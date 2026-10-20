@@ -239,8 +239,9 @@ final class HomeMode {
                     AppLog.w("remote buttons service: " + e.getMessage());
                 }
             }
-            notice(c, Ui.tr("Free My TV ligado: Início e tela de descanso novos, " + disabled.size() + " apps desligados.",
-                    "Free My TV is on: new home screen and screensaver, " + disabled.size() + " apps turned off."));
+            notice(c, Ui.orAr("تم تشغيل Free My TV: شاشة رئيسية وشاشة توقف جديدتان، وتم إيقاف " + disabled.size() + " من التطبيقات.",
+                    Ui.tr("Free My TV ligado: Início e tela de descanso novos, " + disabled.size() + " apps desligados.",
+                    "Free My TV is on: new home screen and screensaver, " + disabled.size() + " apps turned off.")));
             busy(c, Ui.tr("Medindo o Free My TV…", "Measuring Free My TV…"));
             measureHomeTime(c, adb, FREE);
             done(c, null);

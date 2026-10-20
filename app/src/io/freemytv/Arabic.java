@@ -1,0 +1,136 @@
+package io.freemytv;
+
+/**
+ * Arabic copy for the text drawn by the custom UI. Source keys are the English copy, like {@link Spanish}.
+ * Pure Java on purpose (tests/ArabicTest.java runs it without Android). Non-ASCII is written as \\u escapes.
+ * tests/check_ar_coverage.py fails if a new English string has no entry here.
+ */
+final class Arabic {
+    private Arabic() {}
+
+    /** The Arabic for an English string; an unknown string is shown in English rather than blank. */
+    static String text(String english) {
+        switch (english) {
+            case "": return "";
+            case " of ": return " \u0645\u0646 ";
+            case " of 2": return " \u0645\u0646 2";
+            case " of 3": return " \u0645\u0646 3";
+            case ", selected": return "\u060c \u0645\u062d\u062f\u062f";
+            case ", tab ": return "\u060c \u062a\u0628\u0648\u064a\u0628 ";
+            case ". In use": return ". \u0642\u064a\u062f \u0627\u0644\u0627\u0633\u062a\u062e\u062f\u0627\u0645";
+            case "24h change": return "\u0627\u0644\u062a\u063a\u064a\u0631 \u062e\u0644\u0627\u0644 24 \u0633\u0627\u0639\u0629";
+            case "Accept \u201cAllow USB debugging?\u201d on the TV (tick \u201cAlways allow\u201d).": return "\u0627\u0642\u0628\u0644 \u0631\u0633\u0627\u0644\u0629 \u00ab\u0627\u0644\u0633\u0645\u0627\u062d \u0628\u062a\u0635\u062d\u064a\u062d USB\u061f\u00bb \u0639\u0644\u0649 \u0627\u0644\u062a\u0644\u0641\u0627\u0632 (\u0648\u0641\u0639\u0651\u0644 \u00ab\u0627\u0644\u0633\u0645\u0627\u062d \u062f\u0627\u0626\u0645\u064b\u0627\u00bb).";
+            case "All Apps": return "\u0643\u0644 \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u0627\u062a";
+            case "Android didn't accept the new home screen": return "\u0644\u0645 \u064a\u0642\u0628\u0644 \u0623\u0646\u062f\u0631\u0648\u064a\u062f \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629 \u0627\u0644\u062c\u062f\u064a\u062f\u0629";
+            case "Automatic": return "\u062a\u0644\u0642\u0627\u0626\u064a";
+            case "COMPARISON": return "\u0627\u0644\u0645\u0642\u0627\u0631\u0646\u0629";
+            case "Connecting\u2026": return "\u062c\u0627\u0631\u064d \u0627\u0644\u0627\u062a\u0635\u0627\u0644\u2026";
+            case "Couldn't check Free My TV: ": return "\u062a\u0639\u0630\u0651\u0631 \u0641\u062d\u0635 Free My TV: ";
+            case "Couldn't go back to the original: ": return "\u062a\u0639\u0630\u0651\u0631\u062a \u0627\u0644\u0639\u0648\u062f\u0629 \u0625\u0644\u0649 \u0627\u0644\u0623\u0635\u0644\u064a: ";
+            case "Couldn't open ": return "\u062a\u0639\u0630\u0651\u0631 \u0641\u062a\u062d ";
+            case "Couldn't turn on Free My TV: ": return "\u062a\u0639\u0630\u0651\u0631 \u062a\u0634\u063a\u064a\u0644 Free My TV: ";
+            case "Crypto": return "\u0627\u0644\u0639\u0645\u0644\u0627\u062a \u0627\u0644\u0631\u0642\u0645\u064a\u0629";
+            case "Dark": return "\u062f\u0627\u0643\u0646";
+            case "Disney and Globoplay: the TV itself controls those buttons.": return "\u062f\u064a\u0632\u0646\u064a \u0648Globoplay: \u064a\u062a\u062d\u0643\u0645 \u0627\u0644\u062a\u0644\u0641\u0627\u0632 \u0646\u0641\u0633\u0647 \u0628\u0647\u0630\u0647 \u0627\u0644\u0623\u0632\u0631\u0627\u0631.";
+            case "Dollar": return "\u0627\u0644\u062f\u0648\u0644\u0627\u0631";
+            case "Error: ": return "\u062e\u0637\u0623: ";
+            case "Fetching titles\u2026": return "\u062c\u0627\u0631\u064d \u062c\u0644\u0628 \u0627\u0644\u0639\u0646\u0627\u0648\u064a\u0646\u2026";
+            case "For You": return "\u0644\u0643";
+            case "Free My TV's home screen crashed 3 times in a row; I switched back to the original one.": return "\u062a\u0639\u0637\u0644\u062a \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629 \u0644\u0640 Free My TV \u062b\u0644\u0627\u062b \u0645\u0631\u0627\u062a \u0645\u062a\u062a\u0627\u0644\u064a\u0629\u060c \u0641\u0639\u062f\u062a\u064f \u0625\u0644\u0649 \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0623\u0635\u0644\u064a\u0629.";
+            case "Free My TV's home screen ran into a problem.\nGoing back to the TV's original home screen\u2026": return "\u0648\u0627\u062c\u0647\u062a \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629 \u0644\u0640 Free My TV \u0645\u0634\u0643\u0644\u0629.\n\u062c\u0627\u0631\u064d \u0627\u0644\u0631\u062c\u0648\u0639 \u0625\u0644\u0649 \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629 \u0627\u0644\u0623\u0635\u0644\u064a\u0629 \u0644\u0644\u062a\u0644\u0641\u0627\u0632\u2026";
+            case "Free memory": return "\u0627\u0644\u0630\u0627\u0643\u0631\u0629 \u0627\u0644\u0645\u062a\u0627\u062d\u0629";
+            case "HDMI Inputs": return "\u0645\u062f\u0627\u062e\u0644 HDMI";
+            case "Home Screen": return "\u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629";
+            case "Home Screen, ": return "\u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629\u060c ";
+            case "Home Settings": return "\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629";
+            case "Home button": return "\u0632\u0631 \u0627\u0644\u0635\u0641\u062d\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629";
+            case "Home screen memory": return "\u0630\u0627\u0643\u0631\u0629 \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629";
+            case "Inputs": return "\u0627\u0644\u0645\u062f\u0627\u062e\u0644";
+            case "Language": return "\u0627\u0644\u0644\u063a\u0629";
+            case "Light": return "\u0641\u0627\u062a\u062d";
+            case "Live TV": return "\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631";
+            case "Measuring Free My TV\u2026": return "\u062c\u0627\u0631\u064d \u0642\u064a\u0627\u0633 Free My TV\u2026";
+            case "Measuring the original home screen\u2026": return "\u062c\u0627\u0631\u064d \u0642\u064a\u0627\u0633 \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629 \u0627\u0644\u0623\u0635\u0644\u064a\u0629\u2026";
+            case "NOTICES": return "\u062a\u0646\u0628\u064a\u0647\u0627\u062a";
+            case "Netflix button": return "\u0632\u0631 Netflix";
+            case "No TMDB key: see the README (config.properties).": return "\u0644\u0627 \u064a\u0648\u062c\u062f \u0645\u0641\u062a\u0627\u062d TMDB: \u0631\u0627\u062c\u0639 \u0645\u0644\u0641 README (config.properties).";
+            case "No ads, with the new screensaver": return "\u0628\u0644\u0627 \u0625\u0639\u0644\u0627\u0646\u0627\u062a\u060c \u0645\u0639 \u0634\u0627\u0634\u0629 \u0627\u0644\u062a\u0648\u0642\u0641 \u0627\u0644\u062c\u062f\u064a\u062f\u0629";
+            case "No weather data right now.": return "\u0644\u0627 \u062a\u062a\u0648\u0641\u0631 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0637\u0642\u0633 \u0627\u0644\u0622\u0646.";
+            case "None yet.": return "\u0644\u0627 \u0634\u064a\u0621 \u0628\u0639\u062f.";
+            case "Not installed": return "\u063a\u064a\u0631 \u0645\u062b\u0628\u0651\u062a";
+            case "Nothing": return "\u0644\u0627 \u0634\u064a\u0621";
+            case "OK or the arrows change the value.": return "\u0632\u0631 \u0645\u0648\u0627\u0641\u0642 \u0623\u0648 \u0627\u0644\u0623\u0633\u0647\u0645 \u0644\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0642\u064a\u0645\u0629.";
+            case "OK picks, Back cancels.": return "\u0645\u0648\u0627\u0641\u0642 \u0644\u0644\u0627\u062e\u062a\u064a\u0627\u0631\u060c \u0631\u062c\u0648\u0639 \u0644\u0644\u0625\u0644\u063a\u0627\u0621.";
+            case "Off": return "\u0625\u064a\u0642\u0627\u0641";
+            case "On": return "\u062a\u0634\u063a\u064a\u0644";
+            case "On the TV: tick \u201cAlways allow\u201d and press OK.": return "\u0639\u0644\u0649 \u0627\u0644\u062a\u0644\u0641\u0627\u0632: \u0641\u0639\u0651\u0644 \u00ab\u0627\u0644\u0633\u0645\u0627\u062d \u062f\u0627\u0626\u0645\u064b\u0627\u00bb \u062b\u0645 \u0627\u0636\u063a\u0637 \u0645\u0648\u0627\u0641\u0642.";
+            case "Original": return "\u0627\u0644\u0623\u0635\u0644\u064a";
+            case "Original mode, but I couldn't turn back on: ": return "\u0627\u0644\u0648\u0636\u0639 \u0627\u0644\u0623\u0635\u0644\u064a\u060c \u0644\u0643\u0646 \u062a\u0639\u0630\u0651\u0631\u062a \u0625\u0639\u0627\u062f\u0629 \u062a\u0634\u063a\u064a\u0644: ";
+            case "Original mode: the factory home screen, screensaver and apps are back.": return "\u0627\u0644\u0648\u0636\u0639 \u0627\u0644\u0623\u0635\u0644\u064a: \u0639\u0627\u062f\u062a \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629 \u0648\u0634\u0627\u0634\u0629 \u0627\u0644\u062a\u0648\u0642\u0641 \u0648\u0627\u0644\u062a\u0637\u0628\u064a\u0642\u0627\u062a \u0627\u0644\u0623\u0635\u0644\u064a\u0629.";
+            case "Preview": return "\u0645\u0639\u0627\u064a\u0646\u0629";
+            case "Prime Video button": return "\u0632\u0631 Prime Video";
+            case "Quotes widget": return "\u0623\u062f\u0627\u0629 \u0627\u0644\u0627\u0642\u062a\u0628\u0627\u0633\u0627\u062a";
+            case "RECOMMENDATIONS": return "\u062a\u0631\u0634\u064a\u062d\u0627\u062a";
+            case "Remote Buttons": return "\u0623\u0632\u0631\u0627\u0631 \u062c\u0647\u0627\u0632 \u0627\u0644\u062a\u062d\u0643\u0645";
+            case "Restoring the original home screen\u2026": return "\u062c\u0627\u0631\u064d \u0627\u0633\u062a\u0639\u0627\u062f\u0629 \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629 \u0627\u0644\u0623\u0635\u0644\u064a\u0629\u2026";
+            case "Screensaver": return "\u0634\u0627\u0634\u0629 \u0627\u0644\u062a\u0648\u0642\u0641";
+            case "Screensaver, preview": return "\u0634\u0627\u0634\u0629 \u0627\u0644\u062a\u0648\u0642\u0641\u060c \u0645\u0639\u0627\u064a\u0646\u0629";
+            case "Series": return "\u0645\u0633\u0644\u0633\u0644";
+            case "Settings": return "\u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a";
+            case "Shelf": return "\u0627\u0644\u0631\u0641";
+            case "Shortcuts": return "\u0627\u062e\u062a\u0635\u0627\u0631\u0627\u062a";
+            case "Starting\u2026": return "\u062c\u0627\u0631\u064d \u0627\u0644\u0628\u062f\u0621\u2026";
+            case "Sunrise ": return "\u0627\u0644\u0634\u0631\u0648\u0642 ";
+            case "Sunset ": return "\u0627\u0644\u063a\u0631\u0648\u0628 ";
+            case "Switching takes a few seconds; the screen blinks while it measures.": return "\u064a\u0633\u062a\u063a\u0631\u0642 \u0627\u0644\u062a\u0628\u062f\u064a\u0644 \u0628\u0636\u0639 \u062b\u0648\u0627\u0646\u064d\u060c \u0648\u062a\u0648\u0645\u0636 \u0627\u0644\u0634\u0627\u0634\u0629 \u0623\u062b\u0646\u0627\u0621 \u0627\u0644\u0642\u064a\u0627\u0633.";
+            case "Switching the home screen and screensaver\u2026": return "\u062c\u0627\u0631\u064d \u062a\u0628\u062f\u064a\u0644 \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629 \u0648\u0634\u0627\u0634\u0629 \u0627\u0644\u062a\u0648\u0642\u0641\u2026";
+            case "TCL Channel button": return "\u0632\u0631 \u0642\u0646\u0627\u0629 TCL";
+            case "TV Settings": return "\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u062a\u0644\u0641\u0627\u0632";
+            case "Temperature": return "\u062f\u0631\u062c\u0629 \u0627\u0644\u062d\u0631\u0627\u0631\u0629";
+            case "The TV update turned back on ": return "\u0623\u0639\u0627\u062f \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u062a\u0644\u0641\u0627\u0632 \u062a\u0634\u063a\u064a\u0644 ";
+            case "The TV was updated; Free My TV is still on.": return "\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u062a\u0644\u0641\u0627\u0632\u060c \u0648\u0644\u0627 \u064a\u0632\u0627\u0644 Free My TV \u064a\u0639\u0645\u0644.";
+            case "The TV's factory home screen": return "\u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629 \u0627\u0644\u0623\u0635\u0644\u064a\u0629 \u0644\u0644\u062a\u0644\u0641\u0627\u0632";
+            case "Theme": return "\u0627\u0644\u0645\u0638\u0647\u0631";
+            case "These are the TCL remote's buttons: on this TV, the buttons work as they always did.": return "\u0647\u0630\u0647 \u0623\u0632\u0631\u0627\u0631 \u062c\u0647\u0627\u0632 \u062a\u062d\u0643\u0645 TCL\u060c \u0648\u0641\u064a \u0647\u0630\u0627 \u0627\u0644\u062a\u0644\u0641\u0627\u0632 \u062a\u0639\u0645\u0644 \u0627\u0644\u0623\u0632\u0631\u0627\u0631 \u0643\u0645\u0627 \u0643\u0627\u0646\u062a \u062f\u0627\u0626\u0645\u064b\u0627.";
+            case "This product uses the TMDB API but is not endorsed or certified by TMDB.": return "\u064a\u0633\u062a\u062e\u062f\u0645 \u0647\u0630\u0627 \u0627\u0644\u0645\u0646\u062a\u062c \u0648\u0627\u062c\u0647\u0629 TMDB \u0627\u0644\u0628\u0631\u0645\u062c\u064a\u0629 \u0644\u0643\u0646\u0647 \u063a\u064a\u0631 \u0645\u0639\u062a\u0645\u062f \u0623\u0648 \u0645\u0635\u062f\u0651\u0642 \u0645\u0646 TMDB.";
+            case "Turned off what was missing: ": return "\u062a\u0645 \u0625\u064a\u0642\u0627\u0641 \u0645\u0627 \u0643\u0627\u0646 \u0646\u0627\u0642\u0635\u064b\u0627: ";
+            case "Turning apps back on (": return "\u062c\u0627\u0631\u064d \u0625\u0639\u0627\u062f\u0629 \u062a\u0634\u063a\u064a\u0644 \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u0627\u062a (";
+            case "Turning off apps (": return "\u062c\u0627\u0631\u064d \u0625\u064a\u0642\u0627\u0641 \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u0627\u062a (";
+            case "Turning the apps back on\u2026": return "\u062c\u0627\u0631\u064d \u0625\u0639\u0627\u062f\u0629 \u062a\u0634\u063a\u064a\u0644 \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u0627\u062a\u2026";
+            case "Weather": return "\u0627\u0644\u0637\u0642\u0633";
+            case "Weather widget": return "\u0623\u062f\u0627\u0629 \u0627\u0644\u0637\u0642\u0633";
+            case "YouTube button": return "\u0632\u0631 YouTube";
+            case "Your TV's home screen and screensaver": return "\u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629 \u0648\u0634\u0627\u0634\u0629 \u0627\u0644\u062a\u0648\u0642\u0641 \u0627\u0644\u062d\u0627\u0644\u064a\u062a\u0627\u0646 \u0641\u064a \u062a\u0644\u0641\u0627\u0632\u0643";
+            case "no ads, with the new screensaver": return "\u0628\u0644\u0627 \u0625\u0639\u0644\u0627\u0646\u0627\u062a\u060c \u0645\u0639 \u0634\u0627\u0634\u0629 \u0627\u0644\u062a\u0648\u0642\u0641 \u0627\u0644\u062c\u062f\u064a\u062f\u0629";
+            case "not on the shelf": return "\u0644\u064a\u0633 \u0639\u0644\u0649 \u0627\u0644\u0631\u0641";
+            case "now": return "\u0627\u0644\u0622\u0646";
+            case "on the shelf, place ": return "\u0639\u0644\u0649 \u0627\u0644\u0631\u0641\u060c \u0627\u0644\u0645\u0648\u0636\u0639 ";
+            case "prices from ": return "\u0627\u0644\u0623\u0633\u0639\u0627\u0631 \u0645\u0646 ";
+            case "the TV answered with an unexpected home screen name; nothing was changed": return "\u0631\u062f\u0651 \u0627\u0644\u062a\u0644\u0641\u0627\u0632 \u0628\u0627\u0633\u0645 \u063a\u064a\u0631 \u0645\u062a\u0648\u0642\u0639 \u0644\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629\u060c \u0648\u0644\u0645 \u064a\u062a\u063a\u064a\u0631 \u0634\u064a\u0621";
+            case "the TV's factory home screen": return "\u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629 \u0627\u0644\u0623\u0635\u0644\u064a\u0629 \u0644\u0644\u062a\u0644\u0641\u0627\u0632";
+            case "the TV's first setup saved the Wi-Fi, and turning it off would erase those networks. In Settings \u2192 Network & Internet, forget the network and connect again (networks out of range don't show there: Claude Code can remove them from your computer), then try once more.": return "\u062d\u0641\u0638 \u0627\u0644\u0625\u0639\u062f\u0627\u062f \u0627\u0644\u0623\u0648\u0644\u064a \u0644\u0644\u062a\u0644\u0641\u0627\u0632 \u0634\u0628\u0643\u0629 \u0627\u0644\u0648\u0627\u064a \u0641\u0627\u064a\u060c \u0648\u0625\u064a\u0642\u0627\u0641\u0647 \u0633\u064a\u0645\u062d\u0648 \u0647\u0630\u0647 \u0627\u0644\u0634\u0628\u0643\u0627\u062a. \u0645\u0646 \u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u2190 \u0627\u0644\u0634\u0628\u0643\u0629 \u0648\u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a\u060c \u0627\u0646\u0633\u064e \u0627\u0644\u0634\u0628\u0643\u0629 \u062b\u0645 \u0627\u062a\u0635\u0644 \u0628\u0647\u0627 \u0645\u0646 \u062c\u062f\u064a\u062f (\u0627\u0644\u0634\u0628\u0643\u0627\u062a \u062e\u0627\u0631\u062c \u0627\u0644\u0646\u0637\u0627\u0642 \u0644\u0627 \u062a\u0638\u0647\u0631 \u0647\u0646\u0627\u0643\u060c \u0648\u064a\u0645\u0643\u0646 \u0644\u0640 Claude Code \u062d\u0630\u0641\u0647\u0627 \u0645\u0646 \u062d\u0627\u0633\u0648\u0628\u0643)\u060c \u062b\u0645 \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.";
+            case "the home screen": return "\u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629";
+            case "the original home screen": return "\u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629 \u0627\u0644\u0623\u0635\u0644\u064a\u0629";
+            case "the screensaver": return "\u0634\u0627\u0634\u0629 \u0627\u0644\u062a\u0648\u0642\u0641";
+            default: return english;
+        }
+    }
+
+    /** "5 minutes" with Arabic number agreement: 1 and 2 use their own forms, 3-10 the plural, 11+ the singular. */
+    static String unit(long n, String one, String two, String few, String many) {
+        if (n == 1) return one;
+        if (n == 2) return two;
+        long m = n % 100;
+        return n + " " + (m >= 3 && m <= 10 ? few : many);
+    }
+
+    /** "منذ 5 دقائق": how long ago, from a number of minutes (same breakpoints as the English/Portuguese copy). */
+    static String ago(long minutes) {
+        if (minutes < 1) return text("now");
+        if (minutes < 60) return "\u0645\u0646\u0630 " + unit(minutes, "\u062f\u0642\u064a\u0642\u0629", "\u062f\u0642\u064a\u0642\u062a\u064a\u0646", "\u062f\u0642\u0627\u0626\u0642", "\u062f\u0642\u064a\u0642\u0629");
+        long hours = minutes / 60;
+        if (hours < 48) return "\u0645\u0646\u0630 " + unit(hours, "\u0633\u0627\u0639\u0629", "\u0633\u0627\u0639\u062a\u064a\u0646", "\u0633\u0627\u0639\u0627\u062a", "\u0633\u0627\u0639\u0629");
+        long days = minutes / 1440;
+        return "\u0645\u0646\u0630 " + unit(days, "\u064a\u0648\u0645", "\u064a\u0648\u0645\u064a\u0646", "\u0623\u064a\u0627\u0645", "\u064a\u0648\u0645\u064b\u0627");
+    }
+}

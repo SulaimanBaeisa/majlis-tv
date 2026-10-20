@@ -30,7 +30,7 @@ final class Ui {
     static final Locale PT = new Locale("pt", "BR");
     /** English, Portuguese or Spanish, from the settings or, with "auto", the TV's own language. */
     static volatile String language = language();
-    static volatile boolean en = "en".equals(language), es = "es".equals(language);
+    static volatile boolean en = "en".equals(language), es = "es".equals(language), ar = "ar".equals(language);
     static Typeface thin, light, displayMedium, displaySemibold, regular, medium, semibold;
     private static boolean loaded;
     private static final Rect BOUNDS = new Rect();
@@ -64,12 +64,9 @@ final class Ui {
 
     private static final String FONT = "fonts/InterVariable.ttf";
 
-    /** "pt", "es" or "en": the one picked (TV settings or config.properties), or with "auto" the TV's own, else English. */
+    /** "pt", "es", "ar" or "en": the one picked (TV settings or config.properties), or with "auto" the TV's own, else English. */
     private static String language() {
-        String lang = Prefs.language();
-        if (!lang.equals("auto")) return lang;
-        lang = Locale.getDefault().getLanguage();
-        return "pt".equals(lang) || "es".equals(lang) ? lang : "en";
+        return Lang.pick(Prefs.language(), Locale.getDefault().getLanguage());
     }
 
     /** After the language changes in the settings (and once Prefs can read them). */
@@ -77,6 +74,7 @@ final class Ui {
         language = language();
         en = "en".equals(language);
         es = "es".equals(language);
+        ar = "ar".equals(language);
     }
 
     private static boolean has(AssetManager a, String path) {
@@ -134,15 +132,23 @@ final class Ui {
     }
 
     static String tr(String pt, String english) {
-        return es ? Spanish.text(english) : en ? english : pt;
+        return ar ? Arabic.text(english) : es ? Spanish.text(english) : en ? english : pt;
     }
 
     static String tr(String pt, String english, String spanish) {
-        return es ? spanish : en ? english : pt;
+        return ar ? Arabic.text(english) : es ? spanish : en ? english : pt;
     }
 
+    /** For text built at run time (so it has no fixed English key): the Arabic when in Arabic, else {@code other}. */
+    static String orAr(String arabic, String other) {
+        return ar ? arabic : other;
+    }
+
+    /** Saudi Arabic, Gregorian calendar, Western digits (0-9), like most Saudi screens. */
+    static final Locale ARABIC = Locale.forLanguageTag("ar-SA-u-ca-gregory-nu-latn");
+
     static Locale locale() {
-        return es ? spanish() : en ? Locale.US : PT;
+        return ar ? ARABIC : es ? spanish() : en ? Locale.US : PT;
     }
 
     /** The TV's own Spanish (es-MX, es-AR…) when it is in Spanish, Spain's otherwise. */
@@ -153,13 +159,13 @@ final class Ui {
 
     /** "21:47" (in English, "9:47", like the iPhone in the US). */
     static String clock(long now) {
-        return en ? new SimpleDateFormat("h:mm", Locale.US).format(new Date(now))
+        return en || ar ? new SimpleDateFormat("h:mm", locale()).format(new Date(now))
                 : new SimpleDateFormat("HH:mm", locale()).format(new Date(now));
     }
 
     /** "5:21" (sunrise and sunset; in English, "5:21 AM"). */
     static String time(long at) {
-        return once("time", at, () -> en ? new SimpleDateFormat("h:mm a", Locale.US).format(new Date(at))
+        return once("time", at, () -> en || ar ? new SimpleDateFormat("h:mm a", locale()).format(new Date(at))
                 : new SimpleDateFormat("H:mm", locale()).format(new Date(at)));
     }
 
@@ -184,7 +190,8 @@ final class Ui {
 
     /** "domingo, 18 de outubro" (lowercase, like the iPhone in Portuguese); "Sunday, October 18" in English. */
     static String date(long now) {
-        return en ? new SimpleDateFormat("EEEE, MMMM d", Locale.US).format(new Date(now))
+        return ar ? new SimpleDateFormat("EEEE، d MMMM", locale()).format(new Date(now))
+                : en ? new SimpleDateFormat("EEEE, MMMM d", Locale.US).format(new Date(now))
                 : new SimpleDateFormat("EEEE, d 'de' MMMM", locale()).format(new Date(now));
     }
 

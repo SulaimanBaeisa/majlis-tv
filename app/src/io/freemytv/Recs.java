@@ -57,6 +57,7 @@ final class Recs {
     private static final int MANHA = 0, TARDE = 1, NOITE = 2;
     static final String[] PERIOD_LABEL = {"PARA ESTA MANHÃ", "PARA ESTA TARDE", "PARA ESTA NOITE"};
     static final String[] PERIOD_LABEL_EN = {"THIS MORNING", "THIS AFTERNOON", "TONIGHT"};
+    static final String[] PERIOD_LABEL_AR = {"هذا الصباح", "هذا الظهر", "هذا المساء"};
     static final String[] PERIOD_LABEL_ES = {"PARA ESTA MAÑANA", "PARA ESTA TARDE", "PARA ESTA NOCHE"};
     /** Service name on TMDB (part of the name, lowercase) → TV app (HomeApps key, package). */
     private static final String[][] SERVICES = {
@@ -152,7 +153,7 @@ final class Recs {
     String error() { return error; }
 
     static String periodLabel() {
-        return (Ui.es ? PERIOD_LABEL_ES : Ui.en ? PERIOD_LABEL_EN : PERIOD_LABEL)[period(System.currentTimeMillis())];
+        return (Ui.ar ? PERIOD_LABEL_AR : Ui.es ? PERIOD_LABEL_ES : Ui.en ? PERIOD_LABEL_EN : PERIOD_LABEL)[period(System.currentTimeMillis())];
     }
 
     private static int period(long now) {
@@ -420,8 +421,7 @@ final class Recs {
 
     /** Language of titles and genres; the services come from the region. */
     private static String lang() {
-        if (Ui.es) return "ES".equals(java.util.Locale.getDefault().getCountry()) ? "es-ES" : "es-MX";
-        return Ui.en ? "en-US" : "pt-BR";
+        return Lang.tmdbTag(Ui.language, java.util.Locale.getDefault().getCountry());
     }
 
     private static void alternate(List<Pick> out, java.util.Set<String> seen, List<Pick> a, List<Pick> b, int max) {
