@@ -138,6 +138,13 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private final RectF[] cardRects = new RectF[3];
     private final List<HomeApps.Item> lightButtons = new ArrayList<>();
     private Paint lTitle, lTab, lTabOn, lCardTitle, lCardMeta, lQuote, lTip;
+    // Arabic info cards (prayer, date, verse of the day): shown instead of the empty picks when there is no TMDB key
+    private Paint infoLabel, infoBig, infoName, infoMid, infoSmall, infoNum;
+    private List<String[]> daily;
+    private long infoMinute = -1;
+    private Info.Prayer infoPrayer;
+    private StaticLayout verseLayout, hijriLayout;
+    private String verseKey = "", hijriKey = "";
     private Shader lightGradient;
 
     // Shelf
@@ -294,6 +301,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             updatePalette();
             checkNight(true);
             updatePicks();      // three new ones every hour
+            refreshInfo();      // prayer card: once a minute
             handler.postDelayed(this, 15_000);
         }
     };
@@ -519,6 +527,12 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         lQuote = Ui.numbers(Ui.regular, 21 * k, L_FAINT);
         lTip = Ui.text(Ui.semibold, 25 * k, L_INK);
         lTip.setTextAlign(Paint.Align.CENTER);
+        infoLabel = Ui.text(Ui.medium, 27 * k, L_DIM);
+        infoBig = Ui.text(Ui.displaySemibold, 104 * k, L_INK);
+        infoName = Ui.text(Ui.semibold, 56 * k, L_INK);
+        infoMid = Ui.text(Ui.semibold, 36 * k, L_INK);
+        infoSmall = Ui.text(Ui.medium, 26 * k, L_DIM);
+        infoNum = Ui.numbers(Ui.semibold, 29 * k, L_INK);
         lightGradient = null;
         buttonPaint = Ui.text(Ui.semibold, 29 * k, INK);
         capsuleText = Ui.numbers(Ui.medium, 29 * k, 0xF2FFFFFF);
@@ -2279,11 +2293,185 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             if (i == tab) lTabOn.setColor(blend(tone(L_INK, WHITE), L_INK, focus));   // always dark on the white pill
             c.drawText(tabs()[i], r.centerX() - p.measureText(tabs()[i]) / 2, r.centerY() + Ui.halfCap(p), p);
         }
-        int top = -1;
-        for (int i = 0; i < 3; i++) if (cardFocus[i].value > 0.02f && (top < 0 || cardFocus[i].value > cardFocus[top].value)) top = i;
-        for (int i = 0; i < 3; i++) if (i != top) drawLightCard(c, i);
-        if (top >= 0) drawLightCard(c, top);
+        if (showInfoCards()) {
+            drawInfoCards(c);
+        } else {
+            int top = -1;
+            for (int i = 0; i < 3; i++) if (cardFocus[i].value > 0.02f && (top < 0 || cardFocus[i].value > cardFocus[top].value)) top = i;
+            for (int i = 0; i < 3; i++) if (i != top) drawLightCard(c, i);
+            if (top >= 0) drawLightCard(c, top);
+        }
         if (HomeData.coinCount() > 0) drawQuotes(c);
+    }
+
+    // MARK: - Arabic info cards
+
+    /** With no picks to show (no TMDB key) the three cards carry the prayer times, the date and a verse of the day. */
+    private boolean showInfoCards() {
+        return Ui.ar && cards.isEmpty();
+    }
+
+    private double[] where() {
+        try {
+            return new double[] {Double.parseDouble(Prefs.latitude()), Double.parseDouble(Prefs.longitude())};
+        } catch (NumberFormatException e) {
+            return new double[] {21.49012, 39.18624};
+        }
+    }
+
+    /** Recomputes the prayer card when the minute changes (called from the 15 s tick). */
+    private void refreshInfo() {
+        if (!showInfoCards()) return;
+        long minute = System.currentTimeMillis() / 60_000L;
+        if (minute == infoMinute) return;
+        infoMinute = minute;
+        java.util.TimeZone tz = java.util.TimeZone.getDefault();
+        double[] ll = where();
+        infoPrayer = Info.prayer(java.time.LocalDateTime.now(), ll[0], ll[1], tz.getOffset(System.currentTimeMillis()) / 3_600_000.0,
+                Schedule.DEFAULT_IQAMA);
+        heroDirty = true;
+    }
+
+    private String[] todaysItem() {
+        if (daily == null) {
+            daily = new java.util.ArrayList<>();
+            try (java.io.InputStream in = getContext().getAssets().open("daily.tsv")) {
+                java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+                byte[] buf = new byte[4096];
+                int n;
+                while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+                daily = Info.parseDaily(out.toString("UTF-8"));
+            } catch (java.io.IOException e) {
+                AppLog.w("daily.tsv: " + e.getMessage());
+            }
+        }
+        return Info.daily(daily, java.time.LocalDate.now());
+    }
+
+    private void infoChrome(Canvas c, RectF base) {
+        float r0 = 18 * k;
+        tmp.set(base);
+        tmp.offset(0, 10 * k);
+        shadowDeep.setColor(Ui.alpha(0xFF000000, tone(0.14f, 0.32f)));
+        shadows.draw(c, tmp, r0, DEEP_BLUR * k, shadowDeep);
+        fill.setShader(null);
+        fill.setColor(tone(0xFFE8E8ED, 0xFF2C2C2E));
+        c.drawRoundRect(base, r0, r0, fill);
+    }
+
+    private void drawInfoCards(Canvas c) {
+        refreshInfo();
+        int ink = tone(L_INK, WHITE), dim = tone(L_DIM, 0xFF98989D);
+        infoLabel.setColor(dim);
+        infoSmall.setColor(dim);
+        infoBig.setColor(ink);
+        infoName.setColor(ink);
+        infoMid.setColor(ink);
+        infoNum.setColor(ink);
+        for (int i = 0; i < 3; i++) infoChrome(c, cardRects[i]);
+        Info.Prayer p = infoPrayer;
+        if (p != null) drawPrayerCard(c, cardRects[0], p, ink, dim);
+        drawDateCard(c, cardRects[1], ink, dim);
+        drawVerseCard(c, cardRects[2], ink, dim);
+    }
+
+    private void drawPrayerCard(Canvas c, RectF r, Info.Prayer p, int ink, int dim) {
+        float pad = 44 * k, right = r.right - pad, left = r.left + pad;
+        infoLabel.setTextAlign(Paint.Align.RIGHT);
+        c.drawText(p.label, right, r.top + 70 * k, infoLabel);
+        infoBig.setTextAlign(Paint.Align.RIGHT);
+        c.drawText(p.name, right, r.top + 178 * k, infoBig);
+        infoBig.setTextAlign(Paint.Align.LEFT);
+        c.drawText(p.time, left, r.top + 178 * k, infoBig);
+        infoMid.setTextAlign(Paint.Align.RIGHT);
+        infoMid.setColor(p.pending ? tone(0xFF248A3D, 0xFF30D158) : dim);
+        c.drawText(p.sub, right, r.top + 240 * k, infoMid);
+        infoMid.setColor(ink);
+        // the five prayers, Fajr on the right
+        float lineY = r.top + 276 * k;
+        fill.setShader(null);
+        fill.setColor(tone(0x1A000000, 0x24FFFFFF));
+        c.drawRoundRect(left, lineY, right, lineY + 2 * k, k, k, fill);
+        float colW = (right - left) / 5f;
+        infoSmall.setTextAlign(Paint.Align.CENTER);
+        infoNum.setTextAlign(Paint.Align.CENTER);
+        for (int i = 0; i < 5; i++) {
+            float cx = right - colW * (i + 0.5f);
+            boolean next = i == p.index;
+            if (next) {
+                tmp.set(cx - colW / 2 + 6 * k, r.top + 296 * k, cx + colW / 2 - 6 * k, r.bottom - 26 * k);
+                fill.setColor(Ui.alpha(tone(0xFF248A3D, 0xFF30D158), 0.16f));
+                c.drawRoundRect(tmp, 16 * k, 16 * k, fill);
+            }
+            String name = i == Schedule.DHUHR && java.time.LocalDate.now().getDayOfWeek() == java.time.DayOfWeek.FRIDAY && !p.tomorrow
+                    ? Schedule.JUMUAH_AR : Schedule.NAMES_AR[i];
+            infoSmall.setColor(next ? ink : dim);
+            c.drawText(name, cx, r.top + 340 * k, infoSmall);
+            c.drawText(p.times[i], cx, r.top + 386 * k, infoNum);
+        }
+    }
+
+    private void drawDateCard(Canvas c, RectF r, int ink, int dim) {
+        Info.Date d = Info.date(java.time.LocalDate.now());
+        float pad = 34 * k, right = r.right - pad, width = r.width() - 2 * pad;
+        infoLabel.setTextAlign(Paint.Align.RIGHT);
+        c.drawText("اليوم", right, r.top + 70 * k, infoLabel);
+        infoName.setTextAlign(Paint.Align.RIGHT);
+        c.drawText(d.weekday, right, r.top + 142 * k, infoName);
+        infoMid.setTextAlign(Paint.Align.RIGHT);
+        c.drawText(d.gregorian, right, r.top + 198 * k, infoMid);
+        fill.setShader(null);
+        fill.setColor(tone(0x1A000000, 0x24FFFFFF));
+        c.drawRoundRect(r.left + pad, r.top + 232 * k, right, r.top + 234 * k, k, k, fill);
+        infoSmall.setTextAlign(Paint.Align.RIGHT);
+        c.drawText("التاريخ الهجري", right, r.top + 282 * k, infoSmall);
+        if (hijriLayout == null || !hijriKey.equals(d.hijri + "|" + (int) width)) {
+            hijriKey = d.hijri + "|" + (int) width;
+            TextPaint tp = new TextPaint(infoMid);
+            tp.setTextAlign(Paint.Align.LEFT);
+            hijriLayout = StaticLayout.Builder.obtain(d.hijri, 0, d.hijri.length(), tp, Math.max(1, (int) width))
+                    .setTextDirection(android.text.TextDirectionHeuristics.RTL).setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                    .setMaxLines(3).build();
+        }
+        hijriLayout.getPaint().setColor(ink);
+        c.save();
+        c.translate(r.left + pad, r.top + 304 * k);
+        hijriLayout.draw(c);
+        c.restore();
+    }
+
+    private void drawVerseCard(Canvas c, RectF r, int ink, int dim) {
+        String[] item = todaysItem();
+        float pad = 30 * k, right = r.right - pad, width = r.width() - 2 * pad;
+        infoLabel.setTextAlign(Paint.Align.RIGHT);
+        c.drawText(item != null && item[0].equals("H") ? "حديث اليوم" : "آية اليوم", right, r.top + 70 * k, infoLabel);
+        if (item == null) return;
+        String key = item[1] + "|" + (int) width + "|" + (int) (r.height());
+        if (verseLayout == null || !verseKey.equals(key)) {
+            verseKey = key;
+            float maxH = r.height() - 190 * k;
+            TextPaint tp = new TextPaint(infoMid);
+            tp.setTextAlign(Paint.Align.LEFT);
+            StaticLayout best = null;
+            for (float size = 34; size >= 20; size -= 2) {
+                tp.setTextSize(size * k);
+                best = StaticLayout.Builder.obtain(item[2], 0, item[2].length(), tp, Math.max(1, (int) width))
+                        .setTextDirection(android.text.TextDirectionHeuristics.RTL).setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                        .setLineSpacing(0, 1.18f).build();
+                if (best.getHeight() <= maxH) break;
+            }
+            verseLayout = best;
+        }
+        verseLayout.getPaint().setColor(ink);
+        c.save();
+        c.translate(r.left + pad, r.top + 98 * k);
+        verseLayout.draw(c);
+        c.restore();
+        infoSmall.setTextAlign(Paint.Align.RIGHT);
+        infoSmall.setTextSize(23 * k);
+        infoSmall.setColor(dim);
+        c.drawText(TextUtils.ellipsize(item[1], new TextPaint(infoSmall), width, TextUtils.TruncateAt.END).toString(), right, r.bottom - 28 * k, infoSmall);
+        infoSmall.setTextSize(26 * k);
     }
 
     /**
