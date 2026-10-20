@@ -80,16 +80,17 @@ final class Backdrop {
         float sw = src.getWidth() * scale, sh = src.getHeight() * scale;
         c.drawBitmap(src, null, new RectF((WALL_W - sw) / 2, (WALL_H - sh) / 2, (WALL_W + sw) / 2, (WALL_H + sh) / 2), photo);
         src.recycle();
-        // A bright photo (sky) gets a heavier scrim where the title and tabs sit, so the white text keeps its contrast.
+        // The photo stays bright in the middle (the cards are smoked glass); the scrims sit where text is drawn directly
+        // on it: the title and tabs at the top (heavier when the sky there is bright) and the shelf at the bottom.
         float boost = Math.max(0, Math.min(0.3f, (luminance(out, 0.5f, 0.03f, 1f, 0.22f) - 0.30f) * 0.9f));
-        c.drawColor(black(0.30f + boost));
+        c.drawColor(black(0.16f));
         Paint scrim = new Paint(Paint.DITHER_FLAG);
-        scrim.setShader(new LinearGradient(0, 0, 0, WALL_H * 0.32f, new int[] {black(0.42f), black(0.16f), 0},
-                new float[] {0, 0.55f, 1}, Shader.TileMode.CLAMP));
-        c.drawRect(0, 0, WALL_W, WALL_H * 0.32f, scrim);
-        scrim.setShader(new LinearGradient(0, WALL_H, 0, WALL_H * 0.42f, new int[] {black(0.55f), black(0.28f), 0},
+        scrim.setShader(new LinearGradient(0, 0, 0, WALL_H * 0.30f, new int[] {black(0.46f + boost), black(0.22f + boost * 0.6f), 0},
+                new float[] {0, 0.6f, 1}, Shader.TileMode.CLAMP));
+        c.drawRect(0, 0, WALL_W, WALL_H * 0.30f, scrim);
+        scrim.setShader(new LinearGradient(0, WALL_H, 0, WALL_H * 0.48f, new int[] {black(0.46f), black(0.22f), 0},
                 new float[] {0, 0.5f, 1}, Shader.TileMode.CLAMP));
-        c.drawRect(0, WALL_H * 0.42f, WALL_W, WALL_H, scrim);
+        c.drawRect(0, WALL_H * 0.48f, WALL_W, WALL_H, scrim);
         int[] frost = darken(reduce(out, FW, FH, 3, 3), 0.25f);
         int[] glass = darken(reduce(out, GW, GH, 2, 2), 0.25f);
         return new Backdrop(frost, glass, out);
