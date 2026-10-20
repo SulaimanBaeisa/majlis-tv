@@ -102,6 +102,10 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private final Activity activity;
     private final Scene scene = new Scene();
     private final HomeData data;
+    private final LeagueFeed league = new LeagueFeed(new LeagueFeed.Listener() {
+        @Override public void onLeague() { post(new Runnable() { @Override public void run() { drawerDirty = true; platter.invalidate(); } }); }
+    });
+    private Paint leagueName, leagueSmall, leagueNum, leagueHead;
     private final Recs recs;
     private final Click click;
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -302,6 +306,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             checkNight(true);
             updatePicks();      // three new ones every hour
             refreshInfo();      // prayer card: once a minute
+            if (Ui.ar) league.refreshIfStale();   // Saudi league card in the drawer
             handler.postDelayed(this, 15_000);
         }
     };
@@ -533,6 +538,10 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         infoMid = Ui.text(Ui.semibold, 36 * k, L_INK);
         infoSmall = Ui.text(Ui.medium, 26 * k, L_DIM);
         infoNum = Ui.numbers(Ui.semibold, 29 * k, L_INK);
+        leagueHead = Ui.text(Ui.semibold, 25 * k, 0xB3FFFFFF);
+        leagueName = Ui.text(Ui.semibold, 25 * k, 0xF2FFFFFF);
+        leagueSmall = Ui.text(Ui.medium, 20 * k, 0xADFFFFFF);
+        leagueNum = Ui.numbers(Ui.semibold, 25 * k, 0xF2FFFFFF);
         lightGradient = null;
         buttonPaint = Ui.text(Ui.semibold, 29 * k, INK);
         capsuleText = Ui.numbers(Ui.medium, 29 * k, 0xF2FFFFFF);
@@ -1333,7 +1342,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             x += tw + gap;
         }
         float cardsTop = CARDS_TOP * k, split = left + (right - left) * 0.585f;
-        boolean wx = Prefs.weather(), qt = Prefs.quotes() && HomeData.active().length > 0;
+        boolean wx = Prefs.weather(), qt = Ui.ar || Prefs.quotes() && HomeData.active().length > 0;
         // A card that is off gives its room to the other one.
         weatherCard.set(left, cardsTop, qt ? split - 16 * k : right, cardsTop + CARDS_H * k);
         quotesCard.set(wx ? split + 16 * k : left, cardsTop, right, cardsTop + CARDS_H * k);
@@ -1402,7 +1411,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         for (int i = 0; i < drawerItems.size(); i++) if (i != top) drawDrawerTile(c, i);
         if (top >= 0) drawDrawerTile(c, top);
         if (Prefs.weather()) drawWeatherCard(c, weatherCard);
-        if (Prefs.quotes() && HomeData.active().length > 0) drawQuotesCard(c, quotesCard);
+        if (Ui.ar) drawLeagueCard(c, quotesCard);
+        else if (Prefs.quotes() && HomeData.active().length > 0) drawQuotesCard(c, quotesCard);
     }
 
     /** Square drawer button: symbol and name; an input with no device is dimmed. Focused: white, with dark text. */
@@ -1497,6 +1507,99 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         Symbols.draw(getContext(), c, symbol, sx, base - Ui.halfCap(cardDim), size, tone(L_DIM, 0xB3FFFFFF));
         c.drawText(label, lx, base, cardDim);
         return x + total;
+    }
+
+    // MARK: - Saudi league card (Arabic): matches on the right, table on the left
+
+    private void drawLeagueCard(Canvas c, RectF r) {
+        drawerCard(c, r);
+        if (Ui.LEGACY) quotesSnapshot.draw(c, r, "L|" + league.version + "|" + Ui.language + "|" + Float.floatToIntBits(dark()) + "|"
+                + System.currentTimeMillis() / 60_000, cc -> drawLeague(cc, r));
+        else drawLeague(c, r);
+    }
+
+    private void drawLeague(Canvas c, RectF r) {
+        long now = System.currentTimeMillis();
+        int tzMs = java.util.TimeZone.getDefault().getOffset(now);
+        float pad = 28 * k, mid = r.centerX() + 6 * k;
+        float rightEdge = r.right - pad, rightPaneL = mid + 14 * k;      // matches pane: [rightPaneL, rightEdge]
+        float leftEdge = r.left + pad, leftPaneR = mid - 14 * k;          // table pane: [leftEdge, leftPaneR]
+        leagueHead.setTextAlign(Paint.Align.RIGHT);
+        leagueName.setTextAlign(Paint.Align.RIGHT);
+        leagueSmall.setTextAlign(Paint.Align.RIGHT);
+        // divider
+        fill.setShader(null);
+        fill.setColor(tone(0x1A000000, 0x24FFFFFF));
+        c.drawRoundRect(mid - k, r.top + 30 * k, mid + k, r.bottom - 30 * k, k, k, fill);
+
+        if (!league.hasData()) {
+            c.drawText("الدوري السعودي", rightEdge, r.top + 54 * k, leagueHead);
+            leagueSmall.setTextAlign(Paint.Align.RIGHT);
+            c.drawText("لا توجد بيانات الآن", rightEdge, r.top + 110 * k, leagueSmall);
+            return;
+        }
+
+        // --- matches: live first, then the next ones (3 in all)
+        List<League.Match> all = league.matches();
+        List<League.Match> live = League.live(all);
+        List<League.Match> rows = new ArrayList<>(live);
+        for (League.Match m : League.upcoming(all, now, 3)) if (rows.size() < 3) rows.add(m);
+        boolean anyLive = !live.isEmpty();
+        c.drawText(anyLive ? "مباشر · القادمة" : "المباريات القادمة", rightEdge, r.top + 54 * k, leagueHead);
+        float rowH = 72 * k, top = r.top + 82 * k;
+        float paneW = rightEdge - rightPaneL;
+        for (int i = 0; i < rows.size() && i < 3; i++) {
+            League.Match m = rows.get(i);
+            float y = top + i * rowH, base = y + 26 * k;
+            boolean isLive = "in".equals(m.state);
+            float scoreW = 78 * k;
+            float cx = rightPaneL + paneW / 2f;
+            // home on the right, away on the left, the score or "x" between them
+            leagueName.setTextAlign(Paint.Align.RIGHT);
+            String home = TextUtils.ellipsize(m.home, new TextPaint(leagueName), paneW / 2f - scoreW / 2f - 6 * k, TextUtils.TruncateAt.END).toString();
+            c.drawText(home, rightEdge, base, leagueName);
+            leagueName.setTextAlign(Paint.Align.LEFT);
+            String away = TextUtils.ellipsize(m.away, new TextPaint(leagueName), paneW / 2f - scoreW / 2f - 6 * k, TextUtils.TruncateAt.END).toString();
+            c.drawText(away, rightPaneL, base, leagueName);
+            leagueNum.setTextAlign(Paint.Align.CENTER);
+            leagueNum.setColor(isLive ? 0xFFFF6B5E : 0xF2FFFFFF);
+            // score text is written home-away; it sits in the middle, home number on the home (right) side
+            String score = isLive ? m.homeScore + " - " + m.awayScore : "×";
+            c.drawText(isLive ? Rtl.ltr(score) : score, cx, base, leagueNum);
+            leagueNum.setColor(0xF2FFFFFF);
+            leagueSmall.setTextAlign(Paint.Align.CENTER);
+            leagueSmall.setColor(isLive ? 0xFFFF6B5E : 0xADFFFFFF);
+            c.drawText(isLive ? League.clockAr(m) : League.whenAr(m.kickoffMs, now, tzMs), cx, base + 28 * k, leagueSmall);
+            leagueSmall.setColor(0xADFFFFFF);
+        }
+        if (rows.isEmpty()) {
+            leagueSmall.setTextAlign(Paint.Align.RIGHT);
+            c.drawText("لا مباريات قادمة", rightEdge, top + 30 * k, leagueSmall);
+        }
+
+        // --- table: top six, rank / club / played / points
+        List<League.Row> table = league.table();
+        leagueHead.setTextAlign(Paint.Align.RIGHT);
+        c.drawText("ترتيب الدوري", leftPaneR, r.top + 54 * k, leagueHead);
+        if (table.isEmpty()) return;
+        float tw = leftPaneR - leftEdge;
+        float colRank = leftPaneR, colTeam = leftPaneR - 40 * k, colPlayed = leftEdge + 86 * k, colPts = leftEdge + 30 * k;
+        leagueSmall.setTextAlign(Paint.Align.CENTER);
+        c.drawText("لعب", colPlayed, r.top + 88 * k, leagueSmall);
+        c.drawText("نقاط", colPts, r.top + 88 * k, leagueSmall);
+        float rh = 34 * k;
+        for (int i = 0; i < 6 && i < table.size(); i++) {
+            League.Row row = table.get(i);
+            float base = r.top + 120 * k + i * rh;
+            leagueNum.setTextAlign(Paint.Align.RIGHT);
+            c.drawText(String.valueOf(row.rank), colRank, base, leagueNum);
+            leagueName.setTextAlign(Paint.Align.RIGHT);
+            String t = TextUtils.ellipsize(row.team, new TextPaint(leagueName), colTeam - colPlayed - 34 * k, TextUtils.TruncateAt.END).toString();
+            c.drawText(t, colTeam, base, leagueName);
+            leagueNum.setTextAlign(Paint.Align.CENTER);
+            c.drawText(String.valueOf(row.played), colPlayed, base, leagueNum);
+            c.drawText(String.valueOf(row.points), colPts, base, leagueNum);
+        }
     }
 
     /** Prices in the configured currency with the 24 h change (green/red, like Apple's Stocks app). */
