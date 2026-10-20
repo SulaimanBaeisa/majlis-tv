@@ -465,7 +465,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         float kk = width / 1920f;
         sky.layout(0, 0, width, height);
         place(heroLayer, 0, 0);
-        place(status, width - status.getMeasuredWidth(), 0);
+        place(status, Rtl.on() ? 0 : width - status.getMeasuredWidth(), 0);
         place(platter, 0, Math.round(750 * kk));
         place(tiles, 0, Math.round(790 * kk));
         place(drawerLayer, 0, Math.round(470 * kk));
@@ -1003,6 +1003,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             statusRects[i].set(x, cy - b / 2, x + b, cy + b / 2);
             x += b + gap;
         }
+        Rtl.flip(capsuleRect, 0, w);
+        for (RectF r : statusRects) Rtl.flip(r, 0, w);
         statusDirty = true;
     }
 
@@ -1040,6 +1042,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             tileRects[i].set(x, y, x + tw, y + th);
             x += tw + gap;
         }
+        for (int i = 0; i < n; i++) Rtl.flip(tileRects[i], 0, w);
         crispLogos.clear();
     }
 
@@ -1116,7 +1119,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         float cap = q.cap, gap = 6 * k, spacing = 24 * k;
         float total = spacing * (n - 1);
         for (int i = 0; i < n; i++) total += q.glyphs[i] + gap + q.widths[i];
-        float x = right - total;
+        float x = Rtl.on() ? MARGIN * k : right - total;
+        float rowStart = x;
         for (int i = 0; i < n; i++) {
             Glyphs.coin(getContext(), c, HomeData.COINS[coins[i]], x + q.glyphs[i] / 2, base - cap / 2, cap,
                     Ui.alpha(tone(0xB38E8E93, 0x8CFFFFFF), fade));
@@ -1126,7 +1130,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         }
         text.setColor(textColor);
         String stale = HomeData.staleness(data.pricesAt, 5 * 60_000L);
-        if (!stale.isEmpty()) c.drawText(stale, right - total - 24 * k, base, staleQuote);
+        if (!stale.isEmpty()) c.drawText(stale, Rtl.on() ? rowStart + total + 24 * k : right - total - 24 * k, base, staleQuote);
     }
 
     private void drawTiles(Canvas c) {
@@ -1319,6 +1323,9 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         // A card that is off gives its room to the other one.
         weatherCard.set(left, cardsTop, qt ? split - 16 * k : right, cardsTop + CARDS_H * k);
         quotesCard.set(wx ? split + 16 * k : left, cardsTop, right, cardsTop + CARDS_H * k);
+        for (int i = 0; i < n; i++) Rtl.flip(drawerRects[i], 0, w);
+        Rtl.flip(weatherCard, 0, w);
+        Rtl.flip(quotesCard, 0, w);
         drawerDirty = true;
     }
 
@@ -1374,8 +1381,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         hourTemp.setColor(drawerInk(0.95f));
         pricePaint.setColor(drawerInk(0.95f));
         float titleBase = ROW_TITLE * k;
-        if (drawerInputs > 0) c.drawText(Ui.tr("Entradas", "Inputs"), drawerRects[0].left + 4 * k, titleBase, rowTitle);
-        if (drawerInputs < drawerItems.size()) c.drawText(Ui.tr("Atalhos", "Shortcuts"), drawerRects[drawerInputs].left + 4 * k, titleBase, rowTitle);
+        if (drawerInputs > 0) { String t = Ui.tr("Entradas", "Inputs"); c.drawText(t, Rtl.tx(rowTitle, t, drawerRects[0].left + 4 * k, drawerRects[0].left, drawerRects[0].right), titleBase, rowTitle); }
+        if (drawerInputs < drawerItems.size()) { String t = Ui.tr("Atalhos", "Shortcuts"); RectF g = drawerRects[drawerInputs]; c.drawText(t, Rtl.tx(rowTitle, t, g.left + 4 * k, g.left, g.right), titleBase, rowTitle); }
         int top = -1;
         for (int i = 0; i < drawerItems.size(); i++) if (drawerFocus[i].value > 0.02f && (top < 0 || drawerFocus[i].value > drawerFocus[top].value)) top = i;
         for (int i = 0; i < drawerItems.size(); i++) if (i != top) drawDrawerTile(c, i);
@@ -1424,44 +1431,58 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         else drawWeather(c, r);
     }
 
+    /** Text laid out left-to-right inside the card r, mirrored inside it in right-to-left. */
+    private void textIn(Canvas c, String s, float x, float y, Paint p, RectF r) {
+        c.drawText(s, Rtl.tx(p, s, x, r.left, r.right), y, p);
+    }
+
     private void drawWeather(Canvas c, RectF r) {
         float x = r.left + 34 * k;
-        c.drawText(Prefs.city().isEmpty() ? Ui.tr("Clima", "Weather") : Prefs.city(), x, r.top + 54 * k, cardTitle);
+        textIn(c, Prefs.city().isEmpty() ? Ui.tr("Clima", "Weather") : Prefs.city(), x, r.top + 54 * k, cardTitle, r);
         HomeData.Weather wx = data.weather;
         if (Double.isNaN(wx.temp)) {
-            c.drawText(Ui.tr("Sem dados do clima agora.", "No weather data right now."), x, r.top + 120 * k, cardDim);
+            textIn(c, Ui.tr("Sem dados do clima agora.", "No weather data right now."), x, r.top + 120 * k, cardDim, r);
             return;
         }
         String symbol = Symbols.weather(wx.code, wx.isDay);
         float sw = Symbols.width(getContext(), symbol, 52 * k);
-        Symbols.draw(getContext(), c, symbol, x + sw / 2, r.top + 132 * k, 52 * k, drawerInk(0.95f));
+        Symbols.draw(getContext(), c, symbol, Rtl.x(x + sw / 2, r.left, r.right), r.top + 132 * k, 52 * k, drawerInk(0.95f));
         String now = HomeData.degrees(wx.temp);
-        c.drawText(now, x + sw + 18 * k - Ui.leftBearing(bigTemp, now), r.top + 170 * k, bigTemp);
-        c.drawText(HomeData.condition(wx.code, wx.isDay), x, r.top + 220 * k, cardText);
-        c.drawText(Ui.ar ? "العظمى " + HomeData.degrees(wx.max) + "   الصغرى " + HomeData.degrees(wx.min)
+        textIn(c, now, x + sw + 18 * k - Ui.leftBearing(bigTemp, now), r.top + 170 * k, bigTemp, r);
+        textIn(c, HomeData.condition(wx.code, wx.isDay), x, r.top + 220 * k, cardText, r);
+        textIn(c, Ui.ar ? "العظمى " + Rtl.ltr(HomeData.degrees(wx.max)) + "   الصغرى " + Rtl.ltr(HomeData.degrees(wx.min))
                 : Ui.en ? "H:" + HomeData.degrees(wx.max) + "   L:" + HomeData.degrees(wx.min)
-                : "Máx. " + HomeData.degrees(wx.max) + "   Mín. " + HomeData.degrees(wx.min), x, r.top + 258 * k, cardDim);
+                : "Máx. " + HomeData.degrees(wx.max) + "   Mín. " + HomeData.degrees(wx.min), x, r.top + 258 * k, cardDim, r);
         float split = r.left + 392 * k;
+        float splitX = Rtl.x(split, r.left, r.right);
         fill.setShader(null);
         fill.setColor(tone(0x1A000000, 0x24FFFFFF));
-        c.drawRoundRect(split - k, r.top + 34 * k, split + k, r.bottom - 34 * k, k, k, fill);
+        c.drawRoundRect(splitX - k, r.top + 34 * k, splitX + k, r.bottom - 34 * k, k, k, fill);
         float hx = split + 30 * k, hw = (r.right - 30 * k - hx) / 6;
         for (int i = 0; i < wx.hours.size() && i < 6; i++) {
-            float hc = hx + hw * (i + 0.5f);
+            float hc = Rtl.x(hx + hw * (i + 0.5f), r.left, r.right);
             c.drawText(HomeData.hour(wx.hours.get(i)), hc, r.top + 96 * k, hourPaint);
             Symbols.draw(getContext(), c, Symbols.weather(wx.hourCode.get(i), wx.hourDay.get(i)), hc, r.top + 142 * k, 30 * k, drawerInk(0.9f));
             c.drawText(HomeData.degrees(wx.hourTemp.get(i)), hc, r.top + 196 * k, hourTemp);
         }
         float sx = hx, base = r.top + 258 * k;
-        if (wx.sunrise != 0) sx = sunItem(c, "sunrise", Ui.tr("Nascer ", "Sunrise ") + Ui.time(wx.sunrise), sx, base) + 36 * k;
-        if (wx.sunset != 0) sunItem(c, "sunset", Ui.tr("Pôr do sol ", "Sunset ") + Ui.time(wx.sunset), sx, base);
+        if (wx.sunrise != 0) sx = sunItem(c, "sunrise", Ui.tr("Nascer ", "Sunrise ") + Ui.time(wx.sunrise), sx, base, r) + 36 * k;
+        if (wx.sunset != 0) sunItem(c, "sunset", Ui.tr("Pôr do sol ", "Sunset ") + Ui.time(wx.sunset), sx, base, r);
     }
 
-    private float sunItem(Canvas c, String symbol, String label, float x, float base) {
+    /** One "icon + text" item of the sun row, laid out left-to-right from x; mirrored inside r in right-to-left. */
+    private float sunItem(Canvas c, String symbol, String label, float x, float base, RectF r) {
         float size = 22 * k, sw = Symbols.width(getContext(), symbol, size);
-        Symbols.draw(getContext(), c, symbol, x + sw / 2, base - Ui.halfCap(cardDim), size, tone(L_DIM, 0xB3FFFFFF));
-        c.drawText(label, x + sw + 10 * k, base, cardDim);
-        return x + sw + 10 * k + cardDim.measureText(label);
+        float lw = cardDim.measureText(label), total = sw + 10 * k + lw;
+        float sx = x + sw / 2, lx = x + sw + 10 * k;
+        if (Rtl.on()) {
+            // the icon on the right of its text
+            sx = Mirror.x(x + sw / 2, r.left, r.right);
+            lx = Mirror.left(x + sw + 10 * k, x + total, r.left, r.right);   // the text's left edge, mirrored
+        }
+        Symbols.draw(getContext(), c, symbol, sx, base - Ui.halfCap(cardDim), size, tone(L_DIM, 0xB3FFFFFF));
+        c.drawText(label, lx, base, cardDim);
+        return x + total;
     }
 
     /** Prices in the configured currency with the 24 h change (green/red, like Apple's Stocks app). */
@@ -1510,22 +1531,23 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
 
     private void drawPrices(Canvas c, RectF r) {
         float x = r.left + 34 * k, right = r.right - 34 * k;
-        c.drawText(Ui.tr("Cotações", "Crypto"), x, r.top + 54 * k, cardTitle);
+        textIn(c, Ui.tr("Cotações", "Crypto"), x, r.top + 54 * k, cardTitle, r);
         String stale = HomeData.staleness(data.pricesAt, 5 * 60_000L);
-        c.drawText(stale.isEmpty() ? Ui.tr("variação em 24 h", "24h change") : Ui.tr("de ", "", "de ") + stale, right, r.top + 54 * k, cardDimRight);
+        textIn(c, stale.isEmpty() ? Ui.tr("variação em 24 h", "24h change") : Ui.tr("de ", "", "de ") + stale, right, r.top + 54 * k, cardDimRight, r);
         float cap = Ui.cap(cardText);
         int[] coins = HomeData.active();
         for (int j = 0; j < coins.length; j++) {
             int i = coins[j];
             float base = r.top + (110 + 52 * j) * k, mid = base - cap / 2;
             float gw = Glyphs.width(getContext(), HomeData.COINS[i], cap);
-            Glyphs.coin(getContext(), c, HomeData.COINS[i], x + 14 * k, mid, cap, tone(L_DIM, 0xCCFFFFFF));
-            c.drawText(HomeData.coinName(i), x + Math.max(gw, 28 * k) / 2 + 30 * k, base, cardText);
-            c.drawText(HomeData.brl(data.prices[i]), right - 128 * k, base, pricePaint);
+            Glyphs.coin(getContext(), c, HomeData.COINS[i], Rtl.x(x + 14 * k, r.left, r.right), mid, cap, tone(L_DIM, 0xCCFFFFFF));
+            textIn(c, HomeData.coinName(i), x + Math.max(gw, 28 * k) / 2 + 30 * k, base, cardText, r);
+            textIn(c, HomeData.brl(data.prices[i]), right - 128 * k, base, pricePaint, r);
             double change = data.changes[i];
             if (Double.isNaN(change)) continue;
             int color = change >= 0 ? tone(0xFF248A3D, UP_COLOR) : tone(0xFFD70015, DOWN_COLOR);
             tmp.set(right - 108 * k, mid - 17 * k, right, mid + 17 * k);
+            Rtl.flip(tmp, r.left, r.right);
             fill.setShader(null);
             fill.setColor(Ui.alpha(color, 0.2f));
             c.drawRoundRect(tmp, 17 * k, 17 * k, fill);
@@ -1630,6 +1652,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             float y = gridTop + r * GRID_ROW * k - shift;
             if (y > h || y + GRID_ROW * k < 0) continue;
             float x = left + col * (GRID_W + GRID_GAP) * k;
+            if (Rtl.on()) x = w - x - GRID_W * k;
             RectF base = new RectF(x, y, x + GRID_W * k, y + GRID_H * k);
             float f = gridFocus[i].value;
             drawCard(c, others.get(i).tile, base, GRID_RADIUS * k, f, 0.08f);
@@ -1689,7 +1712,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         if (toast == null && toastPaint != null) {
             String next = toasts.poll();
             if (next != null) {
-                toast = layout(next);
+                toast = layout(Rtl.para(next));
                 toastAt = up;
             }
         }
@@ -1711,8 +1734,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         tmp.set((w - tw) / 2f - padX, toastTop, (w + tw) / 2f + padX, toastTop + th + 2 * padY);
         int save = c.saveLayerAlpha(tmp.left - 4, tmp.top - 4, tmp.right + 4, tmp.bottom + 4, Math.round(255 * a));
         scene.glass(c, tmp, Math.min(tmp.height() / 2, 32 * k), SMOKE, 0.55f, 0, 0, 0.02f, 1);
-        Symbols.draw(getContext(), c, "bell", tmp.left + padX + iconW / 2, tmp.centerY(), icon, 0xEBFFFFFF);
-        c.translate(tmp.left + padX + iconW + 16 * k, tmp.top + padY);
+        Symbols.draw(getContext(), c, "bell", Rtl.on() ? tmp.right - padX - iconW / 2 : tmp.left + padX + iconW / 2, tmp.centerY(), icon, 0xEBFFFFFF);
+        c.translate(Rtl.on() ? tmp.left + padX : tmp.left + padX + iconW + 16 * k, tmp.top + padY);
         toast.draw(c);
         c.restoreToCount(save);
     }
@@ -1720,9 +1743,9 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private StaticLayout layout(String text) {
         int max = Math.round(720 * k);
         int width = (int) Math.min(max, Math.ceil(Layout.getDesiredWidth(text, toastPaint)));
-        return StaticLayout.Builder.obtain(text, 0, text.length(), toastPaint, Math.max(1, width))
+        return Rtl.dir(StaticLayout.Builder.obtain(text, 0, text.length(), toastPaint, Math.max(1, width))
                 .setMaxLines(2)
-                .setEllipsize(TextUtils.TruncateAt.END)
+                .setEllipsize(TextUtils.TruncateAt.END))
                 .build();
     }
 
@@ -1772,10 +1795,10 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         boolean down = e.getAction() == KeyEvent.ACTION_DOWN;
         switch (e.getKeyCode()) {
             case KeyEvent.KEYCODE_DPAD_LEFT:
-                if (down) move(-1, 0);
+                if (down) move(Rtl.key(-1), 0);
                 return true;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
-                if (down) move(1, 0);
+                if (down) move(Rtl.key(1), 0);
                 return true;
             case KeyEvent.KEYCODE_DPAD_UP:
                 if (down) move(0, -1);
@@ -2034,6 +2057,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
                 if (!sheetOpen || i >= others.size()) return false;
                 float gridWidth = COLUMNS * GRID_W + (COLUMNS - 1) * GRID_GAP;
                 float x = ((1920 - gridWidth) / 2 + (i % COLUMNS) * (GRID_W + GRID_GAP)) * k;
+                if (Rtl.on()) x = w - x - GRID_W * k;
                 float y = (GRID_TOP + (i / COLUMNS - scroll.target) * GRID_ROW) * k;
                 a11yRect.set(x, y, x + GRID_W * k, y + GRID_H * k);
                 dy = 0;
@@ -2159,6 +2183,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         cardRects[0].set(left, top, left + wide, top + ch);
         cardRects[1].set(cardRects[0].right + g, top, cardRects[0].right + g + tall, top + ch);
         cardRects[2].set(cardRects[1].right + g, top, cardRects[1].right + g + tall, top + ch);
+        for (RectF r : topRects) Rtl.flip(r, 0, w);
+        for (RectF r : cardRects) Rtl.flip(r, 0, w);
         heroDirty = statusDirty = true;
     }
 
@@ -2228,7 +2254,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private void drawLightTop(Canvas c) {
         applyTone();
         String hello = Ui.tr("Para você", "For You");
-        c.drawText(hello, MARGIN * k - Ui.leftBearing(lTitle, hello), L_TITLE_BASE * k, lTitle);
+        c.drawText(hello, Rtl.tx(lTitle, hello, MARGIN * k - Ui.leftBearing(lTitle, hello), 0, w), L_TITLE_BASE * k, lTitle);
         // Text tabs (the selected one in bold, in the main text color); with focus on the tabs, the selected one gets
         // the white pill with a shadow and grows a little (the tvOS focus).
         float focus = Ui.clamp(topFocus[tab].value);
@@ -2302,10 +2328,10 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         }
         if (p == null) return;
         TextPaint tp = new TextPaint(lCardTitle);
-        c.drawText(TextUtils.ellipsize(p.title, tp, bw, TextUtils.TruncateAt.END).toString(), base.left, base.bottom + 46 * k, lCardTitle);
+        { String t = Rtl.para(TextUtils.ellipsize(p.title, tp, bw, TextUtils.TruncateAt.END).toString()); c.drawText(t, Rtl.tx(lCardTitle, t, base.left, base.left, base.right), base.bottom + 46 * k, lCardTitle); }
         if (i == 0 && p.meta != null && !p.meta.isEmpty()) {
             TextPaint mp = new TextPaint(lCardMeta);
-            c.drawText(TextUtils.ellipsize(p.meta, mp, bw, TextUtils.TruncateAt.END).toString(), base.left, base.bottom + 80 * k, lCardMeta);
+            { String t = Rtl.para(TextUtils.ellipsize(p.meta, mp, bw, TextUtils.TruncateAt.END).toString()); c.drawText(t, Rtl.tx(lCardMeta, t, base.left, base.left, base.right), base.bottom + 80 * k, lCardMeta); }
         }
     }
 
@@ -2335,7 +2361,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             if (f > 0.01f) {
                 String label = lightButtons.get(i).label;
                 float half = lTip.measureText(label) / 2;
-                float x = Math.min(r.centerX(), CONTENT_R * k - half);
+                float x = Rtl.on() ? Math.max(r.centerX(), MARGIN * k + half) : Math.min(r.centerX(), CONTENT_R * k - half);
                 lTip.setAlpha(Math.round(255 * f));
                 c.drawText(label, x, r.bottom + (40 + 4 * f) * k, lTip);
             }

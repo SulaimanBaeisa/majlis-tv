@@ -30,6 +30,8 @@ final class Ui {
     static final Locale PT = new Locale("pt", "BR");
     /** English, Portuguese or Spanish, from the settings or, with "auto", the TV's own language. */
     static volatile String language = language();
+    /** Right-to-left layout: frozen when the process starts (with the font); see Rtl. */
+    static volatile boolean rtl;
     static volatile boolean en = "en".equals(language), es = "es".equals(language), ar = "ar".equals(language);
     static Typeface thin, light, displayMedium, displaySemibold, regular, medium, semibold;
     private static boolean loaded;
@@ -39,6 +41,7 @@ final class Ui {
     static synchronized void init(Context c) {
         if (loaded) return;
         loaded = true;
+        rtl = ar;
         AssetManager a = c.getAssets();
         // Arabic needs its own face (Inter has no Arabic letters). It is chosen when the process starts;
         // switching the language later in Settings takes full effect after the home screen restarts.
