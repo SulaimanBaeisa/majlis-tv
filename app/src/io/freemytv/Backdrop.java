@@ -49,6 +49,52 @@ final class Backdrop {
         nightImage = night == null ? null : Bitmap.createBitmap(night, FW, FH, Bitmap.Config.ARGB_8888);
     }
 
+    private Backdrop(int[] frost, int[] glass, Bitmap display) {
+        this.image = null;
+        this.frost = frost;
+        this.glass = glass;
+        this.wide = null;
+        this.tall = null;
+        this.light = frost;
+        this.lightGlass = glass;
+        this.nightFrost = frost;
+        this.nightGlass = glass;
+        this.lightImage = display;
+        this.nightImage = display;
+    }
+
+    /** The wallpaper background is drawn at this size and scaled to the screen (3.7 MB). */
+    static final int WALL_W = 1280, WALL_H = 720;
+
+    /**
+     * The Arabic home's background when there is no TMDB key: the wallpaper itself, sharp, under a dark scrim (heavier
+     * at the top, where the title and tabs are, and at the bottom, behind the shelf). It is always used with the dark
+     * text look (white text, smoked glass), so it reads on any photo. The glass reads a darkened, blurred copy of the
+     * same picture.
+     */
+    static Backdrop wallpaper(Bitmap src) {
+        Bitmap out = Bitmap.createBitmap(WALL_W, WALL_H, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(out);
+        Paint photo = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
+        float scale = Math.max((float) WALL_W / src.getWidth(), (float) WALL_H / src.getHeight());
+        float sw = src.getWidth() * scale, sh = src.getHeight() * scale;
+        c.drawBitmap(src, null, new RectF((WALL_W - sw) / 2, (WALL_H - sh) / 2, (WALL_W + sw) / 2, (WALL_H + sh) / 2), photo);
+        src.recycle();
+        // A bright photo (sky) gets a heavier scrim where the title and tabs sit, so the white text keeps its contrast.
+        float boost = Math.max(0, Math.min(0.3f, (luminance(out, 0.5f, 0.03f, 1f, 0.22f) - 0.30f) * 0.9f));
+        c.drawColor(black(0.30f + boost));
+        Paint scrim = new Paint(Paint.DITHER_FLAG);
+        scrim.setShader(new LinearGradient(0, 0, 0, WALL_H * 0.32f, new int[] {black(0.42f), black(0.16f), 0},
+                new float[] {0, 0.55f, 1}, Shader.TileMode.CLAMP));
+        c.drawRect(0, 0, WALL_W, WALL_H * 0.32f, scrim);
+        scrim.setShader(new LinearGradient(0, WALL_H, 0, WALL_H * 0.42f, new int[] {black(0.55f), black(0.28f), 0},
+                new float[] {0, 0.5f, 1}, Shader.TileMode.CLAMP));
+        c.drawRect(0, WALL_H * 0.42f, WALL_W, WALL_H, scrim);
+        int[] frost = darken(reduce(out, FW, FH, 3, 3), 0.25f);
+        int[] glass = darken(reduce(out, GW, GH, 2, 2), 0.25f);
+        return new Backdrop(frost, glass, out);
+    }
+
     static Backdrop make(Bitmap src, boolean forLight) {
         Bitmap out = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(out);

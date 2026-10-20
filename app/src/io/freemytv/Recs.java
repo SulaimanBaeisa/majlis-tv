@@ -358,54 +358,58 @@ final class Recs {
     }
 
     private List<Pick> saudi;
+    private long saudiDay = Long.MIN_VALUE;
 
     /**
-     * No TMDB key, Arabic: the screensaver shows the bundled photos of Saudi Arabia (assets/saudi, free licenses,
-     * credit shown under each title). They are copied to the cache once, where the rest of the pipeline expects images.
+     * No TMDB key, Arabic: the bundled photos of Saudi Arabia (assets/saudi, free licenses, credit under each title),
+     * starting at a different one each day. They are copied to the cache once, where the rest of the pipeline expects
+     * images. The first one is today's wallpaper (see {@link #wallpaper}); the list is rebuilt when the day changes.
      */
     private List<Pick> saudiPicks() {
-        if (saudi == null) {
-            List<Pick> list = new ArrayList<>();
-            try {
-                java.io.InputStream in = context.getAssets().open("saudi/credits.tsv");
-                java.io.ByteArrayOutputStream raw = new java.io.ByteArrayOutputStream();
-                byte[] buf = new byte[8192];
-                int n;
-                while ((n = in.read(buf)) > 0) raw.write(buf, 0, n);
-                in.close();
-                File dir = new File(context.getCacheDir(), "recs");
-                //noinspection ResultOfMethodCallIgnored
-                dir.mkdirs();
-                int id = 0;
-                for (SaudiPhotos.Photo ph : SaudiPhotos.parse(raw.toString("UTF-8"))) {
-                    File f = new File(dir, "saudi-" + ph.file);
-                    if (!f.exists()) {
-                        try (java.io.InputStream src = context.getAssets().open("saudi/" + ph.file); FileOutputStream dst = new FileOutputStream(f)) {
-                            while ((n = src.read(buf)) > 0) dst.write(buf, 0, n);
-                        }
+        long day = java.time.LocalDate.now().toEpochDay();
+        if (saudi != null && day == saudiDay) return saudi;
+        List<Pick> list = new ArrayList<>();
+        try {
+            java.io.InputStream in = context.getAssets().open("saudi/credits.tsv");
+            java.io.ByteArrayOutputStream raw = new java.io.ByteArrayOutputStream();
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = in.read(buf)) > 0) raw.write(buf, 0, n);
+            in.close();
+            File dir = new File(context.getCacheDir(), "recs");
+            //noinspection ResultOfMethodCallIgnored
+            dir.mkdirs();
+            List<SaudiPhotos.Photo> all = SaudiPhotos.parse(raw.toString("UTF-8"));
+            for (SaudiPhotos.Photo ph : SaudiPhotos.rotate(all, day)) {
+                File f = new File(dir, "saudi-" + ph.file);
+                if (!f.exists()) {
+                    try (java.io.InputStream src = context.getAssets().open("saudi/" + ph.file); FileOutputStream dst = new FileOutputStream(f)) {
+                        while ((n = src.read(buf)) > 0) dst.write(buf, 0, n);
                     }
-                    Pick p = new Pick();
-                    p.kind = "saudi";
-                    p.id = ++id;
-                    p.title = ph.title;
-                    p.backdrop = "saudi-" + ph.file;
-                    p.meta = ph.meta();
-                    p.detailed = true;
-                    list.add(p);
                 }
-            } catch (java.io.IOException e) {
-                AppLog.w("saudi photos: " + e.getMessage());
+                Pick p = new Pick();
+                p.kind = "saudi";
+                p.id = all.indexOf(ph) + 1;          // stable per photo, whatever today's order
+                p.title = ph.title;
+                p.backdrop = "saudi-" + ph.file;
+                p.meta = ph.meta();
+                p.detailed = true;
+                list.add(p);
             }
-            long day = java.time.LocalDate.now().toEpochDay();
-            // same rotation as SaudiPhotos.rotate, on the Picks (the first photo changes every day)
-            List<Pick> rotated = new ArrayList<>();
-            if (!list.isEmpty()) {
-                int start = (int) Math.floorMod(day, (long) list.size());
-                for (int i = 0; i < list.size(); i++) rotated.add(list.get((start + i) % list.size()));
-            }
-            saudi = rotated;
+        } catch (java.io.IOException e) {
+            AppLog.w("saudi photos: " + e.getMessage());
+            return list;        // nothing cached: try again next time
         }
-        return saudi;
+        saudi = list;
+        saudiDay = day;
+        return list;
+    }
+
+    /** Today's wallpaper for the Arabic home (no TMDB key); null with a key or without photos. */
+    Pick wallpaper() {
+        if (hasKey(context) || !Ui.ar) return null;
+        List<Pick> list = saudiPicks();
+        return list.isEmpty() ? null : list.get(0);
     }
 
     /** Movies and shows are numbered separately on TMDB: a pick is identified by type + number. */
@@ -659,7 +663,7 @@ final class Recs {
             if (b == null) throw new IOException("unreadable image");
             AppLog.w("backdrop \u201c" + p.title + "\u201d: " + bounds.outWidth + "×" + bounds.outHeight);
             boolean forLight = light;
-            Backdrop backdrop = Backdrop.make(b, forLight);
+            Backdrop backdrop = "saudi".equals(p.kind) ? Backdrop.wallpaper(b) : Backdrop.make(b, forLight);
             if (forLight != light) return;   // the design changed midway: this one is stale
             synchronized (images) {
                 images.put(p.backdrop, backdrop);

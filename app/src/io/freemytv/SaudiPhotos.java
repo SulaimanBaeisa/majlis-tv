@@ -31,6 +31,11 @@ final class SaudiPhotos {
         return out;
     }
 
+    /** The photo of the day (the home wallpaper): the first of the daily rotation; null with no photos. */
+    static Photo today(List<Photo> list, long day) {
+        return list.isEmpty() ? null : rotate(list, day).get(0);
+    }
+
     /** The list starting at a different photo each day. */
     static List<Photo> rotate(List<Photo> list, long day) {
         List<Photo> out = new ArrayList<>(list.size());

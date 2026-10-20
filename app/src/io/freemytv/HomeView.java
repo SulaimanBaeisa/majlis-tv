@@ -126,6 +126,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     // Night look (like Apple's "Automatic" appearance): darker from sunset to sunrise, with a 2 s transition.
     private static final long NIGHT_MS = 2000;
     private boolean nightTarget;
+    private boolean wallpaperOn;        // the Saudi wallpaper is the background: always the dark text look
     private float night, nightFrom;     // 0 = day, 1 = night
     private long nightAt;
     private final int[] glassNight = new int[Backdrop.GW * Backdrop.GH], frostNight = new int[Backdrop.FW * Backdrop.FH];
@@ -814,7 +815,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
 
     /** Day or night right now (from the sun at your location); `animate`: with the transition. */
     private void checkNight(boolean animate) {
-        boolean want = data.isNight(System.currentTimeMillis());
+        boolean want = wallpaperOn || data.isNight(System.currentTimeMillis());
         if (want == nightTarget) return;
         nightTarget = want;
         if (animate && running) {
@@ -879,7 +880,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     /** Text colors for the current night value (dark by day, white at night). */
     private void applyTone() {
         lTitle.setColor(tone(L_INK, WHITE));
-        lTab.setColor(tone(L_DIM, 0xFF8E8E93));
+        lTab.setColor(wallpaperOn ? 0xDDFFFFFF : tone(L_DIM, 0xFF8E8E93));   // over a photo the idle tabs need more contrast
         lTabOn.setColor(tone(L_INK, WHITE));
         lCardTitle.setColor(tone(L_INK, WHITE));
         lCardMeta.setColor(tone(L_DIM, 0xFF98989D));
@@ -2317,8 +2318,14 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             }
         }
         for (Recs.Pick p : recs.wanted()) recs.backdrop(p);   // all three tabs preloaded: switching tabs is instant
-        Backdrop b = cards.isEmpty() ? null : recs.backdrop(cards.get(0));
-        if (cards.isEmpty() || b != null) showBackdrop(b);
+        // Arabic with no TMDB key: today's Saudi wallpaper is the background (a new one each day), with the dark look.
+        Recs.Pick wall = cards.isEmpty() ? recs.wallpaper() : null;
+        if ((wall != null) != wallpaperOn) {
+            wallpaperOn = wall != null;
+            checkNight(false);
+        }
+        Backdrop b = wall != null ? recs.backdrop(wall) : cards.isEmpty() ? null : recs.backdrop(cards.get(0));
+        if (wall != null ? b != null : (cards.isEmpty() || b != null)) showBackdrop(b);   // loading: the gradient meanwhile
         heroDirty = true;
         spoken.focusMoved();    // new picks under the focused card
     }
@@ -2458,7 +2465,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         shadowDeep.setColor(Ui.alpha(0xFF000000, tone(0.14f, 0.32f)));
         shadows.draw(c, tmp, r0, DEEP_BLUR * k, shadowDeep);
         fill.setShader(null);
-        fill.setColor(tone(0xFFE8E8ED, 0xFF2C2C2E));
+        // over the wallpaper the cards are smoked glass (the photo shows faintly through), not solid
+        fill.setColor(wallpaperOn ? 0xD01C1C1E : tone(0xFFE8E8ED, 0xFF2C2C2E));
         c.drawRoundRect(base, r0, r0, fill);
     }
 
@@ -2520,14 +2528,14 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         infoLabel.setTextAlign(Paint.Align.RIGHT);
         c.drawText("اليوم", right, r.top + 70 * k, infoLabel);
         infoName.setTextAlign(Paint.Align.RIGHT);
-        c.drawText(d.weekday, right, r.top + 142 * k, infoName);
+        c.drawText(d.weekday, right, r.top + 132 * k, infoName);
         infoMid.setTextAlign(Paint.Align.RIGHT);
-        c.drawText(d.gregorian, right, r.top + 198 * k, infoMid);
+        c.drawText(d.gregorian, right, r.top + 184 * k, infoMid);
         fill.setShader(null);
         fill.setColor(tone(0x1A000000, 0x24FFFFFF));
-        c.drawRoundRect(r.left + pad, r.top + 232 * k, right, r.top + 234 * k, k, k, fill);
+        c.drawRoundRect(r.left + pad, r.top + 214 * k, right, r.top + 216 * k, k, k, fill);
         infoSmall.setTextAlign(Paint.Align.RIGHT);
-        c.drawText("التاريخ الهجري", right, r.top + 282 * k, infoSmall);
+        c.drawText("التاريخ الهجري", right, r.top + 258 * k, infoSmall);
         if (hijriLayout == null || !hijriKey.equals(d.hijri + "|" + (int) width)) {
             hijriKey = d.hijri + "|" + (int) width;
             TextPaint tp = new TextPaint(infoMid);
@@ -2538,7 +2546,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         }
         hijriLayout.getPaint().setColor(ink);
         c.save();
-        c.translate(r.left + pad, r.top + 304 * k);
+        c.translate(r.left + pad, r.top + 278 * k);
         hijriLayout.draw(c);
         c.restore();
     }
