@@ -56,7 +56,7 @@ final class HomeMode {
      * your brand's, see the README). The TV's own home screen and screensaver are added at switch time.
      */
     static final String[] DEBLOAT = {
-        "com.google.android.play.games", "com.google.android.youtube.tvmusic",        // Play Games, YouTube Music
+        // (Play Games and YouTube Music stay on in this fork: the owner uses them.)
         // TCL
         "com.tcl.magiconnectfree", "com.tcl.miracast",                                // screen mirroring apps
         "com.tcl.waterfall.overseas", "com.tcl.channelplus",                          // TCL Channel and its Live TV
@@ -179,9 +179,15 @@ final class HomeMode {
             if (home.isEmpty() || home.startsWith(PKG + "/")) {
                 String found = currentHome(adb);
                 home = found != null ? realHome(found) : "";
+                // Hardening: this name goes back into shell commands later; only a plain component name is accepted.
+                if (!home.isEmpty() && !Safe.component(home)) {
+                    throw new IOException(Ui.tr("a TV respondeu com um nome de Início inesperado; nada foi alterado",
+                            "the TV answered with an unexpected home screen name; nothing was changed"));
+                }
             }
             String dream = s.optString("originalDream", "");
             if (dream.isEmpty()) dream = defaultDream(adb);
+            if (!dream.isEmpty() && !Safe.component(dream)) dream = "";
             JSONObject latest = state(c);
             latest.put("originalHome", home).put("originalDream", dream);
             save(c, latest);
@@ -453,7 +459,9 @@ final class HomeMode {
 
     /** The recorded home screen of the TV, as {@link #realHome}. */
     private static String originalHome(JSONObject s) {
-        return realHome(s.optString("originalHome", ""));
+        String home = realHome(s.optString("originalHome", ""));
+        // Hardening: never let an unchecked name reach `pm enable` / `cmd package set-home-activity`.
+        return home.isEmpty() || Safe.component(home) ? home : "";
     }
 
     /**

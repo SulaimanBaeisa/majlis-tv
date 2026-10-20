@@ -12,3 +12,6 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# local test output
+tests/out/
