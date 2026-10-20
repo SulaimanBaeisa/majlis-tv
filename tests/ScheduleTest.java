@@ -55,6 +55,14 @@ public class ScheduleTest {
         eq("custom fajr iqama +30", Schedule.hhmm(n.iqama), "05:34");
         eq("names", Schedule.NAMES_AR[Schedule.ISHA] + "/" + Schedule.NAMES_AR[Schedule.FAJR], "العشاء/الفجر");
 
+        // iqama minutes from config: "fajr,dhuhr,asr,maghrib,isha"
+        eq("parse ok", java.util.Arrays.toString(Schedule.parseIqama("30, 15,15 ,5,15")), "[30, 15, 15, 5, 15]");
+        eq("parse empty -> default", java.util.Arrays.toString(Schedule.parseIqama("")), "[25, 20, 20, 10, 20]");
+        eq("parse null -> default", java.util.Arrays.toString(Schedule.parseIqama(null)), "[25, 20, 20, 10, 20]");
+        eq("parse too few -> default", java.util.Arrays.toString(Schedule.parseIqama("1,2,3")), "[25, 20, 20, 10, 20]");
+        eq("parse junk -> default", java.util.Arrays.toString(Schedule.parseIqama("a,b,c,d,e")), "[25, 20, 20, 10, 20]");
+        eq("parse out of range -> default", java.util.Arrays.toString(Schedule.parseIqama("25,20,20,10,90")), "[25, 20, 20, 10, 20]");
+        eq("parse zero allowed", java.util.Arrays.toString(Schedule.parseIqama("25,0,20,10,20")), "[25, 0, 20, 10, 20]");
         System.out.println(failed == 0 ? "PASS ScheduleTest" : ("FAILED " + failed));
         if (failed != 0) System.exit(1);
     }

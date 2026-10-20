@@ -292,7 +292,7 @@ final class Recs {
      */
     List<Pick> showcase() {
         List<Pick> out = new ArrayList<>();
-        if (!hasKey(context)) return out;
+        if (!hasKey(context)) return Ui.ar ? saudiPicks() : out;
         java.util.Set<String> seen = new java.util.HashSet<>();
         for (Pick p : wanted()) if (hasImage(p) && seen.add(franchise(p.title))) out.add(p);
         Map<String, Boolean> have = new HashMap<>();
@@ -355,6 +355,57 @@ final class Recs {
             for (Pick p : now(kind)) if (seen.add(key(p))) out.add(p);
         }
         return out;
+    }
+
+    private List<Pick> saudi;
+
+    /**
+     * No TMDB key, Arabic: the screensaver shows the bundled photos of Saudi Arabia (assets/saudi, free licenses,
+     * credit shown under each title). They are copied to the cache once, where the rest of the pipeline expects images.
+     */
+    private List<Pick> saudiPicks() {
+        if (saudi == null) {
+            List<Pick> list = new ArrayList<>();
+            try {
+                java.io.InputStream in = context.getAssets().open("saudi/credits.tsv");
+                java.io.ByteArrayOutputStream raw = new java.io.ByteArrayOutputStream();
+                byte[] buf = new byte[8192];
+                int n;
+                while ((n = in.read(buf)) > 0) raw.write(buf, 0, n);
+                in.close();
+                File dir = new File(context.getCacheDir(), "recs");
+                //noinspection ResultOfMethodCallIgnored
+                dir.mkdirs();
+                int id = 0;
+                for (SaudiPhotos.Photo ph : SaudiPhotos.parse(raw.toString("UTF-8"))) {
+                    File f = new File(dir, "saudi-" + ph.file);
+                    if (!f.exists()) {
+                        try (java.io.InputStream src = context.getAssets().open("saudi/" + ph.file); FileOutputStream dst = new FileOutputStream(f)) {
+                            while ((n = src.read(buf)) > 0) dst.write(buf, 0, n);
+                        }
+                    }
+                    Pick p = new Pick();
+                    p.kind = "saudi";
+                    p.id = ++id;
+                    p.title = ph.title;
+                    p.backdrop = "saudi-" + ph.file;
+                    p.meta = ph.meta();
+                    p.detailed = true;
+                    list.add(p);
+                }
+            } catch (java.io.IOException e) {
+                AppLog.w("saudi photos: " + e.getMessage());
+            }
+            long day = java.time.LocalDate.now().toEpochDay();
+            // same rotation as SaudiPhotos.rotate, on the Picks (the first photo changes every day)
+            List<Pick> rotated = new ArrayList<>();
+            if (!list.isEmpty()) {
+                int start = (int) Math.floorMod(day, (long) list.size());
+                for (int i = 0; i < list.size(); i++) rotated.add(list.get((start + i) % list.size()));
+            }
+            saudi = rotated;
+        }
+        return saudi;
     }
 
     /** Movies and shows are numbered separately on TMDB: a pick is identified by type + number. */

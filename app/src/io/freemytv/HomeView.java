@@ -2431,7 +2431,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         java.util.TimeZone tz = java.util.TimeZone.getDefault();
         double[] ll = where();
         infoPrayer = Info.prayer(java.time.LocalDateTime.now(), ll[0], ll[1], tz.getOffset(System.currentTimeMillis()) / 3_600_000.0,
-                Schedule.DEFAULT_IQAMA);
+                Prefs.iqama());
         heroDirty = true;
     }
 

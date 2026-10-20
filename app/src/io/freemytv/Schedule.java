@@ -24,6 +24,23 @@ final class Schedule {
      */
     static final int[] DEFAULT_IQAMA = {25, 20, 20, 10, 20};
 
+    /** "25,20,20,10,20" (Fajr, Dhuhr, Asr, Maghrib, Isha) from config.properties; anything odd gives the defaults. */
+    static int[] parseIqama(String s) {
+        if (s == null) return DEFAULT_IQAMA.clone();
+        String[] f = s.trim().split("\\s*,\\s*");
+        if (f.length != 5) return DEFAULT_IQAMA.clone();
+        int[] out = new int[5];
+        for (int i = 0; i < 5; i++) {
+            try {
+                out[i] = Integer.parseInt(f[i].trim());
+            } catch (NumberFormatException e) {
+                return DEFAULT_IQAMA.clone();
+            }
+            if (out[i] < 0 || out[i] > 60) return DEFAULT_IQAMA.clone();
+        }
+        return out;
+    }
+
     private static final int[] SLOT_TO_TIMES = {PrayerTimes.FAJR, PrayerTimes.DHUHR, PrayerTimes.ASR,
             PrayerTimes.MAGHRIB, PrayerTimes.ISHA};
 

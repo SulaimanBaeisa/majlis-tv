@@ -72,6 +72,8 @@ final class Prefs {
     // MARK: - City (from config.properties)
 
     static String city() { return Config.CITY.trim(); }
+    static int[] iqama() { return Schedule.parseIqama(Config.IQAMA); }
+
     static String latitude() { return Config.LATITUDE; }
     static String longitude() { return Config.LONGITUDE; }
 

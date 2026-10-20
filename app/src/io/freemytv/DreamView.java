@@ -675,9 +675,10 @@ final class DreamView extends View implements Choreographer.FrameCallback, HomeD
         try {
             float x = MARGIN * k, metaBase = META_BASE * k, titleBase = metaBase - 58 * k;
             String title = s.pick.title == null ? "" : s.pick.title;
-            StaticLayout t = StaticLayout.Builder.obtain(title, 0, title.length(), titlePaint, Math.round(TITLE_W * k))
+            // Arabic titles are laid out right-to-left (the caption stays in its corner, where the scrim is)
+            StaticLayout t = Rtl.dir(StaticLayout.Builder.obtain(title, 0, title.length(), titlePaint, Math.round(TITLE_W * k))
                     .setMaxLines(2).setEllipsize(TextUtils.TruncateAt.END).setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                    .setIncludePad(false).build();
+                    .setIncludePad(false)).build();
             float originY = titleBase - t.getLineBaseline(t.getLineCount() - 1);
             float capTop = originY + t.getLineBaseline(0) - Ui.cap(titlePaint);
             c.drawText(Recs.periodLabel(), x, capTop - 30 * k, labelPaint);
@@ -685,7 +686,7 @@ final class DreamView extends View implements Choreographer.FrameCallback, HomeD
             c.translate(x - Ui.leftBearing(titlePaint, title), originY);
             t.draw(c);
             c.restore();
-            if (s.pick.meta != null && !s.pick.meta.isEmpty()) c.drawText(s.pick.meta, x, metaBase, metaPaint);
+            if (s.pick.meta != null && !s.pick.meta.isEmpty()) c.drawText(Rtl.para(s.pick.meta), x, metaBase, metaPaint);
         } finally {
             s.caption.endRecording();
         }
