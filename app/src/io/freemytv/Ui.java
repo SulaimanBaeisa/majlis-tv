@@ -40,6 +40,18 @@ final class Ui {
         if (loaded) return;
         loaded = true;
         AssetManager a = c.getAssets();
+        // Arabic needs its own face (Inter has no Arabic letters). It is chosen when the process starts;
+        // switching the language later in Settings takes full effect after the home screen restarts.
+        if (ar && has(a, FONT_AR)) {
+            thin = arabic(a, 200);
+            light = arabic(a, 300);
+            displayMedium = arabic(a, 500);
+            displaySemibold = arabic(a, 600);
+            regular = arabic(a, 400);
+            medium = arabic(a, 500);
+            semibold = arabic(a, 600);
+            return;
+        }
         thin = font(a, 32, 200);
         light = font(a, 32, 300);
         displayMedium = font(a, 32, 500);
@@ -63,6 +75,17 @@ final class Ui {
     }
 
     private static final String FONT = "fonts/InterVariable.ttf";
+    /** Noto Sans Arabic (SIL OFL 1.1, see fonts/OFL-NotoSansArabic.txt), variable weight. */
+    private static final String FONT_AR = "fonts/NotoSansArabic.ttf";
+
+    private static Typeface arabic(AssetManager a, int weight) {
+        try {
+            Typeface t = new Typeface.Builder(a, FONT_AR).setFontVariationSettings("'wght' " + weight).build();
+            if (t != null) return t;
+        } catch (RuntimeException ignored) {
+        }
+        return Typeface.create(Typeface.DEFAULT, weight, false);
+    }
 
     /** "pt", "es", "ar" or "en": the one picked (TV settings or config.properties), or with "auto" the TV's own, else English. */
     private static String language() {
