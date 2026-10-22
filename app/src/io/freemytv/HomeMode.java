@@ -626,7 +626,7 @@ final class HomeMode {
 
     private static void busy(Context c, String text) {
         JSONObject s = state(c);
-        try { s.put("busy", text).put("busyPid", android.os.Process.myPid()).put("error", ""); } catch (JSONException ignored) {}
+        try { s.put("busy", text).put("busyPid", android.os.Process.myPid()).put("busyAt", System.currentTimeMillis()).put("error", ""); } catch (JSONException ignored) {}
         save(c, s);
     }
 
@@ -637,7 +637,11 @@ final class HomeMode {
     static JSONObject clearStaleBusy(Context c) {
         JSONObject s = state(c);
         int pid = s.optInt("busyPid", 0);
-        if (!s.optString("busy").isEmpty() && (pid == 0 || !new File("/proc/" + pid).exists())) {
+        long age = System.currentTimeMillis() - s.optLong("busyAt", 0);
+        // Another process of this app may be invisible in /proc on some TVs: only a step older than 5 minutes (no
+        // step takes that long; the "Allow" prompt waits 2 minutes) with no live owner is treated as abandoned.
+        boolean ownerAlive = pid == android.os.Process.myPid() || (pid != 0 && new File("/proc/" + pid).exists());
+        if (!s.optString("busy").isEmpty() && age > 5 * 60_000L && !ownerAlive) {
             try { s.put("busy", "").put("busyPid", 0); } catch (JSONException ignored) {}
             save(c, s);
             AppLog.w("cleared a stale busy state (pid " + pid + ")");
