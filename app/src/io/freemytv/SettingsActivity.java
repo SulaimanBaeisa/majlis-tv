@@ -144,7 +144,7 @@ public class SettingsActivity extends Activity {
         private final Runnable poll = new Runnable() {
             @Override public void run() {
                 if (!running) return;
-                state = HomeMode.state(getContext());
+                state = HomeMode.clearStaleBusy(getContext());
                 hasKey = Recs.hasKey(getContext());
                 recs = Recs.status(getContext());
                 boolean nowBusy = !state.optString("busy").isEmpty();

@@ -626,8 +626,23 @@ final class HomeMode {
 
     private static void busy(Context c, String text) {
         JSONObject s = state(c);
-        try { s.put("busy", text).put("error", ""); } catch (JSONException ignored) {}
+        try { s.put("busy", text).put("busyPid", android.os.Process.myPid()).put("error", ""); } catch (JSONException ignored) {}
         save(c, s);
+    }
+
+    /**
+     * A switch that died with its process (killed, TV turned off) leaves "busy" in the saved state and would lock the
+     * settings forever. Busy counts only while the process that set it is still alive; otherwise it is cleared.
+     */
+    static JSONObject clearStaleBusy(Context c) {
+        JSONObject s = state(c);
+        int pid = s.optInt("busyPid", 0);
+        if (!s.optString("busy").isEmpty() && (pid == 0 || !new File("/proc/" + pid).exists())) {
+            try { s.put("busy", "").put("busyPid", 0); } catch (JSONException ignored) {}
+            save(c, s);
+            AppLog.w("cleared a stale busy state (pid " + pid + ")");
+        }
+        return s;
     }
 
     private static void done(Context c, String error) {
