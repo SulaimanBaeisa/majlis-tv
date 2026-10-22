@@ -215,6 +215,10 @@ final class HomeMode {
             check(adb.shell("cmd package set-home-activity " + HOME_ACTIVITY), "Success",
                     Ui.tr("o Android não aceitou o novo Início", "Android didn't accept the new home screen"));
             adb.shell("settings put secure screensaver_components " + DREAM);
+            // Prayer pop-up: "display over other apps" and on-the-minute alarms, for this app only. Original sets both
+            // back to the system default.
+            adb.shell("appops set " + PKG + " SYSTEM_ALERT_WINDOW allow");
+            adb.shell("appops set " + PKG + " SCHEDULE_EXACT_ALARM allow");
             List<String> targets = targets(home, dream, setupHome);
             Set<String> disabled = new HashSet<>(stringList(state(c), "disabled"));
             Set<String> present = packages(adb, "");
@@ -275,6 +279,9 @@ final class HomeMode {
             busy(c, Ui.tr("Devolvendo o Início original…", "Restoring the original home screen…"));
             boolean homeOk = restoreHome(adb, home);
             adb.shell("settings delete secure screensaver_components");
+            PrayerAlarm.cancel(c);
+            adb.shell("appops set " + PKG + " SYSTEM_ALERT_WINDOW default");
+            adb.shell("appops set " + PKG + " SCHEDULE_EXACT_ALARM default");
             try {
                 remoteService(c, adb, false);
             } catch (IOException e) {

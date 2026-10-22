@@ -74,6 +74,49 @@ final class Schedule {
         throw new IllegalStateException("no prayer found");   // cannot happen: tomorrow's Fajr is always ahead
     }
 
+    /** One adhan: which prayer, on which day, at how many minutes after that day's midnight. */
+    static final class Adhan {
+        int prayer;
+        LocalDate date;
+        double minutes;
+        boolean jumuah;
+
+        long epochMs(double tzHours) {
+            long sec = date.toEpochDay() * 86_400L + Math.round(minutes * 60) - Math.round(tzHours * 3600);
+            return sec * 1000;
+        }
+    }
+
+    /** The first adhan strictly after {@code now} (today or tomorrow). */
+    static Adhan nextAdhan(LocalDateTime now, double lat, double lng, double tz) {
+        double nowMin = now.getHour() * 60 + now.getMinute() + now.getSecond() / 60.0;
+        for (int day = 0; day <= 1; day++) {
+            LocalDate date = now.toLocalDate().plusDays(day);
+            double[] t = PrayerTimes.forDate(date, lat, lng, tz);
+            for (int p = 0; p < 5; p++) {
+                double m = Math.round(t[SLOT_TO_TIMES[p]]);
+                if (m + day * 1440 > nowMin) {
+                    Adhan a = new Adhan();
+                    a.prayer = p;
+                    a.date = date;
+                    a.minutes = m;
+                    a.jumuah = p == DHUHR && date.getDayOfWeek() == DayOfWeek.FRIDAY;
+                    return a;
+                }
+            }
+        }
+        throw new IllegalStateException("no adhan found");
+    }
+
+    static String popupTitle(Adhan a) {
+        return "حان الآن موعد أذان " + (a.jumuah ? JUMUAH_AR : NAMES_AR[a.prayer]);
+    }
+
+    static String popupSub(Adhan a, int[] iqamaMinutes) {
+        if (a.jumuah) return "صلاة الجمعة";
+        return "الإقامة بعد " + Arabic.unit(iqamaMinutes[a.prayer], "دقيقة", "دقيقتين", "دقائق", "دقيقة");
+    }
+
     /** "05:29" from minutes after midnight (wraps). */
     static String hhmm(double minutes) {
         return PrayerTimes.hhmm(minutes);

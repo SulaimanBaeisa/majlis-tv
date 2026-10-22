@@ -75,10 +75,24 @@ final class Info {
         return p;
     }
 
-    /** One item of the day: stable for a date, a different one tomorrow; null if there are none. */
+    /** Alternating verse/hadith days, each kind advancing through its entire independent cycle. */
     static String[] daily(List<String[]> items, LocalDate d) {
         if (items == null || items.isEmpty()) return null;
-        return items.get((int) Math.floorMod(d.toEpochDay(), (long) items.size()));
+        int verses = 0, hadith = 0;
+        for (String[] item : items) {
+            if ("Q".equals(item[0])) verses++;
+            else if ("H".equals(item[0])) hadith++;
+        }
+        long day = d.toEpochDay();
+        if (verses == 0 && hadith == 0) return null;
+        boolean mixed = verses > 0 && hadith > 0;
+        String kind = mixed ? (Math.floorMod(day, 2L) == 0 ? "Q" : "H") : (verses > 0 ? "Q" : "H");
+        int count = "Q".equals(kind) ? verses : hadith;
+        int index = (int) Math.floorMod(mixed ? Math.floorDiv(day, 2L) : day, (long) count);
+        for (String[] item : items) {
+            if (kind.equals(item[0]) && index-- == 0) return item;
+        }
+        return null;
     }
 
     /** Parses assets/daily.tsv: "kind TAB source TAB text" per line; '#' lines and blank lines are skipped. */

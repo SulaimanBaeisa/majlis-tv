@@ -37,7 +37,7 @@ final class PrayerTimes {
     static String hhmm(double minutes) {
         int m = (int) Math.round(minutes);
         m = ((m % 1440) + 1440) % 1440;
-        return String.format("%02d:%02d", m / 60, m % 60);
+        return String.format(java.util.Locale.ROOT, "%02d:%02d", m / 60, m % 60);   // Western digits whatever the TV language
     }
 
     private static double julianDay(LocalDate d) {

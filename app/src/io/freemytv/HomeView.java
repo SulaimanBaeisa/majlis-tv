@@ -308,6 +308,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             updatePicks();      // three new ones every hour
             refreshInfo();      // prayer card: once a minute
             if (Ui.ar) league.refreshIfStale();   // Saudi league card in the drawer
+            PrayerAlarm.ensure(getContext());    // adhan pop-up armed while allowed
             handler.postDelayed(this, 15_000);
         }
     };
@@ -2579,9 +2580,19 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         verseLayout.draw(c);
         c.restore();
         infoSmall.setTextAlign(Paint.Align.RIGHT);
-        infoSmall.setTextSize(23 * k);
         infoSmall.setColor(dim);
-        c.drawText(TextUtils.ellipsize(item[1], new TextPaint(infoSmall), width, TextUtils.TruncateAt.END).toString(), right, r.bottom - 28 * k, infoSmall);
+        int divider = item[1].indexOf(" · ");
+        if ("H".equals(item[0]) && divider >= 0) {
+            // Keep the collection/number and narrator visible rather than ellipsizing them together.
+            String reference = item[1].substring(0, divider), narrator = item[1].substring(divider + 3);
+            infoSmall.setTextSize(18 * k);
+            if (infoSmall.measureText(narrator) > width) infoSmall.setTextSize(16 * k);
+            c.drawText(reference, right, r.bottom - 63 * k, infoSmall);
+            c.drawText(narrator, right, r.bottom - 23 * k, infoSmall);
+        } else {
+            infoSmall.setTextSize(23 * k);
+            c.drawText(TextUtils.ellipsize(item[1], new TextPaint(infoSmall), width, TextUtils.TruncateAt.END).toString(), right, r.bottom - 28 * k, infoSmall);
+        }
         infoSmall.setTextSize(26 * k);
     }
 

@@ -457,6 +457,8 @@ final class DreamView extends View implements Choreographer.FrameCallback, HomeD
     private static Bitmap withScrims(Bitmap photo, float lightCaption, float lightClock) {
         int w = photo.getWidth(), h = photo.getHeight();
         Canvas c = new Canvas(photo);
+        // Mirror only the scrim overlay, never the underlying photo or glyphs.
+        if (Rtl.on()) c.scale(-1, 1, w / 2f, h / 2f);
         Paint p = new Paint(Paint.DITHER_FLAG);
         float caption = scrimStrength(lightCaption, 0.5f), corner = scrimStrength(lightClock, 0.42f);
         p.setShader(new LinearGradient(0, h, 0, h * 0.42f,
@@ -505,14 +507,14 @@ final class DreamView extends View implements Choreographer.FrameCallback, HomeD
             if (!Double.isNaN(wx.temp) && Prefs.weather()) {
                 String temp = HomeData.degrees(wx.temp);
                 float tw = cornerDate.measureText(temp);
-                c.drawText(temp, x - tw, DATE_BASE * k, cornerDate);
+                c.drawText(temp, Rtl.tx(cornerDate, temp, x - tw, 0, w), DATE_BASE * k, cornerDate);
                 x -= tw + 10 * k;
                 String symbol = Symbols.weather(wx.code, wx.isDay);
                 float size = 30 * k, sw = Symbols.width(getContext(), symbol, size);
-                Symbols.draw(getContext(), c, symbol, x - sw / 2, DATE_BASE * k - Ui.halfCap(cornerDate), size, 0xEBFFFFFF);
+                Symbols.draw(getContext(), c, symbol, Rtl.x(x - sw / 2, 0, w), DATE_BASE * k - Ui.halfCap(cornerDate), size, 0xEBFFFFFF);
                 x -= sw + 26 * k;
             }
-            c.drawText(date, x - cornerDate.measureText(date), DATE_BASE * k, cornerDate);
+            c.drawText(date, Rtl.tx(cornerDate, date, x - cornerDate.measureText(date), 0, w), DATE_BASE * k, cornerDate);
 
             Glass g = glass;
             if (g != null && glassShader != null) {
@@ -522,7 +524,8 @@ final class DreamView extends View implements Choreographer.FrameCallback, HomeD
             } else {
                 Rect ink = new Rect();
                 cornerClock.getTextBounds(clock, 0, clock.length(), ink);
-                c.drawText(clock, right - ink.right, CLOCK_TOP * k - ink.top, cornerClock);
+                float clockX = Rtl.on() ? w - right - ink.left : right - ink.right;
+                c.drawText(clock, clockX, CLOCK_TOP * k - ink.top, cornerClock);
             }
 
             // Compact prices under the clock, right-aligned.
@@ -540,13 +543,13 @@ final class DreamView extends View implements Choreographer.FrameCallback, HomeD
             }
             float qx = right - total;
             for (int i = 0; i < n; i++) {
-                Glyphs.coin(getContext(), c, HomeData.COINS[coins[i]], qx + glyphs[i] / 2, base - cap / 2, cap, 0xA6FFFFFF);
+                Glyphs.coin(getContext(), c, HomeData.COINS[coins[i]], Rtl.x(qx + glyphs[i] / 2, 0, w), base - cap / 2, cap, 0xA6FFFFFF);
                 qx += glyphs[i] + gap;
-                c.drawText(values[i], qx, base, cornerQuote);
+                c.drawText(values[i], Rtl.tx(cornerQuote, values[i], qx, 0, w), base, cornerQuote);
                 qx += cornerQuote.measureText(values[i]) + spacing;
             }
             String stale = HomeData.staleness(data.pricesAt, 5 * 60_000L);
-            if (!stale.isEmpty() && n > 0) c.drawText(stale, right - total - 24 * k - cornerStale.measureText(stale), base, cornerStale);
+            if (!stale.isEmpty() && n > 0) c.drawText(stale, Rtl.tx(cornerStale, stale, right - total - 24 * k - cornerStale.measureText(stale), 0, w), base, cornerStale);
         } finally {
             chrome.endRecording();
         }
@@ -580,7 +583,10 @@ final class DreamView extends View implements Choreographer.FrameCallback, HomeD
         final Paint paint = new Paint(cornerClock);
         paint.clearShadowLayer();
         paint.setColor(0xFFFFFFFF);
-        final float right = RIGHT * k, top = CLOCK_TOP * k, scale = k;
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        final float right = Rtl.on() ? w - RIGHT * k + bounds.width() : RIGHT * k;
+        final float top = CLOCK_TOP * k, scale = k;
         final int gen = generation;
         worker.execute(() -> {
             Glass g = makeGlass(text, paint, right, top, scale);
@@ -674,19 +680,24 @@ final class DreamView extends View implements Choreographer.FrameCallback, HomeD
         Canvas c = s.caption.beginRecording(w, h);
         try {
             float x = MARGIN * k, metaBase = META_BASE * k, titleBase = metaBase - 58 * k;
+            float titleLeft = Rtl.on() ? w - (MARGIN + TITLE_W) * k : x;
             String title = s.pick.title == null ? "" : s.pick.title;
-            // Arabic titles are laid out right-to-left (the caption stays in its corner, where the scrim is)
+            // Mirror the caption box, keeping Arabic glyphs shaped normally.
             StaticLayout t = Rtl.dir(StaticLayout.Builder.obtain(title, 0, title.length(), titlePaint, Math.round(TITLE_W * k))
                     .setMaxLines(2).setEllipsize(TextUtils.TruncateAt.END).setAlignment(Layout.Alignment.ALIGN_NORMAL)
                     .setIncludePad(false)).build();
             float originY = titleBase - t.getLineBaseline(t.getLineCount() - 1);
             float capTop = originY + t.getLineBaseline(0) - Ui.cap(titlePaint);
-            c.drawText(Recs.periodLabel(), x, capTop - 30 * k, labelPaint);
+            String label = Recs.periodLabel();
+            c.drawText(label, Rtl.tx(labelPaint, label, x, 0, w), capTop - 30 * k, labelPaint);
             c.save();
-            c.translate(x - Ui.leftBearing(titlePaint, title), originY);
+            c.translate(titleLeft - (Rtl.on() ? 0 : Ui.leftBearing(titlePaint, title)), originY);
             t.draw(c);
             c.restore();
-            if (s.pick.meta != null && !s.pick.meta.isEmpty()) c.drawText(Rtl.para(s.pick.meta), x, metaBase, metaPaint);
+            if (s.pick.meta != null && !s.pick.meta.isEmpty()) {
+                String meta = Rtl.para(s.pick.meta);
+                c.drawText(meta, Rtl.tx(metaPaint, meta, x, 0, w), metaBase, metaPaint);
+            }
         } finally {
             s.caption.endRecording();
         }

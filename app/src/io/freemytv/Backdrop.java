@@ -175,8 +175,8 @@ final class Backdrop {
         Bitmap out = b.getWidth() == w && b.getHeight() == h ? b : Bitmap.createScaledBitmap(b, w, h, true);
         if (out != b) b.recycle();
         if (light != null && light.length >= 2) {
-            light[0] = luminance(out, 0, 0.6f, 0.5f, 0.95f);
-            light[1] = luminance(out, 0.62f, 0.04f, 0.96f, 0.36f);
+            light[0] = luminance(out, Rtl.on() ? 0.5f : 0, 0.6f, Rtl.on() ? 1f : 0.5f, 0.95f);
+            light[1] = luminance(out, Rtl.on() ? 0.04f : 0.62f, 0.04f, Rtl.on() ? 0.38f : 0.96f, 0.36f);
         }
         int fw = w / PHOTO_FROST, fh = h / PHOTO_FROST;
         Bitmap frost = Bitmap.createBitmap(reduce(out, fw, fh, 3, 2), fw, fh, Bitmap.Config.ARGB_8888);

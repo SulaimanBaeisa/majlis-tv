@@ -55,6 +55,24 @@ public class ScheduleTest {
         eq("custom fajr iqama +30", Schedule.hhmm(n.iqama), "05:34");
         eq("names", Schedule.NAMES_AR[Schedule.ISHA] + "/" + Schedule.NAMES_AR[Schedule.FAJR], "العشاء/الفجر");
 
+        // next adhan (prayer pop-up alarm): Jeddah 2026-10-20 adhans 05:04, 12:08, 15:27, 17:56, 19:26
+        java.time.LocalDateTime t0 = java.time.LocalDateTime.of(2026, 10, 20, 12, 0);
+        Schedule.Adhan ad = Schedule.nextAdhan(t0, 21.49012, 39.18624, 3);
+        eq("next adhan prayer", ad.prayer, Schedule.DHUHR);
+        eq("next adhan time", Schedule.hhmm(ad.minutes), "12:08");
+        eq("next adhan date", ad.date, java.time.LocalDate.of(2026, 10, 20));
+        eq("exactly at adhan -> next one", Schedule.nextAdhan(java.time.LocalDateTime.of(2026, 10, 20, 12, 8), 21.49012, 39.18624, 3).prayer, Schedule.ASR);
+        Schedule.Adhan late = Schedule.nextAdhan(java.time.LocalDateTime.of(2026, 10, 20, 22, 0), 21.49012, 39.18624, 3);
+        eq("after isha -> tomorrow fajr", late.prayer + " " + late.date, Schedule.FAJR + " 2026-10-21");
+        eq("epoch ms", ad.epochMs(3), java.time.LocalDateTime.of(2026, 10, 20, 12, 8).toEpochSecond(java.time.ZoneOffset.ofHours(3)) * 1000);
+        // pop-up text
+        eq("popup title", Schedule.popupTitle(ad), "حان الآن موعد أذان الظهر");
+        eq("popup sub", Schedule.popupSub(ad, Schedule.DEFAULT_IQAMA), "الإقامة بعد 20 دقيقة");
+        Schedule.Adhan fri = Schedule.nextAdhan(java.time.LocalDateTime.of(2026, 10, 23, 11, 0), 21.49012, 39.18624, 3);
+        eq("friday title", Schedule.popupTitle(fri), "حان الآن موعد أذان الجمعة");
+        eq("friday sub", Schedule.popupSub(fri, Schedule.DEFAULT_IQAMA), "صلاة الجمعة");
+        eq("maghrib sub", Schedule.popupSub(Schedule.nextAdhan(java.time.LocalDateTime.of(2026, 10, 20, 17, 0), 21.49012, 39.18624, 3), Schedule.DEFAULT_IQAMA), "الإقامة بعد 10 دقائق");
+
         // iqama minutes from config: "fajr,dhuhr,asr,maghrib,isha"
         eq("parse ok", java.util.Arrays.toString(Schedule.parseIqama("30, 15,15 ,5,15")), "[30, 15, 15, 5, 15]");
         eq("parse empty -> default", java.util.Arrays.toString(Schedule.parseIqama("")), "[25, 20, 20, 10, 20]");

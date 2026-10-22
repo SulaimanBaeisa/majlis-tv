@@ -7,7 +7,7 @@ The original README (`README.md`) and licence (`LICENSE`) are unchanged.
 ## What is different from upstream
 
 - **Arabic + RTL**: strings (`Arabic.java`, 101 keys, `tests/check_ar_coverage.py` fails on a missing key), mirrored layout (`Rtl.java`, `Mirror.java`), Noto Sans Arabic (SIL OFL, `app/assets/fonts/`). Western digits.
-- **Home cards without a TMDB key**: next prayer with the iqama countdown, the date (Gregorian and Umm al-Qura Hijri), and a verse of the day (`app/assets/daily.tsv`).
+- **Daily Quran/hadith card without a TMDB key**: next prayer with the iqama countdown, the date (Gregorian and Umm al-Qura Hijri), and a daily Quran verse or hadith (`app/assets/daily.tsv`). The original 29 Quran verses are unchanged; 60 hadith texts/complete excerpts from Sahih al-Bukhari and Sahih Muslim are included. They alternate by local calendar day, with independent cycles covering every entry before that kind repeats (29 verse slots / 60 hadith slots). Collection/reference and narrator appear on separate lines. Exact source URLs, excerpt flags and cached-primary-page hashes: `docs/hadith-sources.json`. Excerpts are not presented as the full text of longer hadith.
 - **Prayer times, offline**: Umm al-Qura method (Isha 90 min after Maghrib, 120 in Ramadan), computed on the TV for the latitude/longitude in `config.properties`. Iqama minutes: `iqama=25,20,20,10,20` (Fajr, Dhuhr, Asr, Maghrib, Isha; the Ministry of Islamic Affairs circular of 22 June 2021). Friday shows الجمعة with no countdown.
 - **Saudi Pro League card** in the bottom drawer: live and next matches and the top six of the table, from ESPN's public JSON (`site.api.espn.com`, no key, not an official API).
 - **Wallpaper of the day**: nine photos of Saudi Arabia (`app/assets/saudi/`, Wikimedia Commons, free licences, see `PHOTO-CREDITS.md`). The home background and the screensaver use them; the first one changes at local midnight.
@@ -34,10 +34,9 @@ Add a host on purpose, in that file, or the build is rejected.
 
 ## Known gaps
 
-- Screensaver clock and caption are not mirrored yet.
-- No hadith in the daily card: each one must be checked against its book and number first.
-- No in-TV editor for the iqama minutes (edit `config.properties` and rebuild).
-- The new screens were checked with pixel measurements and logs, not by eye.
+- **Screensaver RTL**: clock/date/weather on the left, photo caption/credit on the right; scrims and brightness sampling follow the text, without flipping photos or glyphs. Verified from actual TV screenshots.
+- No in-TV editor for the iqama minutes (edit `config.properties` and rebuild; intentionally not implemented).
+- The drawer's league and weather panels were visually inspected on the TV. Hadith layout is checked for all 60 entries using the TV's Android text engine; source text and narrator fit checks are included in the on-device harness. Local-midnight selection is unit-tested; a real midnight rollover has not been observed.
 
 ## Credits
 
