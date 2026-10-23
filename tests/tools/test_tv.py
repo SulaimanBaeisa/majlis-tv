@@ -44,6 +44,7 @@ def responses(profile="sony", home="io.freemytv/.HomeActivity", disabled=None, b
         "df /data": "Filesystem 1K-blocks Used Available Use% Mounted on\n/dev/block/dm-0 1000000 500000 400000 56% /data",
         "dumpsys package io.freemytv": "\n".join([
             "versionCode=2 minSdk=28 targetSdk=33", "versionName=1.0.0",
+            "lastUpdateTime=2026-10-23 18:00:00",
             "android.permission.INTERNET: granted=true",
             "android.permission.ACCESS_NETWORK_STATE: granted=true",
             "android.permission.RECEIVE_BOOT_COMPLETED: granted=true"]),
@@ -123,6 +124,24 @@ class VerifyTests(unittest.TestCase):
     def test_reenabled_package_fails(self):
         with Fake(**responses(disabled=["com.google.android.tvrecommendations"])):
             tv.save_baseline(baseline(disabled=["com.google.android.tvlauncher", "com.example.keep"]))
+            rc = tv.verify("10.0.0.2", mode="free")
+        self.assertEqual(rc, 2)
+
+    def test_stale_crash_is_ignored(self):
+        stale = "10-22 19:37:32.545 26406 26406 E AndroidRuntime: Process: io.freemytv, PID: 26406"
+        data = responses()
+        data["logcat -d -b crash -t 400"] = stale
+        with Fake(**data):
+            tv.save_baseline(baseline())
+            rc = tv.verify("10.0.0.2", mode="free")
+        self.assertEqual(rc, 0)
+
+    def test_fresh_crash_fails(self):
+        fresh = "10-23 18:05:00.000 26406 26406 E AndroidRuntime: Process: io.freemytv, PID: 26406"
+        data = responses()
+        data["logcat -d -b crash -t 400"] = fresh
+        with Fake(**data):
+            tv.save_baseline(baseline())
             rc = tv.verify("10.0.0.2", mode="free")
         self.assertEqual(rc, 2)
 

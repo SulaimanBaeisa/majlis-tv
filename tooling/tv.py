@@ -159,7 +159,9 @@ def probe(serial):
         dump = shell(serial, f"dumpsys package {PKG}")
         code = re.search(r"versionCode=(\d+)", dump)
         name = re.search(r"versionName=(\S+)", dump)
-        version = {"code": code.group(1) if code else "", "name": name.group(1) if name else ""}
+        updated = re.search(r"lastUpdateTime=(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", dump)
+        version = {"code": code.group(1) if code else "", "name": name.group(1) if name else "",
+                   "updated": updated.group(1) if updated else ""}
     info = {
         "serial": serial,
         "sdk": int(props.get("ro.build.version.sdk") or 0),
@@ -446,7 +448,17 @@ def verify(ip, mode="auto", expect_apk=None, port=5555, as_json=False):
                       "" if allowed else f"adb shell appops set {PKG} {op} allow")
 
     crash = shell(serial, "logcat -d -b crash -t 400")
-    entries = [l for l in crash.splitlines() if PKG in l]
+    updated = str(info.get("version", {}).get("updated", ""))
+
+    def crash_is_new(line):
+        """Ignore crash-buffer entries older than the installed package's last update."""
+        stamp = re.match(r"(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})", line.strip())
+        installed_at = re.match(r"\d{4}-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})", updated)
+        if not stamp or not installed_at:
+            return True
+        return tuple(int(x) for x in stamp.groups()) >= tuple(int(x) for x in installed_at.groups())
+
+    entries = [l for l in crash.splitlines() if PKG in l and crash_is_new(l)]
     add_check(checks, "runtime.crash", "PASS" if not entries else "FAIL",
               entries[0][:160] if entries else "no crash buffer entries",
               "" if not entries else f"read reports/, then ./tv rollback --ip {ip} if the TV is unusable")
