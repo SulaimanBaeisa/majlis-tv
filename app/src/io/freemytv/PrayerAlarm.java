@@ -15,7 +15,7 @@ import java.util.TimeZone;
 /**
  * Prayer pop-up: an alarm at every adhan (Umm al-Qura times for the configured place) that shows {@link PrayerPopup}
  * over whatever is on screen, then schedules the next one. Needs "display over other apps" (SYSTEM_ALERT_WINDOW) and,
- * for an on-the-minute alarm, SCHEDULE_EXACT_ALARM; both are granted by Free My TV mode and handed back by Original
+ * for an on-the-minute alarm, SCHEDULE_EXACT_ALARM; both are granted by Mashrabiya mode and handed back by Original
  * (HomeMode). Without the overlay permission nothing is shown and nothing is scheduled.
  *
  * The receiver is exported only to holders of android.permission.DUMP (the adb shell, the system): the test action

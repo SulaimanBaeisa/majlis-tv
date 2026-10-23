@@ -41,7 +41,7 @@ final class Watchdog {
         return recent(c, System.currentTimeMillis()).size() >= LIMIT;
     }
 
-    /** After Free My TV mode is turned back on, the count starts over. */
+    /** After Mashrabiya mode is turned back on, the count starts over. */
     static void clear(Context c) {
         //noinspection ResultOfMethodCallIgnored
         file(c).delete();

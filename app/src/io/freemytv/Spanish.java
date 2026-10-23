@@ -60,8 +60,8 @@ final class Spanish {
             case "Switching the home screen and screensaver…": return "Cambiando la pantalla de inicio y el protector de pantalla…";
             case "Android didn't accept the new home screen": return "Android no aceptó la nueva pantalla de inicio";
             case "Turning off apps (": return "Desactivando apps (";
-            case "Measuring Free My TV…": return "Midiendo Free My TV…";
-            case "Couldn't turn on Free My TV: ": return "No se pudo activar Free My TV: ";
+            case "Measuring Mashrabiya…": return "Midiendo Mashrabiya…";
+            case "Couldn't turn on Mashrabiya: ": return "No se pudo activar Mashrabiya: ";
             case "Turning the apps back on…": return "Reactivando las apps…";
             case "Turning apps back on (": return "Reactivando apps (";
             case "Restoring the original home screen…": return "Restaurando la pantalla de inicio original…";
@@ -69,16 +69,16 @@ final class Spanish {
             case "the original home screen": return "la pantalla de inicio original";
             case "Original mode, but I couldn't turn back on: ": return "Modo original, pero no se pudo reactivar: ";
             case "Couldn't go back to the original: ": return "No se pudo volver al modo original: ";
-            case "Free My TV's home screen crashed 3 times in a row; I switched back to the original one.": return "La pantalla de inicio de Free My TV falló 3 veces seguidas; volví a la original.";
+            case "Mashrabiya's home screen crashed 3 times in a row; I switched back to the original one.": return "La pantalla de inicio de Mashrabiya falló 3 veces seguidas; volví a la original.";
             case "the home screen": return "la pantalla de inicio";
             case "the screensaver": return "el protector de pantalla";
-            case "Couldn't check Free My TV: ": return "No se pudo comprobar Free My TV: ";
+            case "Couldn't check Mashrabiya: ": return "No se pudo comprobar Mashrabiya: ";
             case "The TV update turned back on ": return "La actualización del TV reactivó ";
             case "Turned off what was missing: ": return "Desactivé lo que faltaba: ";
-            case "The TV was updated; Free My TV is still on.": return "El TV se actualizó; Free My TV sigue activo.";
+            case "The TV was updated; Mashrabiya is still on.": return "El TV se actualizó; Mashrabiya sigue activo.";
             case "Connecting…": return "Conectando…";
             case "Accept “Allow USB debugging?” on the TV (tick “Always allow”).": return "Acepta “¿Permitir depuración USB?” en el TV (marca “Permitir siempre”).";
-            case "Free My TV's home screen ran into a problem.\nGoing back to the TV's original home screen…": return "La pantalla de inicio de Free My TV tuvo un problema.\nVolviendo a la pantalla original del TV…";
+            case "Mashrabiya's home screen ran into a problem.\nGoing back to the TV's original home screen…": return "La pantalla de inicio de Mashrabiya tuvo un problema.\nVolviendo a la pantalla original del TV…";
             // Home Settings, Shelf and Remote Buttons (#15, #16, #17)
             case "Language": return "Idioma";
             case "Temperature": return "Temperatura";
@@ -106,9 +106,9 @@ final class Spanish {
             case "Disney and Globoplay: the TV itself controls those buttons.": return "Disney y Globoplay: el propio TV controla esos botones.";
             case "These are the TCL remote's buttons: on this TV, the buttons work as they always did.": return "Estos son los botones del control de TCL: en este TV, los botones funcionan como siempre.";
             default:
-                if (english.startsWith("Free My TV is on: new home screen and screensaver, ")) {
-                    return "Free My TV está activo: nueva pantalla de inicio y protector, "
-                            + english.substring("Free My TV is on: new home screen and screensaver, ".length()).replace(" apps turned off.", " apps desactivadas.");
+                if (english.startsWith("Mashrabiya is on: new home screen and screensaver, ")) {
+                    return "Mashrabiya está activo: nueva pantalla de inicio y protector, "
+                            + english.substring("Mashrabiya is on: new home screen and screensaver, ".length()).replace(" apps turned off.", " apps desactivadas.");
                 }
                 if (english.startsWith("On · ")) {
                     return "Activas · " + english.substring(5).replace(" titles from the TV's apps, 3 new ones every hour.",
