@@ -1,0 +1,48 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Tag matches versionName
+        run: |
+          V=$(grep -oE 'android:versionName="[^"]+"' app/AndroidManifest.xml | cut -d'"' -f2)
+          test "v$V" = "${GITHUB_REF_NAME}" || { echo "tag ${GITHUB_REF_NAME} != v$V"; exit 1; }
+      - name: No private assets
+        run: python3 tooling/release_guard.py
+      - name: Decode the signing key
+        env:
+          KEY_B64: ${{ secrets.MASH_KEYSTORE_B64 }}
+        run: printf '%s' "$KEY_B64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+      - name: Build and sign
+        env:
+          MASH_KEYSTORE: ${{ runner.temp }}/release.keystore
+          MASH_KEYSTORE_PASS: ${{ secrets.MASH_KEYSTORE_PASS }}
+          MASH_KEY_ALIAS: ${{ secrets.MASH_KEY_ALIAS }}
+          MASH_KEY_PASS: ${{ secrets.MASH_KEY_PASS }}
+        run: ./build.sh --release
+      - name: Verify the signature
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          "$BT/apksigner" verify --print-certs Mashrabiya.apk
+          sha256sum Mashrabiya.apk > Mashrabiya.apk.sha256
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            Mashrabiya.apk
+            Mashrabiya.apk.sha256
+          generate_release_notes: true

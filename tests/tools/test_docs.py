@@ -23,8 +23,9 @@ class DocsTests(unittest.TestCase):
     def test_common_profile_matches_home_mode(self):
         source = (ROOT / "app/src/io/freemytv/HomeMode.java").read_text()
         match = re.search(r"DEBLOAT = \{(.*?)\};", source, re.S)
-        self.assertIsNotNone(match, "DEBLOAT block not found in HomeMode.java")
-        java = set(re.findall(r'"([a-z][a-z0-9_.]+)"', match.group(1)))
+        block = match.group(1) if match else ""
+        self.assertTrue(block, "DEBLOAT block not found in HomeMode.java")
+        java = set(re.findall(r'"([a-z][a-z0-9_.]+)"', block))
         common = json.loads((ROOT / "tooling/profiles/_common.json").read_text())
         self.assertEqual(set(), java - set(common["allowed_disable"]),
                          "HomeMode.DEBLOAT has packages missing from tooling/profiles/_common.json")
