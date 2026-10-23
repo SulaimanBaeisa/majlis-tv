@@ -12,6 +12,8 @@ the Saudi Pro League, an Arabic news ticker, and 39 Saudi wallpapers that change
 
 ![Majlis home screen](docs/screenshots/home.jpg)
 
+<sub>Design mockup at 1920×1080 — the shipping UI follows this design.</sub>
+
 ## Ask your agent
 
 Majlis is installed by your coding agent, from a single sentence. It works with Claude Code,
