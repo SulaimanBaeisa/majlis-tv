@@ -52,6 +52,19 @@ made by the `./tv` tool, so the result is the same in every model.
 - **One button back.** `Original` restores the stock launcher, recommendations, backdrop and
   screensaver. Nothing is uninstalled.
 
+## Screens
+
+| Home | Matches |
+|:---:|:---:|
+| ![Home](docs/screenshots/home.jpg) | ![Matches](docs/screenshots/matches.jpg) |
+| **News** | **Drawer** |
+| ![News](docs/screenshots/news.jpg) | ![Drawer](docs/screenshots/drawer.jpg) |
+| **Screensaver** | **Settings** |
+| ![Screensaver](docs/screenshots/screensaver.jpg) | ![Settings](docs/screenshots/settings.jpg) |
+
+Home, Matches, News and Drawer are design mockups at 1920×1080; the shipping UI follows them.
+Screensaver and Settings are captures from a Sony BRAVIA on Android 12.
+
 ## Supported TVs
 
 | Brand | Tested on | Android | Notes |
