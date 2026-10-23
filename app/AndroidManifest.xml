@@ -6,9 +6,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- After the TV boots (and after a TV update), checks that Free My TV mode is still as you left it. -->
+    <!-- After the TV boots (and after a TV update), checks that Mashrabiya mode is still as you left it. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <!-- Prayer pop-up over any app at adhan time, on the minute. Granted by Free My TV mode (appops), handed back by
+    <!-- Prayer pop-up over any app at adhan time, on the minute. Granted by Mashrabiya mode (appops), handed back by
          Original. -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
@@ -54,7 +54,7 @@
         android:allowBackup="false"
         android:usesCleartextTraffic="false">
 
-        <!-- The app's icon opens the settings (switch between Free My TV and the original home screen). -->
+        <!-- The app's icon opens the settings (switch between Mashrabiya and the original home screen). -->
         <activity
             android:name=".SettingsActivity"
             android:process=":home"
@@ -74,7 +74,7 @@
         </activity>
 
         <!-- The home screen. Its own process (:home): if it ever crashes, the safety net in the main process still
-             works. It only becomes the TV's home screen in Free My TV mode (cmd package set-home-activity). -->
+             works. It only becomes the TV's home screen in Mashrabiya mode (cmd package set-home-activity). -->
         <activity
             android:name=".HomeActivity"
             android:process=":home"
@@ -153,7 +153,7 @@
         </receiver>
         <!-- Adhan alarms (from the app itself), boot and time changes; the test action only from adb (DUMP). -->
         <!-- In the home-screen process: on TCL, broadcasts to an app that isn't running are dropped (TclAppBoot), and
-             in Free My TV mode that process stays alive (it is the home screen and holds the remote-buttons service). -->
+             in Mashrabiya mode that process stays alive (it is the home screen and holds the remote-buttons service). -->
         <receiver
             android:name=".PrayerAlarm"
             android:process=":home"
