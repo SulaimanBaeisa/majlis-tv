@@ -29,7 +29,7 @@ The first `adb connect` shows **Allow USB debugging?** on the TV. Tick **Always 
 ## 3. Build and install
 
 ```bash
-git clone https://github.com/OWNER/mashrabiya-tv && cd mashrabiya-tv
+git clone https://github.com/SulaimanBaeisa/mashrabiya-tv && cd mashrabiya-tv
 ./tv doctor
 ./tv build --city "Jeddah"
 ./tv install --ip 192.168.1.50
