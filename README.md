@@ -20,18 +20,18 @@ made by the `./tv` tool, so the result is the same in every model.
 
 **Install**
 
-> Install Mashrabiya on my Android TV. Follow https://github.com/OWNER/mashrabiya-tv/blob/main/AGENTS.md
+> Install Mashrabiya on my Android TV. Follow https://github.com/SulaimanBaeisa/mashrabiya-tv/blob/main/AGENTS.md
 > exactly — do not improvise adb commands. My TV's IP is 192.168.1.50 and my city is Jeddah.
 
 **Update**
 
-> Update Mashrabiya on my TV (192.168.1.50) from https://github.com/OWNER/mashrabiya-tv — follow the
+> Update Mashrabiya on my TV (192.168.1.50) from https://github.com/SulaimanBaeisa/mashrabiya-tv — follow the
 > Update section of AGENTS.md exactly.
 
 **Roll back**
 
 > Put the original home screen back on my TV (192.168.1.50), following the Rollback section of
-> https://github.com/OWNER/mashrabiya-tv/blob/main/AGENTS.md.
+> https://github.com/SulaimanBaeisa/mashrabiya-tv/blob/main/AGENTS.md.
 
 ## What it does
 
@@ -74,7 +74,7 @@ claim a 4K interface.
 ## Install without an agent
 
 ```bash
-git clone https://github.com/OWNER/mashrabiya-tv && cd mashrabiya-tv
+git clone https://github.com/SulaimanBaeisa/mashrabiya-tv && cd mashrabiya-tv
 ./tv doctor
 ./tv build --city "Jeddah"
 ./tv install --ip 192.168.1.50

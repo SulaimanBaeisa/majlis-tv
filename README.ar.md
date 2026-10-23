@@ -21,18 +21,18 @@
 **التركيب**
 
 > ركّب مشربية على تلفزيون أندرويد عندي. اتبع
-> https://github.com/OWNER/mashrabiya-tv/blob/main/AGENTS.md حرفيًا، ولا تكتب أوامر adb من عندك.
+> https://github.com/SulaimanBaeisa/mashrabiya-tv/blob/main/AGENTS.md حرفيًا، ولا تكتب أوامر adb من عندك.
 > عنوان التلفزيون 192.168.1.50 ومدينتي جدة.
 
 **التحديث**
 
-> حدّث مشربية على تلفزيوني (192.168.1.50) من https://github.com/OWNER/mashrabiya-tv — اتبع قسم
+> حدّث مشربية على تلفزيوني (192.168.1.50) من https://github.com/SulaimanBaeisa/mashrabiya-tv — اتبع قسم
 > التحديث في AGENTS.md حرفيًا.
 
 **الرجوع**
 
 > أرجِع الشاشة الرئيسية الأصلية على تلفزيوني (192.168.1.50) حسب قسم الرجوع في
-> https://github.com/OWNER/mashrabiya-tv/blob/main/AGENTS.md.
+> https://github.com/SulaimanBaeisa/mashrabiya-tv/blob/main/AGENTS.md.
 
 ## ماذا تغيّر على التلفزيون
 
@@ -44,7 +44,7 @@
 ## التركيب بدون وكيل
 
 ```bash
-git clone https://github.com/OWNER/mashrabiya-tv && cd mashrabiya-tv
+git clone https://github.com/SulaimanBaeisa/mashrabiya-tv && cd mashrabiya-tv
 ./tv doctor
 ./tv build --city "جدة"
 ./tv install --ip 192.168.1.50
