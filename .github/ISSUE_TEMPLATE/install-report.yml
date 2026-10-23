@@ -1,0 +1,36 @@
+name: Install or update problem
+description: Something failed while installing, switching or verifying Mashrabiya
+labels: ["install"]
+body:
+  - type: markdown
+    attributes:
+      value: Remove your IP address, Wi-Fi name and serial number before posting.
+  - type: input
+    id: tv
+    attributes:
+      label: TV brand and model
+      placeholder: Sony KD-55X9000H
+    validations:
+      required: true
+  - type: input
+    id: android
+    attributes:
+      label: Android version
+      placeholder: "12"
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Verify report
+      description: Paste the contents of reports/verify-....md (redact the IP)
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The exact command and the exact output
+    validations:
+      required: true
