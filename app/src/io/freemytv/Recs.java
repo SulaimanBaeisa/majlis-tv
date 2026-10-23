@@ -45,6 +45,7 @@ final class Recs {
         String kind;            // "movie" or "tv"
         String title, backdrop, meta = "", app, pkg;
         boolean detailed;
+        File sourceFile; // owner-provided image in the app-scoped wallpaper directory
     }
 
     interface Listener { void onRecs(); }
@@ -226,6 +227,7 @@ final class Recs {
     }
 
     private File imageFile(Pick p) {
+        if("custom".equals(p.kind) && p.sourceFile!=null)return p.sourceFile;
         return new File(new File(context.getCacheDir(), "recs"), p.backdrop.replace("/", ""));
     }
 
@@ -292,7 +294,8 @@ final class Recs {
      */
     List<Pick> showcase() {
         List<Pick> out = new ArrayList<>();
-        if (!hasKey(context)) return Ui.ar ? saudiPicks() : out;
+        if (Ui.ar) return saudiPicks();
+        if (!hasKey(context)) return out;
         java.util.Set<String> seen = new java.util.HashSet<>();
         for (Pick p : wanted()) if (hasImage(p) && seen.add(franchise(p.title))) out.add(p);
         Map<String, Boolean> have = new HashMap<>();
@@ -358,7 +361,8 @@ final class Recs {
     }
 
     private List<Pick> saudi;
-    private long saudiDay = Long.MIN_VALUE;
+    private long saudiDay = Long.MIN_VALUE,customScanMinute=Long.MIN_VALUE,customStamp;
+    private final java.util.Set<String> badCustom=java.util.Collections.synchronizedSet(new java.util.HashSet<>());
 
     /**
      * No TMDB key, Arabic: the bundled photos of Saudi Arabia (assets/saudi, free licenses, credit under each title),
@@ -366,9 +370,25 @@ final class Recs {
      * images. The first one is today's wallpaper (see {@link #wallpaper}); the list is rebuilt when the day changes.
      */
     private List<Pick> saudiPicks() {
-        long day = java.time.LocalDate.now().toEpochDay();
-        if (saudi != null && day == saudiDay) return saudi;
-        List<Pick> list = new ArrayList<>();
+        long day=java.time.LocalDate.now().toEpochDay(),minute=System.currentTimeMillis()/60_000L;
+        if(saudi!=null && day==saudiDay && minute==customScanMinute)return saudi;
+        customScanMinute=minute;
+        File customDir=context.getExternalFilesDir("wallpapers");
+        File[] files=customDir==null?null:customDir.listFiles(f->f.isFile() && !f.getName().startsWith(".") && f.getName().toLowerCase(Locale.ROOT).matches(".+\\.(jpg|jpeg|png|webp)") && f.length()>0 && f.length()<=32*1024*1024L);
+        if(files==null)files=new File[0];
+        Arrays.sort(files,(a,b)->a.getName().compareTo(b.getName()));
+        long stamp=1;for(int i=0;i<Math.min(64,files.length);i++){File f=files[i];stamp=31*stamp+f.getName().hashCode()+f.length()+f.lastModified();}
+        if(saudi!=null && day==saudiDay && stamp==customStamp)return saudi;
+        customStamp=stamp;
+        List<Pick> list=new ArrayList<>(),custom=new ArrayList<>();
+        for(int i=0;i<Math.min(64,files.length);i++) {
+            File f=files[i];Pick p=new Pick();p.sourceFile=f;p.kind="custom";p.id=f.getName().hashCode();
+            p.backdrop="custom-"+f.getName()+"-"+f.length()+"-"+f.lastModified();
+            p.title=News.clean(f.getName().replaceFirst("\\.[^.]+$",""));p.meta="خلفية شخصية";p.detailed=true;
+            if(!badCustom.contains(p.backdrop))custom.add(p);
+        }
+        if(!custom.isEmpty())java.util.Collections.rotate(custom,-Math.floorMod(day,custom.size()));
+        list.addAll(custom);
         try {
             java.io.InputStream in = context.getAssets().open("saudi/credits.tsv");
             java.io.ByteArrayOutputStream raw = new java.io.ByteArrayOutputStream();
@@ -407,9 +427,10 @@ final class Recs {
 
     /** Today's wallpaper for the Arabic home (no TMDB key); null with a key or without photos. */
     Pick wallpaper() {
-        if (hasKey(context) || !Ui.ar) return null;
+        if (!Ui.ar) return null;
         List<Pick> list = saudiPicks();
-        return list.isEmpty() ? null : list.get(0);
+        for(Pick p:list)if(!badCustom.contains(p.backdrop))return p;
+        return null;
     }
 
     /** Movies and shows are numbered separately on TMDB: a pick is identified by type + number. */
@@ -626,6 +647,7 @@ final class Recs {
     // MARK: - Images (TMDB originals on disk, up to 24 so the whole list fits; this hour's kept ready in memory)
 
     private void download(Pick p) throws IOException {
+        if("custom".equals(p.kind))return;
         File f = imageFile(p);
         if (f.exists()) return;
         //noinspection ResultOfMethodCallIgnored
@@ -647,33 +669,29 @@ final class Recs {
 
     /** Reads the original (≥ 1920 wide) and builds the backdrop (Backdrop: cards plus frosted and glass versions). */
     private void loadImage(Pick p) {
-        synchronized (images) {
-            if (images.containsKey(p.backdrop)) return;
-        }
-        File f = imageFile(p);
+        synchronized(images){if(images.containsKey(p.backdrop))return;}
+        File f=imageFile(p);
         try {
-            download(p);
-            BitmapFactory.Options bounds = new BitmapFactory.Options();
-            bounds.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(f.getPath(), bounds);
-            BitmapFactory.Options opts = new BitmapFactory.Options();
-            opts.inSampleSize = 1;
-            while (bounds.outWidth / (opts.inSampleSize * 2) >= Backdrop.W) opts.inSampleSize *= 2;
-            Bitmap b = BitmapFactory.decodeFile(f.getPath(), opts);
-            if (b == null) throw new IOException("unreadable image");
-            AppLog.w("backdrop \u201c" + p.title + "\u201d: " + bounds.outWidth + "×" + bounds.outHeight);
-            boolean forLight = light;
-            Backdrop backdrop = "saudi".equals(p.kind) ? Backdrop.wallpaper(b) : Backdrop.make(b, forLight);
-            if (forLight != light) return;   // the design changed midway: this one is stale
-            synchronized (images) {
-                images.put(p.backdrop, backdrop);
-                while (images.size() > (forLight ? 10 : 4)) images.remove(images.keySet().iterator().next());
+            download(p);boolean forLight=light;
+            Backdrop backdrop;
+            if("saudi".equals(p.kind) || "custom".equals(p.kind)){backdrop=WallpaperCache.load(context,f);AppLog.w("wallpaper source: "+("custom".equals(p.kind)?"custom":"bundled"));}
+            else {
+                BitmapFactory.Options bounds=new BitmapFactory.Options();bounds.inJustDecodeBounds=true;BitmapFactory.decodeFile(f.getPath(),bounds);
+                BitmapFactory.Options opts=new BitmapFactory.Options();opts.inSampleSize=1;
+                while(bounds.outWidth/(opts.inSampleSize*2)>=Backdrop.W)opts.inSampleSize*=2;
+                Bitmap b=BitmapFactory.decodeFile(f.getPath(),opts);if(b==null)throw new IOException("unreadable image");
+                backdrop=Backdrop.make(b,forLight);
+            }
+            if(forLight!=light)return;
+            synchronized(images){
+                images.put(p.backdrop,backdrop);
+                while(images.size()>(forLight?10:4))images.remove(images.keySet().iterator().next());
             }
             notifyListeners();
-        } catch (IOException | RuntimeException | OutOfMemoryError e) {
-            //noinspection ResultOfMethodCallIgnored
-            f.delete();
-            AppLog.w("recommendation image: " + e.getMessage());
+        }catch(IOException | RuntimeException | OutOfMemoryError e){
+            if(!"custom".equals(p.kind))f.delete();
+            else{badCustom.add(p.backdrop);notifyListeners();}
+            AppLog.w("recommendation image: "+e.getMessage());
         }
     }
 

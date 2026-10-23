@@ -5,6 +5,7 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.RuntimeShader;
@@ -31,6 +32,12 @@ final class Scene {
     private final Recording auroraNode = Recording.create("aurora");
     // The layer is drawn at a quarter size and scaled up: filtered, its soft shapes stay soft instead of stepping.
     private final Paint layerPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
+    // Android 12 (Sony): cached bitmap glass, not the flat-colour pre-AGSL fallback.
+    private final Paint bitmapGlassPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+    private final Matrix glassMatrix = new Matrix();
+    private BitmapShader bitmapGlass, bitmapGlassB;
+    private boolean hasGlassB;
+    private float offsetX, offsetY, bitmapMix;
     private int w = 1, h = 1, lw = 1, lh = 1;
     private float speed = 1, baseDim, dim, time;
     private boolean auroraDirty = true, imageFrost, imageGlass;
@@ -69,6 +76,7 @@ final class Scene {
             setFrostScale();
             if (imageGlass) liquid.setFloatUniform("imageScale", (float) Backdrop.GW / w, (float) Backdrop.GH / h);
         }
+        updateBitmapMatrix();
         push();
     }
 
@@ -122,6 +130,10 @@ final class Scene {
         imageGlass = true;
         glassA = fill(glassA, from);
         if (to != null) glassB = fill(glassB, to);
+        hasGlassB=to!=null; bitmapMix=0;
+        bitmapGlass=new BitmapShader(glassA,Shader.TileMode.CLAMP,Shader.TileMode.CLAMP);
+        bitmapGlassB=hasGlassB?new BitmapShader(glassB,Shader.TileMode.CLAMP,Shader.TileMode.CLAMP):null;
+        updateBitmapMatrix();
         if (liquid == null) return;
         glassShaderA = linear(glassA);
         liquid.setInputShader("imageA", glassShaderA);
@@ -131,6 +143,7 @@ final class Scene {
     }
 
     void setGlassMix(float t) {
+        bitmapMix=Math.max(0,Math.min(1,t));
         if (liquid != null) liquid.setFloatUniform("mixB", Math.max(0, Math.min(1, t)));
     }
 
@@ -161,7 +174,7 @@ final class Scene {
                 float specular, float alpha) {
         if (alpha <= 0.004f) return;
         if (liquid == null) {
-            glass(c, r, radius, tint, Math.max(0.5f, tintAlpha), 0, 0, lift, 1, alpha);
+            glass(c, r, radius, tint, tintAlpha, 0, 0, lift, 1, alpha);
             return;
         }
         liquid.setFloatUniform("center", r.centerX(), r.centerY());
@@ -204,8 +217,17 @@ final class Scene {
 
     /** Offset (px) of the layer that will draw glass, if it was moved on screen without being redrawn. */
     void setOffset(float x, float y) {
+        if(x!=offsetX || y!=offsetY){offsetX=x;offsetY=y;updateBitmapMatrix();}
         if (glass != null) glass.setFloatUniform("offset", x, y);
         if (liquid != null) liquid.setFloatUniform("offset", x, y);
+    }
+
+    /** Inverse shader mapping samples (local + screen offset), including translated drawer layers. */
+    private void updateBitmapMatrix() {
+        glassMatrix.setScale((float)w/Backdrop.GW,(float)h/Backdrop.GH);
+        glassMatrix.postTranslate(-offsetX,-offsetY);
+        if(bitmapGlass!=null)bitmapGlass.setLocalMatrix(glassMatrix);
+        if(bitmapGlassB!=null)bitmapGlassB.setLocalMatrix(glassMatrix);
     }
 
     private void setFrostScale() {
@@ -248,9 +270,20 @@ final class Scene {
         if (alpha <= 0.004f) return;
         if (glass == null) {
             if (body > 0) {
-                flatFill.setColor(Ui.alpha(tint | 0xFF000000, Math.max(0.35f, tintAlpha)));
+                if(imageGlass && bitmapGlass!=null) {
+                    bitmapGlassPaint.setShader(bitmapGlass);
+                    bitmapGlassPaint.setAlpha(Math.round(255*Math.min(1,alpha*body)));
+                    c.drawRoundRect(r,radius,radius,bitmapGlassPaint);
+                    if(hasGlassB && bitmapGlassB!=null && bitmapMix>0) {
+                        bitmapGlassPaint.setShader(bitmapGlassB);
+                        bitmapGlassPaint.setAlpha(Math.round(255*Math.min(1,alpha*body*bitmapMix)));
+                        c.drawRoundRect(r,radius,radius,bitmapGlassPaint);
+                    }
+                }
+                flatFill.setColor(Ui.alpha(tint | 0xFF000000, Math.min(1,alpha*body)*(imageGlass?tintAlpha:Math.max(0.35f,tintAlpha))));
                 c.drawRoundRect(r, radius, radius, flatFill);
             }
+            flatRim.setColor(Ui.alpha(0xFFFFFFFF,0.20f*Math.min(1,alpha)));
             c.drawRoundRect(r, radius, radius, flatRim);
             return;
         }

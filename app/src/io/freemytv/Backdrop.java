@@ -49,7 +49,7 @@ final class Backdrop {
         nightImage = night == null ? null : Bitmap.createBitmap(night, FW, FH, Bitmap.Config.ARGB_8888);
     }
 
-    private Backdrop(int[] frost, int[] glass, Bitmap display) {
+    Backdrop(int[] frost, int[] glass, Bitmap display) {
         this.image = null;
         this.frost = frost;
         this.glass = glass;
@@ -63,8 +63,8 @@ final class Backdrop {
         this.nightImage = display;
     }
 
-    /** The wallpaper background is drawn at this size and scaled to the screen (3.7 MB). */
-    static final int WALL_W = 1280, WALL_H = 720;
+    /** Native 1080p UI wallpaper; the full-size bitmap is built once, never blurred while drawing. */
+    static final int WALL_W = 1920, WALL_H = 1080;
 
     /**
      * The Arabic home's background when there is no TMDB key: the wallpaper itself, sharp, under a dark scrim (heavier
@@ -92,8 +92,17 @@ final class Backdrop {
                 new float[] {0, 0.5f, 1}, Shader.TileMode.CLAMP));
         c.drawRect(0, WALL_H * 0.48f, WALL_W, WALL_H, scrim);
         int[] frost = darken(reduce(out, FW, FH, 3, 3), 0.25f);
-        int[] glass = darken(reduce(out, GW, GH, 2, 2), 0.25f);
+        int[] glass = readableGlass(darken(reduce(out, GW, GH, 6, 3), 0.16f));
         return new Backdrop(frost, glass, out);
+    }
+
+    /** Limit bright blurred pixels, preserving hue. Large TV text stays readable even over a white custom photo. */
+    static int[] readableGlass(int[] pixels) {
+        for(int i=0;i<pixels.length;i++) {
+            int v=pixels[i],r=(v>>>16)&255,g=(v>>>8)&255,b=v&255,max=Math.max(r,Math.max(g,b));
+            if(max>130)pixels[i]=(v&0xFF000000)|((r*130/max)<<16)|((g*130/max)<<8)|(b*130/max);
+        }
+        return pixels;
     }
 
     static Backdrop make(Bitmap src, boolean forLight) {
@@ -162,6 +171,7 @@ final class Backdrop {
         while (bounds.outWidth / (opts.inSampleSize * 2) >= w && bounds.outHeight / (opts.inSampleSize * 2) >= h) opts.inSampleSize *= 2;
         Bitmap src = android.graphics.BitmapFactory.decodeFile(f.getPath(), opts);
         if (src == null) throw new java.io.IOException("unreadable image");
+        src=WallpaperCache.orient(f,src);
         float ratio = (float) w / h;
         int cw = Math.min(src.getWidth(), Math.round(src.getHeight() * ratio));
         int ch = Math.min(src.getHeight(), Math.round(cw / ratio));

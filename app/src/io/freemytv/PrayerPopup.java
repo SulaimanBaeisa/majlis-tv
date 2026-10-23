@@ -18,7 +18,9 @@ import android.view.WindowManager;
 final class PrayerPopup {
     private PrayerPopup() {}
 
-    private static final long SHOW_MS = 60_000L;
+    static final long SHOW_MS = 60_000;
+    static final long SAFETY_HIDE_MS = 62_000;
+    private static final Runnable SAFETY_HIDE = PrayerPopup::hideNow;
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
     private static View current;
 
@@ -49,6 +51,7 @@ final class PrayerPopup {
             v.setAlpha(0f);
             v.animate().alpha(1f).setDuration(400).start();
             MAIN.postDelayed(PrayerPopup::fadeOut, SHOW_MS);
+            MAIN.postDelayed(SAFETY_HIDE, SAFETY_HIDE_MS);
         });
     }
 
@@ -59,7 +62,7 @@ final class PrayerPopup {
     private static void fadeOut() {
         View v = current;
         if (v == null) return;
-        v.animate().alpha(0f).setDuration(500).withEndAction(PrayerPopup::hideNow).start();
+        v.animate().alpha(0f).setDuration(500).withEndAction(()->{if(current==v)hideNow();}).start();
     }
 
     private static void hideNow() {
@@ -67,6 +70,7 @@ final class PrayerPopup {
         View v = current;
         current = null;
         if (v == null) return;
+        v.animate().cancel();
         try {
             ((WindowManager) v.getContext().getSystemService(Context.WINDOW_SERVICE)).removeView(v);
         } catch (RuntimeException ignored) {

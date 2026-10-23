@@ -15,3 +15,6 @@ __pycache__/
 
 # local test output
 tests/out/
+
+# Licensed personal font files: never redistribute or commit
+app/assets/fonts/thmanyah*

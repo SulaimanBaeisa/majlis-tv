@@ -1,0 +1,1983 @@
+{
+  "created_utc": "2026-10-22T23:21:08.690419+00:00",
+  "added": 30,
+  "total_after_addition": 39,
+  "target_size": [
+    3840,
+    2160
+  ],
+  "tv_asset_size": [
+    1920,
+    1080
+  ],
+  "retained_originals_directory": "/srv/projects/free-my-tv-ar/design/walls/originals",
+  "legacy_unchanged_sha256": {
+    "s8.jpg": "2d939a07169a76966997419cfdc26c87ecee3d9ea128636c47c32043e7911030",
+    "s1.jpg": "b432f8c0c693fd5ccd649b4d1a4d8a475f9840dd083ba1e457b4b4b99d344947",
+    "s9.jpg": "243d94762ddc55505c0729d09ed18bde3aca9408017ba5ae590bef8ee808b7b3",
+    "s2.jpg": "8db18dbfff79d6f33bef6c3e18121fd20c6ab778add891fe9113f8b6bc8fc86e",
+    "s7.jpg": "d056719f3549a0096c2c2b30a2a66e0631c8eac604ae30dcae6374f5a3c0699c",
+    "s4.jpg": "2c639b1bf981e71dfeeee2a273eebb3c4b3991ce5ff29a4d4ff96d796cc312c3",
+    "s6.jpg": "0819a036beae5c082bb7502fcd383c95bea9e2b753e556757d9e1b09cecf4ced",
+    "s3.jpg": "06c631f9832d0bb8ed7dac8891d3b7c83c553666fea6a17fc775973873fda8f3",
+    "s5.jpg": "6bed6ad2a743c5146adab51c1e0369cb034a9fc600836b880d0ce1d1986c476a"
+  },
+  "images": [
+    {
+      "key": "c01",
+      "pageid": 172682378,
+      "title": "File:King Fahd’s Fountain 2025.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:King_Fahd%E2%80%99s_Fountain_2025.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/9/95/King_Fahd%E2%80%99s_Fountain_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 4032,
+      "height": 3024,
+      "size": 1007553,
+      "sha1": "09e3de73de1c060bb302d2bb0e9a620dbf30e47b",
+      "mime": "image/jpeg",
+      "artist": "ほっきー",
+      "credit": "Own work",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution_required": "false",
+      "restrictions": "",
+      "description": "King Fahd’s Fountain_2025",
+      "categories": [
+        "Category:CC-Zero",
+        "Category:Files with coordinates missing SDC location of creation",
+        "Category:King Fahd's Fountain in Jeddah",
+        "Category:Self-published work"
+      ],
+      "coordinates": [
+        {
+          "lat": 21.520006,
+          "lon": 39.151761,
+          "primary": true,
+          "globe": "earth"
+        }
+      ],
+      "retrieved_utc": "2026-10-22T22:27:38.580080+00:00",
+      "original_file": "originals/c01.jpg",
+      "file": "s10.jpg",
+      "title_ar": "نافورة الملك فهد ليلًا",
+      "place_ar": "جدة",
+      "credit_display": "ほっきー",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "69d6ec05ae8c8e864bf500238fb006aa261c663f0b0be746bc9871139e193fda",
+      "asset_bytes": 1045365,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "414472c3b96aa8e798f5d44bcdd7c76c3862f28fefe6cc34f324554c4cdaff53",
+      "tv_asset_bytes": 341626,
+      "decoded_size": [
+        4032,
+        3024
+      ],
+      "crop_box": [
+        0,
+        378,
+        4032,
+        2646
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c04",
+      "pageid": 61289940,
+      "title": "File:Riyadh Skyline showing the King Abdullah Financial District (KAFD) and the famous Kingdom Tower .jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Riyadh_Skyline_showing_the_King_Abdullah_Financial_District_(KAFD)_and_the_famous_Kingdom_Tower_.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Riyadh_Skyline_showing_the_King_Abdullah_Financial_District_%28KAFD%29_and_the_famous_Kingdom_Tower_.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 6000,
+      "height": 4000,
+      "size": 15971464,
+      "sha1": "40da28e8354d46b4d1b57265efc201abbb9d7aeb",
+      "mime": "image/jpeg",
+      "artist": "B.alotaby",
+      "credit": "Own work",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Riyadh Skyline showing the King Abdullah Financial District (KAFD) and the famous Kingdom Tower",
+      "categories": [
+        "Category:2016 in Riyadh",
+        "Category:CC-BY-SA-4.0",
+        "Category:Incidental views of Kingdom Centre (Riyadh)",
+        "Category:King Abdullah Financial District",
+        "Category:Self-published work"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:38.580147+00:00",
+      "original_file": "originals/c04.jpg",
+      "file": "s11.jpg",
+      "title_ar": "أفق الرياض وقت الغروب",
+      "place_ar": "الرياض",
+      "credit_display": "B.alotaby",
+      "anchor": [
+        0.5,
+        0.42
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "d156dc17c6fdbc14c6bbf3b81b89907efd85031990b6bcf8c57d464ad1d24331",
+      "asset_bytes": 2727359,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "299ab82e49c5692f88cdbc5743dd8804724b8ea267d22adb1005e81efa998bf4",
+      "tv_asset_bytes": 514515,
+      "decoded_size": [
+        6000,
+        4000
+      ],
+      "crop_box": [
+        0,
+        262,
+        6000,
+        3637
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c31",
+      "pageid": 123264071,
+      "title": "File:Abha (51289579187).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Abha_(51289579187).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Abha_%2851289579187%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 5472,
+      "height": 3078,
+      "size": 13202338,
+      "sha1": "1ef72115bc7c6d187eae7428b2a3281b9534d8b7",
+      "mime": "image/jpeg",
+      "artist": "Chad Nagle",
+      "credit": "Abha",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution_required": "false",
+      "restrictions": "",
+      "description": "Abha",
+      "categories": [
+        "Category:Abha",
+        "Category:CC-Zero",
+        "Category:Files from Chad Nagle Flickr stream",
+        "Category:Flickr images reviewed by FlickreviewR 2"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:43.087278+00:00",
+      "original_file": "originals/c31.jpg",
+      "file": "s12.jpg",
+      "title_ar": "إطلالة على مدينة أبها",
+      "place_ar": "أبها",
+      "credit_display": "Chad Nagle",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "618399b1f1ec3fc949218b225d936cd77869b8b175692df2006867226d102dc9",
+      "asset_bytes": 4336897,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "ec01674cfe501f674834d95491d6a87dedaf45adc5a0a7bc64c71b21161a9994",
+      "tv_asset_bytes": 1178023,
+      "decoded_size": [
+        5472,
+        3078
+      ],
+      "crop_box": [
+        0,
+        0,
+        5472,
+        3078
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c16",
+      "pageid": 31244074,
+      "title": "File:Khobar water tower.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Khobar_water_tower.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Khobar_water_tower.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 5812,
+      "height": 3968,
+      "size": 10859897,
+      "sha1": "29d63a223b808acc2e7231e1f4e2fb3a46abc2f0",
+      "mime": "image/jpeg",
+      "artist": "Francisco Anzola",
+      "credit": "Flickr : Khobar water tower",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Khobar water tower",
+      "categories": [
+        "Category:CC-BY-2.0",
+        "Category:Flickr images uploaded by Flickr upload bot",
+        "Category:Khobar",
+        "Category:Photographs by Francisco Anzola",
+        "Category:Saudi Arabia photographs taken on 2014-02-12",
+        "Category:Water towers in Saudi Arabia"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:41.618695+00:00",
+      "original_file": "originals/c16.jpg",
+      "file": "s13.jpg",
+      "title_ar": "برج المياه على الواجهة البحرية",
+      "place_ar": "الخبر",
+      "credit_display": "Francisco Anzola",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "243b105082e9e5adfb802664769ae67e662b241afa8bcddad28cd773fe35f508",
+      "asset_bytes": 2247552,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "30c5531ded06032782da127dcc173972847bf5708e36b0d138b46a8e9ff960cc",
+      "tv_asset_bytes": 566708,
+      "decoded_size": [
+        5812,
+        3968
+      ],
+      "crop_box": [
+        0,
+        349,
+        5812,
+        3618
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c10",
+      "pageid": 169134816,
+      "title": "File:قرية ذي عين التراثية.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:%D9%82%D8%B1%D9%8A%D8%A9_%D8%B0%D9%8A_%D8%B9%D9%8A%D9%86_%D8%A7%D9%84%D8%AA%D8%B1%D8%A7%D8%AB%D9%8A%D8%A9.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/8/8f/%D9%82%D8%B1%D9%8A%D8%A9_%D8%B0%D9%8A_%D8%B9%D9%8A%D9%86_%D8%A7%D9%84%D8%AA%D8%B1%D8%A7%D8%AB%D9%8A%D8%A9.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 6192,
+      "height": 4128,
+      "size": 6472464,
+      "sha1": "7a9e7fa6bfea123317fd5aefc43b1c75d19527c8",
+      "mime": "image/jpeg",
+      "artist": "وكالة الأنباء السعودية",
+      "credit": "https://cc.spa.gov.sa/ar#2309639",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Vegetation cover in the heritage village of Thee Ain, Saudi Arabia.",
+      "categories": [
+        "Category:Al-Baha Province",
+        "Category:CC-BY-SA-4.0",
+        "Category:Photos from Saudi Photos platform",
+        "Category:Thee Ain",
+        "Category:Traditional houses in Dhu Ain"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:40.032211+00:00",
+      "original_file": "originals/c10.jpg",
+      "file": "s14.jpg",
+      "title_ar": "قرية ذي عين والخضرة المحيطة بها",
+      "place_ar": "ذي عين (الباحة)",
+      "credit_display": "وكالة الأنباء السعودية",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "5e7effb822890e603e26ed7c0cd3b11119549b5e71a5b97a4ffc989049ab533d",
+      "asset_bytes": 6054965,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "72cfc14e32841451b35c826e16754f098d21b0fcdfbc4a7438e98f503487a35d",
+      "tv_asset_bytes": 1599969,
+      "decoded_size": [
+        6192,
+        4128
+      ],
+      "crop_box": [
+        0,
+        322,
+        6192,
+        3805
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c14",
+      "pageid": 182753085,
+      "title": "File:Maraya Concert Hall 20260130 1.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Maraya_Concert_Hall_20260130_1.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Maraya_Concert_Hall_20260130_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 4000,
+      "height": 2252,
+      "size": 2747953,
+      "sha1": "ed4b5efa2e3958313bf4e8a85c67d93475a86ed1",
+      "mime": "image/jpeg",
+      "artist": "Z thomas",
+      "credit": "Own work",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Maraya Concert Hall in Al-'Ula",
+      "categories": [
+        "Category:CC-BY-4.0",
+        "Category:January 2026 Saudi Arabia photographs",
+        "Category:Maraya Concert Hall",
+        "Category:Photos by Z thomas",
+        "Category:Self-published work"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:40.032287+00:00",
+      "original_file": "originals/c14.jpg",
+      "file": "s15.jpg",
+      "title_ar": "مبنى مرايا بين جبال العلا",
+      "place_ar": "العلا",
+      "credit_display": "Z thomas",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "6d8999449355b8894212e2a8ed6676b217808dcc73552da30b42e542501ff686",
+      "asset_bytes": 2823805,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "1e7ce4c0c191da6ac895c2f58ca11906ccc2bdce294180ae2c0643dd4038841e",
+      "tv_asset_bytes": 761595,
+      "decoded_size": [
+        4000,
+        2252
+      ],
+      "crop_box": [
+        0,
+        1,
+        4000,
+        2251
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c09",
+      "pageid": 115618239,
+      "title": "File:Al-Hada mountain road, al-Taif, Saudi Arabia (1).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Al-Hada_mountain_road,_al-Taif,_Saudi_Arabia_(1).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/Al-Hada_mountain_road%2C_al-Taif%2C_Saudi_Arabia_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 6000,
+      "height": 4000,
+      "size": 9170049,
+      "sha1": "6e14677c1feae352e6884e4ab88b4bcd6ff4de6d",
+      "mime": "image/jpeg",
+      "artist": "Richard Mortel",
+      "credit": "https://www.flickr.com/photos/prof_richard/50914300663/",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Al-Hada, near al-Taif, Saudi Arabia",
+      "categories": [
+        "Category:Al-Hada",
+        "Category:CC-BY-2.0",
+        "Category:Flickr images reviewed by FlickreviewR 2",
+        "Category:Photographs by Richard Mortel",
+        "Category:Saudi Arabia photographs taken on 2021-01-05"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:40.032191+00:00",
+      "original_file": "originals/c09.jpg",
+      "file": "s16.jpg",
+      "title_ar": "طريق الهدا الجبلي",
+      "place_ar": "الطائف",
+      "credit_display": "Richard Mortel",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "6eebd6311dba694937c2d50fcc6123b2b59604440b7cf5483eff45635f0d2304",
+      "asset_bytes": 3439134,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "375fca043be63189d8687ce3d5eb0140275ff78017b6314e9efa2cbc61d25ef8",
+      "tv_asset_bytes": 967840,
+      "decoded_size": [
+        6000,
+        4000
+      ],
+      "crop_box": [
+        0,
+        312,
+        6000,
+        3687
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c33",
+      "pageid": 157152057,
+      "title": "File:Quba Mosque Full Picture (2024).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Quba_Mosque_Full_Picture_(2024).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Quba_Mosque_Full_Picture_%282024%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 4000,
+      "height": 3000,
+      "size": 2807972,
+      "sha1": "d8c19c4d40c0aa0cd76f078d332b5d87b2db507f",
+      "mime": "image/jpeg",
+      "artist": "Kaliper1",
+      "credit": "Own work",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Quba mosque during my visit to Medina, 27 December 2024. Taken on top of a hill to see full view of Mosque",
+      "categories": [
+        "Category:2024 in Medina",
+        "Category:CC-BY-SA-4.0",
+        "Category:Files with coordinates missing SDC location of creation",
+        "Category:Mosques in Saudi Arabia photographed in 2024",
+        "Category:Quba Mosque",
+        "Category:Saudi Arabia photographs taken on 2024-12-27",
+        "Category:Self-published work",
+        "Category:Uploaded with Mobile/Android"
+      ],
+      "coordinates": [
+        {
+          "lat": 24.4373296,
+          "lon": 39.6187536,
+          "primary": true,
+          "globe": "earth"
+        }
+      ],
+      "retrieved_utc": "2026-10-22T22:27:44.495157+00:00",
+      "original_file": "originals/c33.jpg",
+      "file": "s17.jpg",
+      "title_ar": "إطلالة واسعة على مسجد قباء",
+      "place_ar": "المدينة المنورة",
+      "credit_display": "Kaliper1",
+      "anchor": [
+        0.5,
+        0.2
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "09130aad5e4820ca4142d690275fc78027be0e13214eced8c5eb8f2b326a92dc",
+      "asset_bytes": 2176075,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "570fe4697aa4019b0b6910185d7706db02762a34596b7f0a2ab8de35fe55ccd8",
+      "tv_asset_bytes": 646423,
+      "decoded_size": [
+        4000,
+        3000
+      ],
+      "crop_box": [
+        0,
+        150,
+        4000,
+        2400
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c13",
+      "pageid": 34980847,
+      "title": "File:حقل 2013 (11106216194).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:%D8%AD%D9%82%D9%84_2013_(11106216194).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/3/33/%D8%AD%D9%82%D9%84_2013_%2811106216194%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 5184,
+      "height": 3456,
+      "size": 11542599,
+      "sha1": "3d8d0785d1581d3df72e7a2badc6995ede6a1d59",
+      "mime": "image/jpeg",
+      "artist": "ADEL AL-OMRANI",
+      "credit": "حقل 2013",
+      "license": "CC BY-SA 2.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "حقل 2013 Haql Beach",
+      "categories": [
+        "Category:CC-BY-SA-2.0",
+        "Category:Files with coordinates missing SDC location of creation",
+        "Category:Flickr images missing SDC published in",
+        "Category:Flickr images reviewed by FlickreviewR",
+        "Category:Haql",
+        "Category:Images with watermarks",
+        "Category:Photos by Adel al-Omrani",
+        "Category:Taken with Canon EOS 600D"
+      ],
+      "coordinates": [
+        {
+          "lat": 29.32992,
+          "lon": 34.949998,
+          "primary": true,
+          "globe": "earth"
+        }
+      ],
+      "retrieved_utc": "2026-10-22T22:27:40.032262+00:00",
+      "original_file": "originals/c13.jpg",
+      "file": "s18.jpg",
+      "title_ar": "صفاء البحر على ساحل حقل",
+      "place_ar": "حقل",
+      "credit_display": "ADEL AL-OMRANI",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "0e1cd3dbe2d64c87133a6006ed045587a34664e78969d29b997aee651cd58a19",
+      "asset_bytes": 3046864,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "b2e1a6f7446834aae1094c8146d4a8e0fd73ae586f529f602e295d9532f25277",
+      "tv_asset_bytes": 720784,
+      "decoded_size": [
+        5184,
+        3456
+      ],
+      "crop_box": [
+        0,
+        270,
+        5184,
+        3186
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c21",
+      "pageid": 146551597,
+      "title": "File:Imarah Palace.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Imarah_Palace.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/1/11/Imarah_Palace.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 6000,
+      "height": 4000,
+      "size": 13864369,
+      "sha1": "3afe567a92f37d317bc5c23428b6c74cf7e42e78",
+      "mime": "image/jpeg",
+      "artist": "Richard Mortel",
+      "credit": "https://www.flickr.com/photos/prof_richard/50404820422/",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Imarah Palace, Najran, Saudi Arabia, 1944",
+      "categories": [
+        "Category:CC-BY-2.0",
+        "Category:Flickr images reviewed by FlickreviewR 2",
+        "Category:Najran",
+        "Category:Najran Province",
+        "Category:Photographs by Richard Mortel",
+        "Category:Saudi Arabia",
+        "Category:Saudi Arabia photographs taken on 2020-09-23"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:41.618849+00:00",
+      "original_file": "originals/c21.jpg",
+      "file": "s19.jpg",
+      "title_ar": "قصر الإمارة التاريخي",
+      "place_ar": "نجران",
+      "credit_display": "Richard Mortel",
+      "anchor": [
+        0.5,
+        0.15
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "eba17708d0e7de847b34656bbe360580a8741b95e003cb7f837140e0c83de5f1",
+      "asset_bytes": 3159424,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "e31ef35d89ba0ac651f9f2e8613cc1f95c78d0f93b049735b23530f5d05d7f6b",
+      "tv_asset_bytes": 923702,
+      "decoded_size": [
+        6000,
+        4000
+      ],
+      "crop_box": [
+        0,
+        93,
+        6000,
+        3468
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c06",
+      "pageid": 193755202,
+      "title": "File:At-Turaif District in ad-Dir'iyah 2025.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:At-Turaif_District_in_ad-Dir%27iyah_2025.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/9/99/At-Turaif_District_in_ad-Dir%27iyah_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 5712,
+      "height": 4284,
+      "size": 5456858,
+      "sha1": "158716e00d81410c26d0ac855fdb5dc6193834ee",
+      "mime": "image/jpeg",
+      "artist": "ほっきー",
+      "credit": "Own work",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution_required": "false",
+      "restrictions": "",
+      "description": "At-Turaif District in ad-Dir'iyah_2025",
+      "categories": [
+        "Category:2025 in Saudi Arabia",
+        "Category:CC-Zero",
+        "Category:Diriyah",
+        "Category:Files with coordinates missing SDC location of creation",
+        "Category:Self-published work"
+      ],
+      "coordinates": [
+        {
+          "lat": 24.734947,
+          "lon": 46.576156,
+          "primary": true,
+          "globe": "earth"
+        }
+      ],
+      "retrieved_utc": "2026-10-22T22:27:38.580184+00:00",
+      "original_file": "originals/c06.jpg",
+      "file": "s20.jpg",
+      "title_ar": "حي الطريف التاريخي",
+      "place_ar": "الدرعية",
+      "credit_display": "ほっきー",
+      "anchor": [
+        0.5,
+        0.4
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "89ea5801839fba4c5741b5bca6ee8ecb0190e1f2a887e2755c34139ab65d59ef",
+      "asset_bytes": 2951828,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "5d102e5c53c0859d9cf5b0020f7b368925d4f29f05e7dedb7fe3287da020cb25",
+      "tv_asset_bytes": 850871,
+      "decoded_size": [
+        5712,
+        4284
+      ],
+      "crop_box": [
+        0,
+        428,
+        5712,
+        3641
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c19",
+      "pageid": 105538393,
+      "title": "File:Jubbah UNESCO site landscape, Saudi Arabia (4).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Jubbah_UNESCO_site_landscape,_Saudi_Arabia_(4).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Jubbah_UNESCO_site_landscape%2C_Saudi_Arabia_%284%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 6000,
+      "height": 4000,
+      "size": 13211934,
+      "sha1": "3fe4ab81deb3104de16cf3e7564ad3db14ef3fa6",
+      "mime": "image/jpeg",
+      "artist": "Richard Mortel",
+      "credit": "https://www.flickr.com/photos/prof_richard/50224718611/",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Jubbah, Saudi Arabia",
+      "categories": [
+        "Category:CC-BY-2.0",
+        "Category:Flickr images reviewed by FlickreviewR 2",
+        "Category:Jubbah, Saudi Arabia",
+        "Category:Photographs by Richard Mortel",
+        "Category:Saudi Arabia photographs taken on 2020-07-28"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:41.618817+00:00",
+      "original_file": "originals/c19.jpg",
+      "file": "s21.jpg",
+      "title_ar": "جبال موقع جبّة التراثي",
+      "place_ar": "جبّة (حائل)",
+      "credit_display": "Richard Mortel",
+      "anchor": [
+        0.5,
+        0.55
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "1cae7b0e0b5e2fe7f408cdc08c25cb273b18ac0936c5a2f9deba16d4a0408a36",
+      "asset_bytes": 2658963,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "8ace19f0176f6672c5f31950ac50c1f57a571e2445e7f25639c07be46d42c532",
+      "tv_asset_bytes": 788496,
+      "decoded_size": [
+        6000,
+        4000
+      ],
+      "crop_box": [
+        0,
+        343,
+        6000,
+        3718
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c23",
+      "pageid": 115602898,
+      "title": "File:Yanbu al-Nakhl, Saudi Arabia (12).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Yanbu_al-Nakhl,_Saudi_Arabia_(12).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/e/ee/Yanbu_al-Nakhl%2C_Saudi_Arabia_%2812%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 6000,
+      "height": 4000,
+      "size": 9185093,
+      "sha1": "445717031816ade6ffd59c040e2924103f9acbf2",
+      "mime": "image/jpeg",
+      "artist": "Richard Mortel",
+      "credit": "https://www.flickr.com/photos/prof_richard/51283367785/",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Yanbu al-Nakhl, Saudi Arabia",
+      "categories": [
+        "Category:CC-BY-2.0",
+        "Category:Flickr images reviewed by FlickreviewR 2",
+        "Category:Photographs by Richard Mortel",
+        "Category:Saudi Arabia photographs taken on 2021-06-08",
+        "Category:Yanbu"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:41.618877+00:00",
+      "original_file": "originals/c23.jpg",
+      "file": "s22.jpg",
+      "title_ar": "مبانٍ تراثية في ينبع النخل",
+      "place_ar": "ينبع النخل",
+      "credit_display": "Richard Mortel",
+      "anchor": [
+        0.5,
+        0.45
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "7c8faa60644f95097cd7974b9fad572c550d7ecd9cf244abc9334cf2749520dd",
+      "asset_bytes": 3611896,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "8489784d7e00c8f7058d3315ab8ffeca6f2862de12b9c907bbf42540ddfe02a0",
+      "tv_asset_bytes": 1023124,
+      "decoded_size": [
+        6000,
+        4000
+      ],
+      "crop_box": [
+        0,
+        281,
+        6000,
+        3656
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c24",
+      "pageid": 179795762,
+      "title": "File:Red Sea’s Northern Harrat Beach in Umluj, Saudi Arabia (2025).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Red_Sea%E2%80%99s_Northern_Harrat_Beach_in_Umluj,_Saudi_Arabia_(2025).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Red_Sea%E2%80%99s_Northern_Harrat_Beach_in_Umluj%2C_Saudi_Arabia_%282025%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 6000,
+      "height": 4000,
+      "size": 3555611,
+      "sha1": "1c56de7ed26d9984673fd9e9455929692d4350c6",
+      "mime": "image/jpeg",
+      "artist": "Saudi Press Agency (SPA)",
+      "credit": "https://cc.spa.gov.sa/ar",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "شاطئ الحرة الشمالية في أملج، المملكة العربية السعودية (2025)",
+      "categories": [
+        "Category:CC-BY-SA-4.0",
+        "Category:Cities in Tabuk (province)",
+        "Category:Coastline of the Northern Saudi Arabia",
+        "Category:Image sources of Saudi Arabia",
+        "Category:Photos from Saudi Photos platform",
+        "Category:Saudi Arabia",
+        "Category:Umluj"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:43.087151+00:00",
+      "original_file": "originals/c24.jpg",
+      "file": "s23.jpg",
+      "title_ar": "شاطئ الحرة الشمالية",
+      "place_ar": "أملج",
+      "credit_display": "Saudi Press Agency (SPA)",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "5c637920f42717ac79e8af51ae9f9f5163a2d23c4822b104ee1b8a02ac0aabf8",
+      "asset_bytes": 3961067,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "0fb6d1029e6c8e666740b8e730f1c80811334778f37dcd8a7667fa8075c9d24e",
+      "tv_asset_bytes": 1187749,
+      "decoded_size": [
+        6000,
+        4000
+      ],
+      "crop_box": [
+        0,
+        312,
+        6000,
+        3687
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c07",
+      "pageid": 93509323,
+      "title": "File:رجال ألمع1.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:%D8%B1%D8%AC%D8%A7%D9%84_%D8%A3%D9%84%D9%85%D8%B91.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/4/45/%D8%B1%D8%AC%D8%A7%D9%84_%D8%A3%D9%84%D9%85%D8%B91.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 4496,
+      "height": 3000,
+      "size": 7369553,
+      "sha1": "96d42550a77cc3a658cd1333d983daa68fcf3e53",
+      "mime": "image/jpeg",
+      "artist": "Heritage Commission",
+      "credit": "Own work",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "احد المواقع التراثية المميز في منطقة عسير",
+      "categories": [
+        "Category:CC-BY-SA-4.0",
+        "Category:Images from Heritage Commission",
+        "Category:Items with VRTS permission confirmed",
+        "Category:Rijal Alma’a Village"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:38.580202+00:00",
+      "original_file": "originals/c07.jpg",
+      "file": "s24.jpg",
+      "title_ar": "عمارة رجال ألمع والزهور",
+      "place_ar": "رجال ألمع (عسير)",
+      "credit_display": "Heritage Commission",
+      "anchor": [
+        0.5,
+        0.4
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "d5344adbf18f793e7cd5010bf8837e655b1954fe551b9bd8980921754085a3ea",
+      "asset_bytes": 4248359,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "12898d762939447fa7cf85073f21121e8729f0bf6d5a4c90862353c369eab671",
+      "tv_asset_bytes": 1365364,
+      "decoded_size": [
+        4496,
+        3000
+      ],
+      "crop_box": [
+        0,
+        188,
+        4496,
+        2717
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c35",
+      "pageid": 187047337,
+      "title": "File:Wide shot of the Green Dome at The Prophet's Mosque (Al Masjid-e-Nabawi).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_(Al_Masjid-e-Nabawi).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/4/44/Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 5184,
+      "height": 3456,
+      "size": 6955925,
+      "sha1": "f3dfa437661944216acfe2a75bb4f24c74480a81",
+      "mime": "image/jpeg",
+      "artist": "TheHadiRahim",
+      "credit": "Own work",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution_required": "false",
+      "restrictions": "",
+      "description": "Wide shot of the Green Dome at The Prophet's Mosque (Al Masjid-e-Nabawi)",
+      "categories": [],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T23:07:50.436985+00:00",
+      "original_file": "originals/c35.jpg",
+      "file": "s25.jpg",
+      "title_ar": "القبة الخضراء والمسجد النبوي",
+      "place_ar": "المدينة المنورة",
+      "credit_display": "TheHadiRahim",
+      "anchor": [
+        0.5,
+        0.65
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "f956362ed003ce42cc17f03a5b77e499c577e95392459ca647caad77a76cc4e0",
+      "asset_bytes": 2185333,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "26b2786ff06691e0f4cf6ced8ec214a586eb7b97392606b1afc8d8448581c64e",
+      "tv_asset_bytes": 604700,
+      "decoded_size": [
+        5184,
+        3456
+      ],
+      "crop_box": [
+        0,
+        351,
+        5184,
+        3267
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c03",
+      "pageid": 201251281,
+      "title": "File:King Abdullah Financial District (KAFD), Riyadh, Saudi Arabia, 2026.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:King_Abdullah_Financial_District_(KAFD),_Riyadh,_Saudi_Arabia,_2026.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/8/86/King_Abdullah_Financial_District_%28KAFD%29%2C_Riyadh%2C_Saudi_Arabia%2C_2026.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 7441,
+      "height": 4961,
+      "size": 19150818,
+      "sha1": "97f8738e410c16d2e6e6442343b55d6ecf0136d4",
+      "mime": "image/jpeg",
+      "artist": "Unknown author Unknown author",
+      "credit": "Saudi Photos Hub by Saudi Press Agency",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "The Full Moon Illuminates the Riyadh Skyline Behind a City Tower, 2026",
+      "categories": [
+        "Category:CC-BY-SA-4.0",
+        "Category:Creative Commons Attribution-Share Alike 4.0 missing SDC copyright license",
+        "Category:Creative Commons Attribution-Share Alike missing SDC copyright status",
+        "Category:Files with coordinates missing SDC location of creation",
+        "Category:Full moon",
+        "Category:King Abdullah Financial District",
+        "Category:Photos from Saudi Photos platform",
+        "Category:Template Unknown (author)"
+      ],
+      "coordinates": [
+        {
+          "lat": 24.778557,
+          "lon": 46.60786,
+          "primary": true,
+          "globe": "earth"
+        }
+      ],
+      "retrieved_utc": "2026-10-22T22:27:38.580128+00:00",
+      "original_file": "originals/c03.jpg",
+      "file": "s26.jpg",
+      "title_ar": "القمر فوق أفق الرياض",
+      "place_ar": "الرياض",
+      "credit_display": "Saudi Photos Hub (SPA) — مصوّر غير مسمّى",
+      "anchor": [
+        0.5,
+        0.4
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "c194882c475fc54734a848d07779dc1b985446f5fbe38da9ce3479f9105f694c",
+      "asset_bytes": 2349081,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "7b8bb7e63cc875dd14f78f3d6b2037dce377e4b765b315980b504e1281252e57",
+      "tv_asset_bytes": 558663,
+      "decoded_size": [
+        7441,
+        4961
+      ],
+      "crop_box": [
+        0,
+        310,
+        7441,
+        4495
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c22",
+      "pageid": 28200227,
+      "title": "File:Origineel huis Najran.JPG",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Origineel_huis_Najran.JPG",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/9/93/Origineel_huis_Najran.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 4752,
+      "height": 3168,
+      "size": 5629635,
+      "sha1": "b98dc0f4ace4a9da7cfc130e29fb256ef5170ff8",
+      "mime": "image/jpeg",
+      "artist": "TacoJeddah",
+      "credit": "Own work",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Traditional house in Najran",
+      "categories": [
+        "Category:CC-BY-SA-3.0",
+        "Category:Najran",
+        "Category:Self-published work",
+        "Category:Taken with Canon EOS 500D"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:41.618863+00:00",
+      "original_file": "originals/c22.jpg",
+      "file": "s27.jpg",
+      "title_ar": "العمارة التقليدية في نجران",
+      "place_ar": "نجران",
+      "credit_display": "TacoJeddah",
+      "anchor": [
+        0.5,
+        0.02
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "d72b118b80581394a9ec09150557882f4c05c71cb8ff1de6e4522b71b0589c89",
+      "asset_bytes": 2387554,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "00af8f50d0392b1e91f72e3ad9f3bdc4511d3f2fd47b54067250e88e6c6fa092",
+      "tv_asset_bytes": 664777,
+      "decoded_size": [
+        4752,
+        3168
+      ],
+      "crop_box": [
+        0,
+        9,
+        4752,
+        2682
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c34",
+      "pageid": 82008566,
+      "title": "File:المسجد الحرام٣.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B3%D8%AC%D8%AF_%D8%A7%D9%84%D8%AD%D8%B1%D8%A7%D9%85%D9%A3.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/9/95/%D8%A7%D9%84%D9%85%D8%B3%D8%AC%D8%AF_%D8%A7%D9%84%D8%AD%D8%B1%D8%A7%D9%85%D9%A3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 5184,
+      "height": 3456,
+      "size": 1751291,
+      "sha1": "d848d71ab6b7c0bcee1e7e5ec7c1e485c39b981a",
+      "mime": "image/jpeg",
+      "artist": "saudipics",
+      "credit": "http://saudipics.com/images/preview/67",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "المسجد الحرام",
+      "categories": [
+        "Category:2018 in Mecca",
+        "Category:CC-BY-SA-4.0",
+        "Category:Images with extracted images",
+        "Category:Incidental views of Abraj Al Bait Towers",
+        "Category:Night in Saudi Arabia",
+        "Category:Photographs taken on 2018-11-23",
+        "Category:Time 02:18"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T23:07:50.436863+00:00",
+      "original_file": "originals/c34.jpg",
+      "file": "s28.jpg",
+      "title_ar": "إطلالة ليلية على المسجد الحرام",
+      "place_ar": "مكة المكرمة",
+      "credit_display": "saudipics",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "8ad35ec10b4decf0ddddc0cf2373d1b3152ab8fa36e967ac9adc154af3b67899",
+      "asset_bytes": 2770105,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "d718d6be45b166c9f88f2cbbad3b1552f10100986d6bc37636f4d6d1b0e6feba",
+      "tv_asset_bytes": 784493,
+      "decoded_size": [
+        5184,
+        3456
+      ],
+      "crop_box": [
+        0,
+        270,
+        5184,
+        3186
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c08",
+      "pageid": 93509328,
+      "title": "File:رجال ألمع2.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:%D8%B1%D8%AC%D8%A7%D9%84_%D8%A3%D9%84%D9%85%D8%B92.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/%D8%B1%D8%AC%D8%A7%D9%84_%D8%A3%D9%84%D9%85%D8%B92.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 4496,
+      "height": 3000,
+      "size": 8282121,
+      "sha1": "2f298dd2dbd0171c4fd3d41db31849884cab66a5",
+      "mime": "image/jpeg",
+      "artist": "Heritage Commission",
+      "credit": "Own work",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "احد المواقع التراثية المميز في منطقة عسير",
+      "categories": [
+        "Category:CC-BY-SA-4.0",
+        "Category:Images from Heritage Commission",
+        "Category:Items with VRTS permission confirmed",
+        "Category:Rijal Alma’a Village"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:40.032162+00:00",
+      "original_file": "originals/c08.jpg",
+      "file": "s29.jpg",
+      "title_ar": "بيوت رجال ألمع بين الخضرة",
+      "place_ar": "رجال ألمع (عسير)",
+      "credit_display": "Heritage Commission",
+      "anchor": [
+        0.5,
+        0.4
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "984f54c7280c4f6d2fd88ae99d16a20847c564faf556dba37b6e0d0505199ec9",
+      "asset_bytes": 4747052,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "d379871e69384ad9503331b9a4efd03b5a69af9ae0410f42235c233c64c6df6c",
+      "tv_asset_bytes": 1493123,
+      "decoded_size": [
+        4496,
+        3000
+      ],
+      "crop_box": [
+        0,
+        188,
+        4496,
+        2717
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c25",
+      "pageid": 115637336,
+      "title": "File:Red Sea at Umm Lajj, Saudi Arabia (17).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Red_Sea_at_Umm_Lajj,_Saudi_Arabia_(17).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Red_Sea_at_Umm_Lajj%2C_Saudi_Arabia_%2817%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 4608,
+      "height": 3456,
+      "size": 5752766,
+      "sha1": "ee2b02358c1ba5c94a454a715201568ddcf09424",
+      "mime": "image/jpeg",
+      "artist": "Richard Mortel",
+      "credit": "https://www.flickr.com/photos/prof_richard/51281511599/",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Red Sea at Umm Lajj, Saudi Arabia",
+      "categories": [
+        "Category:CC-BY-2.0",
+        "Category:Files with coordinates missing SDC location of creation",
+        "Category:Flickr images reviewed by FlickreviewR 2",
+        "Category:Photographs by Richard Mortel",
+        "Category:Saudi Arabia photographs taken on 2021-06-04",
+        "Category:Umluj"
+      ],
+      "coordinates": [
+        {
+          "lat": 26.311439,
+          "lon": 36.40043,
+          "primary": true,
+          "globe": "earth"
+        }
+      ],
+      "retrieved_utc": "2026-10-22T22:27:43.087180+00:00",
+      "original_file": "originals/c25.jpg",
+      "file": "s30.jpg",
+      "title_ar": "أمواج البحر الأحمر على الصخور",
+      "place_ar": "أملج",
+      "credit_display": "Richard Mortel",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "4ce795a43219405e2b4ea641e4a79ed353365bce3c00ab2dbb3e9175b72b55ec",
+      "asset_bytes": 3176355,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "d55dc735b99110a545bb76fa19ba0198a874d7e6a6aeddd898f181daa18cf11e",
+      "tv_asset_bytes": 962166,
+      "decoded_size": [
+        4608,
+        3456
+      ],
+      "crop_box": [
+        0,
+        432,
+        4608,
+        3024
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c12",
+      "pageid": 34980817,
+      "title": "File:غروب حقل (12439472714).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:%D8%BA%D8%B1%D9%88%D8%A8_%D8%AD%D9%82%D9%84_(12439472714).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/%D8%BA%D8%B1%D9%88%D8%A8_%D8%AD%D9%82%D9%84_%2812439472714%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 5184,
+      "height": 3399,
+      "size": 7687030,
+      "sha1": "6b18b95fb20c4a5cd37df414b9fe34a13c0c142b",
+      "mime": "image/jpeg",
+      "artist": "ADEL AL-OMRANI",
+      "credit": "غروب حقل",
+      "license": "CC BY-SA 2.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Sunset of Haql",
+      "categories": [
+        "Category:CC-BY-SA-2.0",
+        "Category:Flickr images reviewed by FlickreviewR",
+        "Category:Images with watermarks",
+        "Category:Photos by Adel al-Omrani",
+        "Category:Taken with Canon EOS 600D"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:40.032245+00:00",
+      "original_file": "originals/c12.jpg",
+      "file": "s31.jpg",
+      "title_ar": "غروب الشمس على البحر",
+      "place_ar": "حقل",
+      "credit_display": "ADEL AL-OMRANI",
+      "anchor": [
+        0.5,
+        0.45
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "b522f85e933a346800f6891fb1c84576cf61cddb821eb651e5537da9ba9ec53d",
+      "asset_bytes": 1710280,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "800d9e5b7fa5967c4b304042f00cdc9d8894202903a16e0621513ba07c7488b7",
+      "tv_asset_bytes": 419038,
+      "decoded_size": [
+        5184,
+        3399
+      ],
+      "crop_box": [
+        0,
+        217,
+        5184,
+        3133
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c05",
+      "pageid": 32176247,
+      "title": "File:Masmak Fort (12753717253).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Masmak_Fort_(12753717253).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/8/81/Masmak_Fort_%2812753717253%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 6016,
+      "height": 4000,
+      "size": 11726166,
+      "sha1": "70c8db0f5555b6c4aec0a28f475d5eabd29e5ed5",
+      "mime": "image/jpeg",
+      "artist": "Francisco Anzola",
+      "credit": "Masmak Fort",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Masmak Fort",
+      "categories": [
+        "Category:CC-BY-2.0",
+        "Category:Files with coordinates missing SDC location of creation",
+        "Category:Flickr images missing SDC Flickr photo ID",
+        "Category:Flickr images missing SDC published in",
+        "Category:Flickr images reviewed by FlickreviewR",
+        "Category:Masmak fort",
+        "Category:Photographs of the national flag of Saudi Arabia in Riyadh",
+        "Category:Taken with Nikon D3200"
+      ],
+      "coordinates": [
+        {
+          "lat": 24.643896,
+          "lon": 46.709296,
+          "primary": true,
+          "globe": "earth"
+        }
+      ],
+      "retrieved_utc": "2026-10-22T22:27:38.580163+00:00",
+      "original_file": "originals/c05.jpg",
+      "file": "s32.jpg",
+      "title_ar": "قصر المصمك",
+      "place_ar": "الرياض",
+      "credit_display": "Francisco Anzola",
+      "anchor": [
+        0.5,
+        0.05
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "e993f6787e8649681be9c7ee3d5354384b27e53ccc4caa078c0a5052ca6aa645",
+      "asset_bytes": 2355463,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "a3c3d849f781221c2333b3ae712c5b17869daec66db5f2f276c49ca8406ec362",
+      "tv_asset_bytes": 635039,
+      "decoded_size": [
+        6016,
+        4000
+      ],
+      "crop_box": [
+        0,
+        30,
+        6016,
+        3414
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c11",
+      "pageid": 34980669,
+      "title": "File:بحر حقل (15037998121).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:%D8%A8%D8%AD%D8%B1_%D8%AD%D9%82%D9%84_(15037998121).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/7/76/%D8%A8%D8%AD%D8%B1_%D8%AD%D9%82%D9%84_%2815037998121%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 6432,
+      "height": 3967,
+      "size": 13593801,
+      "sha1": "846622ac6c6eb4919d36dc0cd1fdd65f74741fed",
+      "mime": "image/jpeg",
+      "artist": "ADEL AL-OMRANI",
+      "credit": "بحر حقل",
+      "license": "CC BY-SA 2.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "2014",
+      "categories": [
+        "Category:CC-BY-SA-2.0",
+        "Category:Flickr images reviewed by FlickreviewR",
+        "Category:Haql",
+        "Category:Photos by Adel al-Omrani"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:40.032228+00:00",
+      "original_file": "originals/c11.jpg",
+      "file": "s33.jpg",
+      "title_ar": "السحب والبحر على ساحل حقل",
+      "place_ar": "حقل",
+      "credit_display": "ADEL AL-OMRANI",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "faa68a92509f5c0464a9ad2741cdd411691d553e86b4c15fcae5f0e46efb1463",
+      "asset_bytes": 2924230,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "9f28ad874934edea858d5292cc6ac820a42994da1b800d859c18ff33bd633297",
+      "tv_asset_bytes": 743603,
+      "decoded_size": [
+        6432,
+        3967
+      ],
+      "crop_box": [
+        0,
+        174,
+        6432,
+        3792
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c37",
+      "pageid": 119728002,
+      "title": "File:Empty Coast in Farasan Island.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Empty_Coast_in_Farasan_Island.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/8/88/Empty_Coast_in_Farasan_Island.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 6000,
+      "height": 3075,
+      "size": 14839434,
+      "sha1": "7bbbc5f22064273268641af5eed81bf941a28025",
+      "mime": "image/jpeg",
+      "artist": "Abdalrahman Mohrat",
+      "credit": "Flickr",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "An Empty Coast in Farasan Island, SA",
+      "categories": [],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T23:07:50.437049+00:00",
+      "original_file": "originals/c37.jpg",
+      "file": "s34.jpg",
+      "title_ar": "ساحل فرسان الهادئ",
+      "place_ar": "فرسان (جازان)",
+      "credit_display": "Abdalrahman Mohrat",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "559ac6c35090c016c2f35f569c246ff48eb8a05261b208cae868b67e9ed7a261",
+      "asset_bytes": 4034723,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "95f3aa834e6a9d6b75888b6ab8bc10a84c75a6000f18a57292dc237c4c8827ce",
+      "tv_asset_bytes": 941079,
+      "decoded_size": [
+        6000,
+        3075
+      ],
+      "crop_box": [
+        267,
+        0,
+        5733,
+        3075
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c39",
+      "pageid": 181627403,
+      "title": "File:Shubra Palace, 1905, al-Taif, Saudi Arabia (3).jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Shubra_Palace,_1905,_al-Taif,_Saudi_Arabia_(3).jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Shubra_Palace%2C_1905%2C_al-Taif%2C_Saudi_Arabia_%283%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 6000,
+      "height": 4000,
+      "size": 5312893,
+      "sha1": "0a2d10d66f0ac9b1fca0cf7a7961d0268b692bfc",
+      "mime": "image/jpeg",
+      "artist": "Richard Mortel",
+      "credit": "https://www.flickr.com/photos/prof_richard/50911901611/",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Shubra Palace, 1905, al-Taif, Saudi Arabia",
+      "categories": [
+        "Category:CC-BY-2.0",
+        "Category:Flickr images missing SDC published in",
+        "Category:Flickr images reviewed by FlickreviewR 2",
+        "Category:Mashrabiya in Saudi Arabia",
+        "Category:Photographs by Richard Mortel",
+        "Category:Saudi Arabia photographs taken on 2021-01-03",
+        "Category:Shupra Castle",
+        "Category:Ta’if"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T23:07:50.437097+00:00",
+      "original_file": "originals/c39.jpg",
+      "file": "s35.jpg",
+      "title_ar": "الواجهة الخارجية لقصر شبرا",
+      "place_ar": "الطائف",
+      "credit_display": "Richard Mortel",
+      "anchor": [
+        0.5,
+        0.0
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "c460048ace80b8d104bfb1cadaeb45ae1d079399eff4d08ca49c1b8e53585c0f",
+      "asset_bytes": 2027042,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "facc2a1ee9b23bb844eeb92506811f15f2b44daf8a8d249586d7526de7d043a6",
+      "tv_asset_bytes": 566197,
+      "decoded_size": [
+        6000,
+        4000
+      ],
+      "crop_box": [
+        0,
+        0,
+        6000,
+        3375
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c38",
+      "pageid": 141456263,
+      "title": "File:Farasan sunrise.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Farasan_sunrise.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/8/87/Farasan_sunrise.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 5815,
+      "height": 3665,
+      "size": 9700005,
+      "sha1": "197cff1b978b61ec6fae9a1b252266e2244a9057",
+      "mime": "image/jpeg",
+      "artist": "Abdalrahman Mohrat",
+      "credit": "https://www.flickr.com/photos/abdmohrat/43548122561/",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Farasan",
+      "categories": [],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T23:07:50.437074+00:00",
+      "original_file": "originals/c38.jpg",
+      "file": "s36.jpg",
+      "title_ar": "شروق الشمس في فرسان",
+      "place_ar": "فرسان (جازان)",
+      "credit_display": "Abdalrahman Mohrat",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "5a1bea0bbda351bf962d2e0e04e4bac32dbcf99cc2bf112c8c1147ed9c5cb098",
+      "asset_bytes": 2080473,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "e187880571ef0a82c272fe2561a0b885accbc29def9848d19e9b312a5ae24069",
+      "tv_asset_bytes": 358236,
+      "decoded_size": [
+        5815,
+        3665
+      ],
+      "crop_box": [
+        0,
+        197,
+        5815,
+        3467
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c40",
+      "pageid": 93542860,
+      "title": "File:قلعة الدقل.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:%D9%82%D9%84%D8%B9%D8%A9_%D8%A7%D9%84%D8%AF%D9%82%D9%84.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/d/d0/%D9%82%D9%84%D8%B9%D8%A9_%D8%A7%D9%84%D8%AF%D9%82%D9%84.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 4496,
+      "height": 3000,
+      "size": 2594390,
+      "sha1": "dcbd84a42ca75fe88187ca68d731d9aa5bb9276f",
+      "mime": "image/jpeg",
+      "artist": "Heritage Commission",
+      "credit": "Own work",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Al-Daql Castle - an ancient castle located in the northwest of the city of Abha in the Kingdom of Saudi Arabia.",
+      "categories": [],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T23:07:50.437124+00:00",
+      "original_file": "originals/c40.jpg",
+      "file": "s37.jpg",
+      "title_ar": "قلعة الدقل قرب أبها",
+      "place_ar": "أبها",
+      "credit_display": "Heritage Commission",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "0a74164e05cad4feb3ff6dbbea95d405def5292f4cc319a18fdd0339680b7103",
+      "asset_bytes": 2818310,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "26f6c0c32a1565d280234ba6526cacb94f538ec7d5eb3f176a4aba3e5f93621a",
+      "tv_asset_bytes": 824165,
+      "decoded_size": [
+        4496,
+        3000
+      ],
+      "crop_box": [
+        0,
+        235,
+        4496,
+        2764
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c41",
+      "pageid": 145183565,
+      "title": "File:Ottoman fort on Farasan Islands.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Ottoman_fort_on_Farasan_Islands.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/e/eb/Ottoman_fort_on_Farasan_Islands.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 6000,
+      "height": 4000,
+      "size": 8117495,
+      "sha1": "5f35da8657c06223ffd135a399f059a36a8f1b1e",
+      "mime": "image/jpeg",
+      "artist": "Richard Mortel",
+      "credit": "https://www.flickr.com/photos/prof_richard/50925807937/",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Photograph of an Ottoman fort on Farasan Islands, Jazan Province, Saudi Arabia. The photograph was taken in January 2021.",
+      "categories": [],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T23:07:50.437150+00:00",
+      "original_file": "originals/c41.jpg",
+      "file": "s38.jpg",
+      "title_ar": "القلعة العثمانية في فرسان",
+      "place_ar": "فرسان (جازان)",
+      "credit_display": "Richard Mortel",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "78bb96cbef0fa6a563d8bbfe8cee1c8fcd5366f14be3a7fab5b08272f8b02696",
+      "asset_bytes": 2963675,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "116934e5138dd217952dd829ddc6874b21aa60ef09c4e5c555295bdd64abc6e4",
+      "tv_asset_bytes": 795477,
+      "decoded_size": [
+        6000,
+        4000
+      ],
+      "crop_box": [
+        0,
+        312,
+        6000,
+        3687
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    },
+    {
+      "key": "c15",
+      "pageid": 182753095,
+      "title": "File:Maraya Concert Hall 20260130 6.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Maraya_Concert_Hall_20260130_6.jpg",
+      "original_url": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Maraya_Concert_Hall_20260130_6.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "width": 4000,
+      "height": 2252,
+      "size": 2957388,
+      "sha1": "9220fdd115f2c63684128cec59140ffb3a29bcd0",
+      "mime": "image/jpeg",
+      "artist": "Z thomas",
+      "credit": "Own work",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0",
+      "attribution_required": "true",
+      "restrictions": "",
+      "description": "Maraya Concert Hall in Al-'Ula",
+      "categories": [
+        "Category:CC-BY-4.0",
+        "Category:January 2026 Saudi Arabia photographs",
+        "Category:Maraya Concert Hall",
+        "Category:Photos by Z thomas",
+        "Category:Self-published work"
+      ],
+      "coordinates": [],
+      "retrieved_utc": "2026-10-22T22:27:40.032311+00:00",
+      "original_file": "originals/c15.jpg",
+      "file": "s39.jpg",
+      "title_ar": "مرايا وانعكاس الجبال",
+      "place_ar": "العلا",
+      "credit_display": "Z thomas",
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "visual_review": "Selected after review of the actual source crop in review sheets; detail spot checks performed.",
+      "geo_evidence": "Commons source description and named-location categories and/or coordinates; manually matched to this place.",
+      "asset_size": [
+        3840,
+        2160
+      ],
+      "asset_sha256": "85ed96ff195b39b12c74578cd8a2a9f11bd04e0791c8b94937106027af536e8f",
+      "asset_bytes": 3063630,
+      "tv_asset_size": [
+        1920,
+        1080
+      ],
+      "tv_asset_sha256": "6c58d3c0bee4fa9119e9c6cef5e75005c052207d60dbe67e9348690c3ffa70f9",
+      "tv_asset_bytes": 866803,
+      "decoded_size": [
+        4000,
+        2252
+      ],
+      "crop_box": [
+        0,
+        1,
+        4000,
+        2251
+      ],
+      "upscaled": false,
+      "changes": "EXIF orientation normalized; 16:9 crop; 3840x2160 master and a 1920x1080 TV derivative; sRGB conversion when a profile was present; JPEG quality 95, 4:4:4; EXIF GPS removed.",
+      "asset_profile": "sRGB"
+    }
+  ]
+}

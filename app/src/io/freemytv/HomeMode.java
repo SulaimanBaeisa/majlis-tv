@@ -36,8 +36,8 @@ final class HomeMode {
     static final String PKG = "io.freemytv";
     static final String HOME_ACTIVITY = PKG + "/" + PKG + ".HomeActivity";
     static final String SETTINGS_ACTIVITY = PKG + "/" + PKG + ".SettingsActivity";
-    /** Our screensaver: on Android 11 the copy that runs in the main process (ScreensaverAlone, #10). */
-    static final String DREAM = PKG + "/" + PKG + (Build.VERSION.SDK_INT == 30 ? ".ScreensaverAlone" : ".Screensaver");
+    /** Android 11/12 need their DreamActivity and DreamService in the default process. */
+    static final String DREAM = PKG + "/" + PKG + (TvCompat.separateDream(Build.VERSION.SDK_INT) ? ".ScreensaverAlone" : ".Screensaver");
     static final String FREE = "free", ORIGINAL = "original";
 
     /** Classic Android TV's home screen; its recommendations service crashes on the screensaver while it's off (#11). */

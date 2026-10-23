@@ -169,6 +169,11 @@ final class League {
         return out.size() > max ? new ArrayList<>(out.subList(0, max)) : out;
     }
 
+    /** A score belongs to one named team. Never use an RTL-ambiguous home-away score string. */
+    static String scoreFor(Match m, boolean home) {
+        return "pre".equals(m.state)?"–":Integer.toString(home?m.homeScore:m.awayScore);
+    }
+
     /** The match clock in Arabic: minute for a match in play, "استراحة" at half-time, "انتهت" when over. */
     static String clockAr(Match m) {
         String s = m.status == null ? "" : m.status;

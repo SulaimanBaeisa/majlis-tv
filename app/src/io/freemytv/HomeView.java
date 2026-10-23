@@ -60,13 +60,13 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     // tvOS grid (Human Interface Guidelines): content inside the safe area, 80 px from the sides and 60 from top and
     // bottom; 40 px between items; 7 columns of 217 px (the apps). The shelf glass extends 36 px past the tiles (the
     // same padding on all four sides) and the tile corners are concentric with it (glass radius = radius + padding).
-    private static final float MARGIN = 80, CONTENT_R = 1840;
+    private static final float MARGIN = 96, CONTENT_R = 1824;
     // Hero, anchored at the bottom (a two-line title grows upward).
     private static final float HERO_TITLE_W = 900;
     // Shelf: tiles with corners concentric with the glass (glass radius = tile radius + padding).
     // Shelf like the tvOS 27 Dock: 5:3 icons (210 × 126) in each brand's color, 48 apart, and the glass bar hugging
     // them with 40 of padding (the focused icon grows 20% without touching its edge).
-    private static final float SHELF_PAD = 40, TILE_GAP = 48;
+    private static final float SHELF_PAD = 17, TILE_GAP = 48;
     private static final float TILE_RADIUS = 22, TILE_MAX_W = 270;
     // Tile focus (Apple TV style): it grows from the center and its shadow drops (it "rises" toward the viewer).
     private static final float FOCUS_GROW = 0.2f;
@@ -88,14 +88,14 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private static final ExecutorService LOADER = Executors.newSingleThreadExecutor();
     // Light design (the L_ constants): title, tab bar, three recommendation cards and the shelf.
     // The tab bar is a 68 px capsule; the cards sit on the 5-column grid (the wide one spans 3).
-    private static final float L_TITLE_BASE = 130, L_TABBAR_TOP = 158, L_TABBAR_H = 68, L_CARDS_TOP = 262, L_CARD_H = 442;
-    private static final float L_TALL_W = 320, L_CARD_GAP = 40, L_BUTTON = 68, L_BUTTON_GAP = 20, L_BUTTON_CY = 103;
-    private static final float L_PLATTER_TOP = 814, L_TILE_H = 126;
+    private static final float L_TITLE_BASE = 130, L_TABBAR_TOP = 56, L_TABBAR_H = 72, L_CARDS_TOP = 168, L_CARD_H = 500;
+    private static final float L_TALL_W = 324, L_CARD_GAP = 40, L_BUTTON = 72, L_BUTTON_GAP = 16, L_BUTTON_CY = 92;
+    private static final float L_PLATTER_TOP = 716, L_TILE_H = 126;
     private static final int L_INK = 0xFF1D1D1F, L_DIM = 0xFF6E6E73, L_FAINT = 0xFF8E8E93;
     private static final String[] TABS = {"Explorar", "Filmes", "Séries"};
     private static final String[] TABS_EN = {"Explore", "Movies", "Shows"};
     private static final String[] TABS_ES = {"Explorar", "Películas", "Series"};
-    private static final String[] TABS_AR = {"استكشاف", "أفلام", "مسلسلات"};
+    private static final String[] TABS_AR = {"الرئيسية", "المباريات", "الأخبار"};
     private static final String[] TAB_KIND = {null, "movie", "tv"};
     private static final int Z_TOP = 4, Z_CARDS = 5;
 
@@ -107,6 +107,26 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     });
     private Paint leagueName, leagueSmall, leagueNum, leagueHead;
     private final Recs recs;
+    private final NewsFeed news;
+    private final HomePanels panels=new HomePanels();
+    private final RectF tickerRect=new RectF();
+    private DailyLayout dailyLayout;
+    private String dailyLayoutKey="";
+    private int tickerIndex;
+    private final Runnable minuteTick=new Runnable(){@Override public void run(){
+        if(!running)return;
+        refreshInfo();heroDirty=statusDirty=drawerDirty=true;
+        handler.postDelayed(this,60_000-System.currentTimeMillis()%60_000);
+    }};
+    private long tickerFadeAt;
+    private final Runnable newsChanged=new Runnable(){@Override public void run(){heroDirty=true;platter.invalidate();}};
+    private final Runnable tickerTick=new Runnable(){@Override public void run(){
+        if(!running)return;
+        if(Ui.ar && !news.snapshot.ticker.isEmpty()){
+            tickerIndex=(tickerIndex+1)%news.snapshot.ticker.size();tickerFadeAt=SystemClock.uptimeMillis();platter.invalidate();
+        }
+        handler.postDelayed(this,8000);
+    }};
     private final Click click;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final SharedPreferences ui;
@@ -307,7 +327,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             checkNight(true);
             updatePicks();      // three new ones every hour
             refreshInfo();      // prayer card: once a minute
-            if (Ui.ar) league.refreshIfStale();   // Saudi league card in the drawer
+            if (Ui.ar) { league.refreshIfStale(); news.refreshIfStale(); }
             PrayerAlarm.ensure(getContext());    // adhan pop-up armed while allowed
             handler.postDelayed(this, 15_000);
         }
@@ -318,6 +338,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         activity = a;
         data = HomeData.get(a);
         recs = Recs.get(a);
+        news = NewsFeed.get(a);
         click = new Click(a);
         ui = a.getSharedPreferences("home-ui", Context.MODE_PRIVATE);
         tvInputs = (TvInputManager) a.getSystemService(Context.TV_INPUT_SERVICE);
@@ -372,6 +393,10 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         lastStep = 0;
         data.addListener(this);
         recs.addListener(this);
+        news.addListener(newsChanged);
+        if(Ui.ar){news.refreshIfStale();league.refreshIfStale();}
+        handler.postDelayed(tickerTick,8000);
+        handler.postDelayed(minuteTick,60_000-System.currentTimeMillis()%60_000);
         data.refreshIfStale();
         recs.refreshIfStale();
         if (tvInputs != null) tvInputs.registerCallback(inputCallback, handler);
@@ -393,6 +418,9 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         running = false;
         Choreographer.getInstance().removeFrameCallback(this);
         handler.removeCallbacks(tick);
+        handler.removeCallbacks(tickerTick);
+        handler.removeCallbacks(minuteTick);
+        news.removeListener(newsChanged);
         data.removeListener(this);
         recs.removeListener(this);
         if (tvInputs != null) tvInputs.unregisterCallback(inputCallback);
@@ -463,7 +491,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         measure(status, Math.round(1160 * kk), Math.round(240 * kk));
         // Sized to what they draw (the glass and its shadow; the grown tiles and their shadows): smaller layers are
         // cheaper for the GPU to composite on every frame of the drawer animation.
-        measure(platter, width, Math.round(320 * kk));
+        measure(platter, width, Math.round(360 * kk));
         measure(tiles, width, Math.round(270 * kk));
         measure(drawerLayer, width, Math.round(600 * kk));
         measure(sheetLayer, width, height);
@@ -481,8 +509,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         sky.layout(0, 0, width, height);
         place(heroLayer, 0, 0);
         place(status, Rtl.on() ? 0 : width - status.getMeasuredWidth(), 0);
-        place(platter, 0, Math.round(750 * kk));
-        place(tiles, 0, Math.round(790 * kk));
+        place(platter, 0, Math.round(680 * kk));
+        place(tiles, 0, Math.round(720 * kk));
         place(drawerLayer, 0, Math.round(470 * kk));
         sheetLayer.layout(0, 0, width, height);
         sheetLayer.setPivotX(width / 2f);
@@ -535,11 +563,12 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         lTip = Ui.text(Ui.semibold, 25 * k, L_INK);
         lTip.setTextAlign(Paint.Align.CENTER);
         infoLabel = Ui.text(Ui.medium, 27 * k, L_DIM);
-        infoBig = Ui.text(Ui.displaySemibold, 104 * k, L_INK);
+        infoBig = Ui.numbers(Ui.clockFace(getContext()), 104 * k, L_INK);
         infoName = Ui.text(Ui.semibold, 56 * k, L_INK);
         infoMid = Ui.text(Ui.semibold, 36 * k, L_INK);
         infoSmall = Ui.text(Ui.medium, 26 * k, L_DIM);
         infoNum = Ui.numbers(Ui.semibold, 29 * k, L_INK);
+        panels.size(k);
         leagueHead = Ui.text(Ui.semibold, 25 * k, 0xB3FFFFFF);
         leagueName = Ui.text(Ui.semibold, 25 * k, 0xF2FFFFFF);
         leagueSmall = Ui.text(Ui.medium, 20 * k, 0xADFFFFFF);
@@ -1057,7 +1086,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private void layoutShelf() {
         int n = shelf.size();
         float pad = SHELF_PAD * k, gap = TILE_GAP * k, th = L_TILE_H * k;
-        float full = (CONTENT_R - MARGIN) * k;
+        float full = (CONTENT_R - MARGIN-2*SHELF_PAD) * k;
         float tw = Math.min(TILE_MAX_W * k, (full - Math.max(0, n - 1) * gap) / Math.max(1, n));
         float width = n * tw + Math.max(0, n - 1) * gap, left = (w - width) / 2f;
         float top = L_PLATTER_TOP * k;
@@ -1072,7 +1101,21 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     }
 
     /** Shelf layer: the glass bar and its shadow (it only changes with the background). */
+    private void drawNewsTicker(Canvas c) {
+        tickerRect.set(MARGIN*k,912*k,CONTENT_R*k,988*k);
+        scene.glass(c,tickerRect,38*k,SMOKE,0.24f,0,0,0.02f,1);
+        List<News.Item> list=news.snapshot.ticker;long elapsed=SystemClock.uptimeMillis()-tickerFadeAt;
+        float alpha=1;int index=list.isEmpty()?0:tickerIndex%list.size();
+        if(tickerFadeAt!=0 && elapsed<400){
+            if(elapsed<200){alpha=1-elapsed/200f;if(!list.isEmpty())index=(index+list.size()-1)%list.size();}
+            else alpha=(elapsed-200)/200f;
+            platter.postInvalidateOnAnimation();
+        }
+        panels.ticker(c,tickerRect,list.isEmpty()?null:list.get(index),alpha,index,list.size());
+    }
+
     private void drawPlatter(Canvas c) {
+        if(Ui.ar && drawer.value<0.01f)drawNewsTicker(c);
         if (shelf.isEmpty()) return;
         float radius = (TILE_RADIUS + SHELF_PAD) * k;
         tmp.set(platterRect);
@@ -1520,89 +1563,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         else drawLeague(c, r);
     }
 
-    private void drawLeague(Canvas c, RectF r) {
-        long now = System.currentTimeMillis();
-        int tzMs = java.util.TimeZone.getDefault().getOffset(now);
-        float pad = 28 * k, mid = r.centerX() + 6 * k;
-        float rightEdge = r.right - pad, rightPaneL = mid + 14 * k;      // matches pane: [rightPaneL, rightEdge]
-        float leftEdge = r.left + pad, leftPaneR = mid - 14 * k;          // table pane: [leftEdge, leftPaneR]
-        leagueHead.setTextAlign(Paint.Align.RIGHT);
-        leagueName.setTextAlign(Paint.Align.RIGHT);
-        leagueSmall.setTextAlign(Paint.Align.RIGHT);
-        // divider
-        fill.setShader(null);
-        fill.setColor(tone(0x1A000000, 0x24FFFFFF));
-        c.drawRoundRect(mid - k, r.top + 30 * k, mid + k, r.bottom - 30 * k, k, k, fill);
-
-        if (!league.hasData()) {
-            c.drawText("الدوري السعودي", rightEdge, r.top + 54 * k, leagueHead);
-            leagueSmall.setTextAlign(Paint.Align.RIGHT);
-            c.drawText("لا توجد بيانات الآن", rightEdge, r.top + 110 * k, leagueSmall);
-            return;
-        }
-
-        // --- matches: live first, then the next ones (3 in all)
-        List<League.Match> all = league.matches();
-        List<League.Match> live = League.live(all);
-        List<League.Match> rows = new ArrayList<>(live);
-        for (League.Match m : League.upcoming(all, now, 3)) if (rows.size() < 3) rows.add(m);
-        boolean anyLive = !live.isEmpty();
-        c.drawText(anyLive ? "مباشر · القادمة" : "المباريات القادمة", rightEdge, r.top + 54 * k, leagueHead);
-        float rowH = 72 * k, top = r.top + 82 * k;
-        float paneW = rightEdge - rightPaneL;
-        for (int i = 0; i < rows.size() && i < 3; i++) {
-            League.Match m = rows.get(i);
-            float y = top + i * rowH, base = y + 26 * k;
-            boolean isLive = "in".equals(m.state);
-            float scoreW = 78 * k;
-            float cx = rightPaneL + paneW / 2f;
-            // home on the right, away on the left, the score or "x" between them
-            leagueName.setTextAlign(Paint.Align.RIGHT);
-            String home = TextUtils.ellipsize(m.home, new TextPaint(leagueName), paneW / 2f - scoreW / 2f - 6 * k, TextUtils.TruncateAt.END).toString();
-            c.drawText(home, rightEdge, base, leagueName);
-            leagueName.setTextAlign(Paint.Align.LEFT);
-            String away = TextUtils.ellipsize(m.away, new TextPaint(leagueName), paneW / 2f - scoreW / 2f - 6 * k, TextUtils.TruncateAt.END).toString();
-            c.drawText(away, rightPaneL, base, leagueName);
-            leagueNum.setTextAlign(Paint.Align.CENTER);
-            leagueNum.setColor(isLive ? 0xFFFF6B5E : 0xF2FFFFFF);
-            // score text is written home-away; it sits in the middle, home number on the home (right) side
-            String score = isLive ? m.homeScore + " - " + m.awayScore : "×";
-            c.drawText(isLive ? Rtl.ltr(score) : score, cx, base, leagueNum);
-            leagueNum.setColor(0xF2FFFFFF);
-            leagueSmall.setTextAlign(Paint.Align.CENTER);
-            leagueSmall.setColor(isLive ? 0xFFFF6B5E : 0xADFFFFFF);
-            c.drawText(isLive ? League.clockAr(m) : League.whenAr(m.kickoffMs, now, tzMs), cx, base + 28 * k, leagueSmall);
-            leagueSmall.setColor(0xADFFFFFF);
-        }
-        if (rows.isEmpty()) {
-            leagueSmall.setTextAlign(Paint.Align.RIGHT);
-            c.drawText("لا مباريات قادمة", rightEdge, top + 30 * k, leagueSmall);
-        }
-
-        // --- table: top six, rank / club / played / points
-        List<League.Row> table = league.table();
-        leagueHead.setTextAlign(Paint.Align.RIGHT);
-        c.drawText("ترتيب الدوري", leftPaneR, r.top + 54 * k, leagueHead);
-        if (table.isEmpty()) return;
-        float tw = leftPaneR - leftEdge;
-        float colRank = leftPaneR, colTeam = leftPaneR - 40 * k, colPlayed = leftEdge + 86 * k, colPts = leftEdge + 30 * k;
-        leagueSmall.setTextAlign(Paint.Align.CENTER);
-        c.drawText("لعب", colPlayed, r.top + 88 * k, leagueSmall);
-        c.drawText("نقاط", colPts, r.top + 88 * k, leagueSmall);
-        float rh = 34 * k;
-        for (int i = 0; i < 6 && i < table.size(); i++) {
-            League.Row row = table.get(i);
-            float base = r.top + 120 * k + i * rh;
-            leagueNum.setTextAlign(Paint.Align.RIGHT);
-            c.drawText(String.valueOf(row.rank), colRank, base, leagueNum);
-            leagueName.setTextAlign(Paint.Align.RIGHT);
-            String t = TextUtils.ellipsize(row.team, new TextPaint(leagueName), colTeam - colPlayed - 34 * k, TextUtils.TruncateAt.END).toString();
-            c.drawText(t, colTeam, base, leagueName);
-            leagueNum.setTextAlign(Paint.Align.CENTER);
-            c.drawText(String.valueOf(row.played), colPlayed, base, leagueNum);
-            c.drawText(String.valueOf(row.points), colPts, base, leagueNum);
-        }
-    }
+    private void drawLeague(Canvas c, RectF r) { panels.drawer(c,r,league); }
 
     /** Prices in the configured currency with the 24 h change (green/red, like Apple's Stocks app). */
     private void drawQuotesCard(Canvas c, RectF r) {
@@ -2285,8 +2246,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private void layoutLight() {
         if (lTab == null) return;
         // Text tabs; the focus pill extends 26 px past the text (the first tab's text starts at the margin).
-        float pad = 26 * k, tabTop = L_TABBAR_TOP * k, tabBottom = (L_TABBAR_TOP + L_TABBAR_H) * k;
-        float x = MARGIN * k - pad;
+        float pad = 32 * k, tabTop = (L_TABBAR_TOP+6) * k, tabBottom = (L_TABBAR_TOP + L_TABBAR_H-6) * k;
+        float x = (MARGIN+6) * k;
         for (int i = 0; i < 3; i++) {
             float tw = Math.max(lTabOn.measureText(tabs()[i]), lTab.measureText(tabs()[i]));
             topRects[i].set(x, tabTop, x + tw + 2 * pad, tabBottom);
@@ -2309,7 +2270,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
 
     /** The three cards of the current tab (Explore, Movies, Shows) and the background taken from the first one. */
     private void updateCards() {
-        List<Recs.Pick> list = recs.now(TAB_KIND[tab]);
+        List<Recs.Pick> list = Ui.ar?new ArrayList<>():recs.now(TAB_KIND[tab]);
         if (!samePicks(list, cards)) {
             cards = list;
             cardIndex = Math.min(cardIndex, Math.max(0, list.size() - 1));
@@ -2318,7 +2279,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
                 retarget(false);
             }
         }
-        for (Recs.Pick p : recs.wanted()) recs.backdrop(p);   // all three tabs preloaded: switching tabs is instant
+        if(!Ui.ar)for (Recs.Pick p : recs.wanted()) recs.backdrop(p);   // all three tabs preloaded: switching tabs is instant
         // Arabic with no TMDB key: today's Saudi wallpaper is the background (a new one each day), with the dark look.
         Recs.Pick wall = cards.isEmpty() ? recs.wallpaper() : null;
         if ((wall != null) != wallpaperOn) {
@@ -2379,13 +2340,14 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private void drawLightTop(Canvas c) {
         applyTone();
         String hello = Ui.tr("Para você", "For You");
-        c.drawText(hello, Rtl.tx(lTitle, hello, MARGIN * k - Ui.leftBearing(lTitle, hello), 0, w), L_TITLE_BASE * k, lTitle);
+        if(!Ui.ar)c.drawText(hello, Rtl.tx(lTitle, hello, MARGIN * k - Ui.leftBearing(lTitle, hello), 0, w), L_TITLE_BASE * k, lTitle);
+        if(Ui.ar){tmp.set(topRects[0]);tmp.union(topRects[2]);tmp.inset(-6*k,-6*k);scene.glass(c,tmp,36*k,SMOKE,0.24f,0,0,0.02f,1);}
         // Text tabs (the selected one in bold, in the main text color); with focus on the tabs, the selected one gets
         // the white pill with a shadow and grows a little (the tvOS focus).
         float focus = Ui.clamp(topFocus[tab].value);
         for (int i = 0; i < 3; i++) {
             RectF r = topRects[i];
-            if (i == tab && focus > 0.01f) {
+            if (i == tab && (Ui.ar || focus > 0.01f)) {
                 float s = 1 + 0.05f * focus;
                 cell.set(r.centerX() - r.width() * s / 2, r.centerY() - r.height() * s / 2,
                         r.centerX() + r.width() * s / 2, r.centerY() + r.height() * s / 2);
@@ -2397,11 +2359,11 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
                     shadows.draw(c, tmp, rr, SHADOW_BLUR * k, shadow);
                 }
                 fill.setShader(null);
-                fill.setColor(Ui.alpha(0xFFFFFFFF, focus));
+                fill.setColor(Ui.alpha(0xFFFFFFFF, Ui.ar?1:focus));
                 c.drawRoundRect(cell, rr, rr, fill);
             }
             Paint p = i == tab ? lTabOn : lTab;
-            if (i == tab) lTabOn.setColor(blend(tone(L_INK, WHITE), L_INK, focus));   // always dark on the white pill
+            if (i == tab) lTabOn.setColor(Ui.ar?L_INK:blend(tone(L_INK, WHITE), L_INK, focus));   // always dark on the white pill
             c.drawText(tabs()[i], r.centerX() - p.measureText(tabs()[i]) / 2, r.centerY() + Ui.halfCap(p), p);
         }
         if (showInfoCards()) {
@@ -2412,15 +2374,13 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             for (int i = 0; i < 3; i++) if (i != top) drawLightCard(c, i);
             if (top >= 0) drawLightCard(c, top);
         }
-        if (HomeData.coinCount() > 0) drawQuotes(c);
+        if (!Ui.ar && HomeData.coinCount() > 0) drawQuotes(c);
     }
 
     // MARK: - Arabic info cards
 
     /** With no picks to show (no TMDB key) the three cards carry the prayer times, the date and a verse of the day. */
-    private boolean showInfoCards() {
-        return Ui.ar && cards.isEmpty();
-    }
+    private boolean showInfoCards() { return Ui.ar; }
 
     private double[] where() {
         try {
@@ -2460,20 +2420,15 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     }
 
     private void infoChrome(Canvas c, RectF base) {
-        float r0 = 18 * k;
-        tmp.set(base);
-        tmp.offset(0, 10 * k);
-        shadowDeep.setColor(Ui.alpha(0xFF000000, tone(0.14f, 0.32f)));
-        shadows.draw(c, tmp, r0, DEEP_BLUR * k, shadowDeep);
-        fill.setShader(null);
-        // over the wallpaper the cards are smoked glass (the photo shows faintly through), not solid
-        fill.setColor(wallpaperOn ? 0xD01C1C1E : tone(0xFFE8E8ED, 0xFF2C2C2E));
-        c.drawRoundRect(base, r0, r0, fill);
+        float radius=32*k;
+        tmp.set(base);tmp.offset(0,12*k);
+        shadowDeep.setColor(0x42000000);shadows.draw(c,tmp,radius,DEEP_BLUR*k,shadowDeep);
+        scene.glass(c,base,radius,SMOKE,0.22f,0,0,0.02f,1);
     }
 
     private void drawInfoCards(Canvas c) {
         refreshInfo();
-        int ink = tone(L_INK, WHITE), dim = tone(L_DIM, 0xFF98989D);
+        int ink = tone(L_INK, WHITE), dim = tone(L_DIM, 0xFFBFC3CA);
         infoLabel.setColor(dim);
         infoSmall.setColor(dim);
         infoBig.setColor(ink);
@@ -2481,6 +2436,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         infoMid.setColor(ink);
         infoNum.setColor(ink);
         for (int i = 0; i < 3; i++) infoChrome(c, cardRects[i]);
+        if(tab==1){for(int i=0;i<3;i++)panels.matches(c,cardRects[i],league,i);return;}
+        if(tab==2){for(int i=0;i<3;i++)panels.news(c,cardRects[i],news.snapshot,i);return;}
         Info.Prayer p = infoPrayer;
         if (p != null) drawPrayerCard(c, cardRects[0], p, ink, dim);
         drawDateCard(c, cardRects[1], ink, dim);
@@ -2488,38 +2445,26 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     }
 
     private void drawPrayerCard(Canvas c, RectF r, Info.Prayer p, int ink, int dim) {
-        float pad = 44 * k, right = r.right - pad, left = r.left + pad;
-        infoLabel.setTextAlign(Paint.Align.RIGHT);
-        c.drawText(p.label, right, r.top + 70 * k, infoLabel);
-        infoBig.setTextAlign(Paint.Align.RIGHT);
-        c.drawText(p.name, right, r.top + 178 * k, infoBig);
-        infoBig.setTextAlign(Paint.Align.LEFT);
-        c.drawText(p.time, left, r.top + 178 * k, infoBig);
-        infoMid.setTextAlign(Paint.Align.RIGHT);
-        infoMid.setColor(p.pending ? tone(0xFF248A3D, 0xFF30D158) : dim);
-        c.drawText(p.sub, right, r.top + 240 * k, infoMid);
-        infoMid.setColor(ink);
-        // the five prayers, Fajr on the right
-        float lineY = r.top + 276 * k;
-        fill.setShader(null);
-        fill.setColor(tone(0x1A000000, 0x24FFFFFF));
-        c.drawRoundRect(left, lineY, right, lineY + 2 * k, k, k, fill);
-        float colW = (right - left) / 5f;
-        infoSmall.setTextAlign(Paint.Align.CENTER);
-        infoNum.setTextAlign(Paint.Align.CENTER);
-        for (int i = 0; i < 5; i++) {
-            float cx = right - colW * (i + 0.5f);
-            boolean next = i == p.index;
-            if (next) {
-                tmp.set(cx - colW / 2 + 6 * k, r.top + 296 * k, cx + colW / 2 - 6 * k, r.bottom - 26 * k);
-                fill.setColor(Ui.alpha(tone(0xFF248A3D, 0xFF30D158), 0.16f));
-                c.drawRoundRect(tmp, 16 * k, 16 * k, fill);
-            }
-            String name = i == Schedule.DHUHR && java.time.LocalDate.now().getDayOfWeek() == java.time.DayOfWeek.FRIDAY && !p.tomorrow
-                    ? Schedule.JUMUAH_AR : Schedule.NAMES_AR[i];
-            infoSmall.setColor(next ? ink : dim);
-            c.drawText(name, cx, r.top + 340 * k, infoSmall);
-            c.drawText(p.times[i], cx, r.top + 386 * k, infoNum);
+        float pad=40*k,right=r.right-pad,left=r.left+pad;
+        java.time.LocalTime now=java.time.LocalTime.now();
+        infoLabel.setTextAlign(Paint.Align.RIGHT);c.drawText(p.label,right,r.top+65*k,infoLabel);
+        infoName.setTextAlign(Paint.Align.RIGHT);infoName.setTextSize(72*k);c.drawText(p.name,right,r.top+153*k,infoName);infoName.setTextSize(56*k);
+        infoMid.setTextAlign(Paint.Align.RIGHT);infoMid.setTextSize(30*k);infoMid.setColor(0xFFBFC3CA);
+        c.drawText("الأذان "+Rtl.ltr(p.time),right,r.top+208*k,infoMid);
+        infoMid.setColor(p.pending?0xFF5BE37F:0xFFBFC3CA);c.drawText(p.sub,right,r.top+258*k,infoMid);
+        infoMid.setTextSize(36*k);infoMid.setColor(ink);
+        infoLabel.setTextAlign(Paint.Align.LEFT);c.drawText("الوقت الآن",left,r.top+65*k,infoLabel);
+        infoBig.setTextAlign(Paint.Align.LEFT);infoBig.setTextSize(132*k);c.drawText(Info.clock12(now),left,r.top+204*k,infoBig);infoBig.setTextSize(104*k);
+        infoSmall.setTextAlign(Paint.Align.LEFT);c.drawText(Info.ampm(now),left,r.top+252*k,infoSmall);
+        float colW=(right-left)/5f;infoSmall.setTextAlign(Paint.Align.CENTER);infoNum.setTextAlign(Paint.Align.CENTER);
+        for(int i=0;i<5;i++) {
+            float cx=right-colW*(i+0.5f);boolean next=i==p.index;
+            tmp.set(cx-colW/2+6*k,r.bottom-156*k,cx+colW/2-6*k,r.bottom-36*k);
+            fill.setShader(null);fill.setColor(next?0x2830D158:0x14FFFFFF);c.drawRoundRect(tmp,22*k,22*k,fill);
+            if(next){border.setColor(0x665BE37F);c.drawRoundRect(tmp,22*k,22*k,border);}
+            String name=i==Schedule.DHUHR && java.time.LocalDate.now().getDayOfWeek()==java.time.DayOfWeek.FRIDAY && !p.tomorrow?Schedule.JUMUAH_AR:Schedule.NAMES_AR[i];
+            infoSmall.setColor(next?ink:0xFFBFC3CA);c.drawText(name,cx,r.bottom-110*k,infoSmall);
+            c.drawText(p.times[i],cx,r.bottom-62*k,infoNum);
         }
     }
 
@@ -2553,47 +2498,14 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     }
 
     private void drawVerseCard(Canvas c, RectF r, int ink, int dim) {
-        String[] item = todaysItem();
-        float pad = 30 * k, right = r.right - pad, width = r.width() - 2 * pad;
-        infoLabel.setTextAlign(Paint.Align.RIGHT);
-        c.drawText(item != null && item[0].equals("H") ? "حديث اليوم" : "آية اليوم", right, r.top + 70 * k, infoLabel);
-        if (item == null) return;
-        String key = item[1] + "|" + (int) width + "|" + (int) (r.height());
-        if (verseLayout == null || !verseKey.equals(key)) {
-            verseKey = key;
-            float maxH = r.height() - 190 * k;
-            TextPaint tp = new TextPaint(infoMid);
-            tp.setTextAlign(Paint.Align.LEFT);
-            StaticLayout best = null;
-            for (float size = 34; size >= 20; size -= 2) {
-                tp.setTextSize(size * k);
-                best = StaticLayout.Builder.obtain(item[2], 0, item[2].length(), tp, Math.max(1, (int) width))
-                        .setTextDirection(android.text.TextDirectionHeuristics.RTL).setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                        .setLineSpacing(0, 1.18f).build();
-                if (best.getHeight() <= maxH) break;
-            }
-            verseLayout = best;
-        }
-        verseLayout.getPaint().setColor(ink);
-        c.save();
-        c.translate(r.left + pad, r.top + 98 * k);
-        verseLayout.draw(c);
-        c.restore();
-        infoSmall.setTextAlign(Paint.Align.RIGHT);
-        infoSmall.setColor(dim);
-        int divider = item[1].indexOf(" · ");
-        if ("H".equals(item[0]) && divider >= 0) {
-            // Keep the collection/number and narrator visible rather than ellipsizing them together.
-            String reference = item[1].substring(0, divider), narrator = item[1].substring(divider + 3);
-            infoSmall.setTextSize(18 * k);
-            if (infoSmall.measureText(narrator) > width) infoSmall.setTextSize(16 * k);
-            c.drawText(reference, right, r.bottom - 63 * k, infoSmall);
-            c.drawText(narrator, right, r.bottom - 23 * k, infoSmall);
-        } else {
-            infoSmall.setTextSize(23 * k);
-            c.drawText(TextUtils.ellipsize(item[1], new TextPaint(infoSmall), width, TextUtils.TruncateAt.END).toString(), right, r.bottom - 28 * k, infoSmall);
-        }
-        infoSmall.setTextSize(26 * k);
+        String[] item=todaysItem();float pad=30*k,right=r.right-pad,width=r.width()-2*pad;
+        infoLabel.setTextAlign(Paint.Align.RIGHT);c.drawText(item!=null && item[0].equals("H")?"حديث اليوم":"آية اليوم",right,r.top+65*k,infoLabel);
+        if(item==null)return;
+        String key=item[1]+"|"+item[2]+"|"+(int)width+"|"+(int)r.height();
+        if(dailyLayout==null || !dailyLayoutKey.equals(key)){dailyLayoutKey=key;dailyLayout=DailyLayout.make(item[2],item[1],Math.max(1,(int)width),r.height(),k);}
+        dailyLayout.text.getPaint().setColor(ink);dailyLayout.source.getPaint().setColor(0xFFBFC3CA);
+        c.save();c.translate(r.left+pad,r.top+98*k);dailyLayout.text.draw(c);c.restore();
+        c.save();c.translate(r.left+pad,r.top+dailyLayout.sourceTop);dailyLayout.source.draw(c);c.restore();
     }
 
     /**
@@ -2673,7 +2585,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
                 float half = lTip.measureText(label) / 2;
                 float x = Rtl.on() ? Math.max(r.centerX(), MARGIN * k + half) : Math.min(r.centerX(), CONTENT_R * k - half);
                 lTip.setAlpha(Math.round(255 * f));
-                c.drawText(label, x, r.bottom + (40 + 4 * f) * k, lTip);
+                c.drawText(label, x, r.bottom + (26 + 2 * f) * k, lTip);
             }
         }
     }

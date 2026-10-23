@@ -9,6 +9,13 @@ import java.util.List;
 final class Info {
     private Info() {}
 
+    static String clock12(java.time.LocalTime t) {
+        int h=t.getHour()%12;
+        return (h==0?12:h)+":"+(t.getMinute()<10?"0":"")+t.getMinute();
+    }
+
+    static String ampm(java.time.LocalTime t) { return t.getHour()<12?"ص":"م"; }
+
     private static final String[] WEEKDAYS = {"الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت", "الأحد"};   // Monday first
     private static final String[] MONTHS = {"يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس",
             "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"};

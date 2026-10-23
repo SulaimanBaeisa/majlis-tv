@@ -32,6 +32,8 @@ final class LeagueFeed {
     private volatile List<League.Row> table = Collections.emptyList();
     private volatile long monthAt, todayAt, tableAt;
     volatile long version;
+    private volatile long updatedAt;
+    long lastUpdateMs(){return updatedAt;}
 
     LeagueFeed(Listener listener) { this.listener = listener; }
 
@@ -80,6 +82,7 @@ final class LeagueFeed {
                 busy.set(false);
             }
             if (changed) {
+                updatedAt=System.currentTimeMillis();
                 AppLog.w("league: " + matches().size() + " matches (" + League.live(matches()).size() + " live), " + table.size() + " table rows");
                 version++;
                 listener.onLeague();

@@ -81,7 +81,15 @@ final class Ui {
     /** Noto Sans Arabic (SIL OFL 1.1, see fonts/OFL-NotoSansArabic.txt), variable weight. */
     private static final String FONT_AR = "fonts/NotoSansArabic.ttf";
 
+    static Typeface clockFace(Context context) {
+        if(ar)try{return Typeface.createFromAsset(context.getAssets(),"fonts/thmanyahserifdisplay-Bold.otf");}catch(RuntimeException ignored){}
+        return displaySemibold;
+    }
+
     private static Typeface arabic(AssetManager a, int weight) {
+        // Original, unmodified licensed files: private build on the owner's devices only.
+        String personal="fonts/thmanyahsans-"+(weight>=600?"Bold":weight>=500?"Medium":weight<=300?"Light":"Regular")+".otf";
+        if(has(a,personal))try{return Typeface.createFromAsset(a,personal);}catch(RuntimeException ignored){}
         try {
             Typeface t = new Typeface.Builder(a, FONT_AR).setFontVariationSettings("'wght' " + weight).build();
             if (t != null) return t;
