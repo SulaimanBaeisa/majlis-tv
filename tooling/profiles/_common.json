@@ -1,0 +1,17 @@
+{
+  "allowed_disable": [
+    "com.google.android.tvlauncher", "com.google.android.tvrecommendations", "com.google.android.backdrop",
+    "com.google.android.apps.tv.launcherx", "com.google.android.tungsten.setupwraith",
+    "com.google.audio.hearing.visualization.accessibility.scribe",
+    "com.google.android.katniss", "com.android.hotwordenrollment.okgoogle",
+    "com.tcl.magiconnectfree", "com.tcl.miracast", "com.tcl.waterfall.overseas", "com.tcl.channelplus",
+    "com.tcl.messagebox", "com.tcl.usercenter", "com.tcl.exhibit", "com.tcl.esticker", "com.tcl.hotelmenu",
+    "com.tcl.repairguide", "com.tcl.ocean.instructions", "com.tcl.logkit"
+  ],
+  "must_stay_enabled": [
+    "com.android.vending", "com.google.android.gms", "com.google.android.gsf", "com.android.tv.settings",
+    "com.google.android.youtube.tv", "com.netflix.ninja", "com.google.android.apps.mediashell",
+    "com.google.android.tv.remote.service", "com.google.android.inputmethod.latin",
+    "com.google.android.webview", "io.freemytv"
+  ]
+}

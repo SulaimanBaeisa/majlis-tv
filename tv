@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Mashrabiya installer. Thin shim so every agent runs the same entry point.
+set -euo pipefail
+exec python3 "$(dirname "$0")/tooling/tv.py" "$@"

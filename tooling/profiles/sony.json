@@ -1,0 +1,10 @@
+{
+  "id": "sony", "label": "Sony BRAVIA (Android TV 9-14)",
+  "match": {"device": "sony|bravia|kd-|xr-", "sdk_min": 28},
+  "appops": ["SYSTEM_ALERT_WINDOW", "SCHEDULE_EXACT_ALARM"],
+  "must_stay_enabled": ["com.sony.dtv.tvx"],
+  "extra_checks": [
+    {"id": "sony.tvx", "cmd": "pm list packages -e com.sony.dtv.tvx",
+     "expect": "package:com.sony.dtv.tvx", "fix": "adb shell pm enable com.sony.dtv.tvx"}
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "tcl", "label": "TCL Google TV (Android 11-14)",
+  "match": {"device": "tcl", "sdk_min": 28},
+  "appops": ["SYSTEM_ALERT_WINDOW", "SCHEDULE_EXACT_ALARM", "AUTO_START"],
+  "must_stay_enabled": ["com.tcl.tv", "com.tcl.tvinput", "com.tcl.guard"],
+  "extra_checks": [
+    {"id": "tcl.autostart", "cmd": "appops get io.freemytv AUTO_START || appops get io.freemytv APP_AUTO_START",
+     "expect": "allow", "fix": "adb shell appops set io.freemytv AUTO_START allow"}
+  ],
+  "notes": "TclAppBoot drops manifest broadcasts and blocks ModeJob binding; the app runs the mode job in-process and keeps its adhan receiver in :home. Do not change that without a TCL test."
+}

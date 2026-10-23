@@ -1,0 +1,6 @@
+{
+  "id": "generic", "label": "Generic Android TV / Google TV",
+  "match": {"device": "$^", "sdk_min": 28},
+  "appops": ["SYSTEM_ALERT_WINDOW", "SCHEDULE_EXACT_ALARM"],
+  "extra_checks": []
+}
