@@ -219,6 +219,10 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private final RectF weatherCard = new RectF(), quotesCard = new RectF();
     private final Spring drawer = new Spring(0.46f, 0.92f, 0);
     private boolean drawerOpen;
+    // Android 11 (no hardware layers): the drawer is blitted from a bitmap while it slides.
+    private Bitmap drawerCache;
+    private boolean drawerCacheValid, drawerAnimating, drawerTilesAnimating;
+    private String drawerCacheKey = "";
     private int drawerIndex;
 
     // "All Apps" sheet
@@ -631,8 +635,11 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         if (topMoving) status.invalidate();
         heroMoving |= topMoving | cardsMoving;
         boolean drawerItemsMoving = step(drawerFocus, dt);
+        drawerTilesAnimating = drawerItemsMoving;
         boolean gridMoving = step(gridFocus, dt) | scroll.step(dt);
         boolean drawerMoving = drawer.step(dt);
+        drawerAnimating = drawerMoving;
+        if (drawerMoving || drawerItemsMoving) drawerCacheValid = false;
         boolean sheetMoving = sheet.step(dt);
         boolean toastFading = tickToast(up);
         boolean heroFading = tickHeroFade(up);
@@ -1439,6 +1446,38 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
 
     private void drawDrawer(Canvas c) {
         if (drawerItems.isEmpty()) return;
+        if (!Ui.LEGACY) { drawDrawerContent(c); return; }
+        // Android 11: translating the drawer redraws every tile and card on each frame. Blit the last render instead.
+        if ((drawerAnimating || drawerTilesAnimating) && drawerCache != null) { c.drawBitmap(drawerCache, 0, 0, null); return; }
+        int cw = Math.max(1, getWidth()), ch = Math.max(1, drawerLayer.getHeight());
+        if (drawerCache == null || drawerCache.getWidth() != cw || drawerCache.getHeight() != ch) {
+            drawerCache = Bitmap.createBitmap(cw, ch, Bitmap.Config.ARGB_8888);
+            drawerCacheValid = false;
+        }
+        String key = drawerCacheKey();
+        if (!drawerCacheValid || !key.equals(drawerCacheKey)) {
+            drawerCache.eraseColor(0);
+            Canvas bc = new Canvas(drawerCache);
+            int top = drawerLayer.getTop();
+            bc.translate(0, -top);
+            scene.setOffset(0, -top);
+            drawDrawerContent(bc);
+            scene.setOffset(0, 0);
+            drawerCacheKey = key;
+            drawerCacheValid = true;
+        }
+        c.drawBitmap(drawerCache, 0, 0, null);
+    }
+
+    /** Everything the drawer shows, without the layer translation (drawn at the screen position it occupies). */
+    private String drawerCacheKey() {
+        StringBuilder s = new StringBuilder(drawerCardsKey());
+        s.append('|').append(drawerIndex).append('|').append(drawerInputs).append('|').append(drawerItems.size());
+        for (Spring f : drawerFocus) s.append('|').append(Math.round(f.value * 20));
+        return s.toString();
+    }
+
+    private void drawDrawerContent(Canvas c) {
         rowTitle.setColor(tone(L_DIM, 0xB3FFFFFF));
         cardTitle.setColor(tone(L_DIM, 0xB3FFFFFF));
         cardText.setColor(drawerInk(0.95f));

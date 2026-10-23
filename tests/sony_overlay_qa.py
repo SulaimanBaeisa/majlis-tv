@@ -2,8 +2,10 @@
 """Sony-only, opt-in manual QA: one PRAYER_TEST banner over native Settings, never edits the real prayer alarm."""
 import json,re,subprocess,time
 from pathlib import Path
-SERIAL='10.3.30.60:5555'
-OUT=Path('/srv/projects/free-my-tv-ar/tv-recon/sony-v2-20261023')
+import os
+SERIAL=os.environ.get('TV_SERIAL','10.3.30.60:5555')
+EXPECT=os.environ.get('TV_BRAND','sony')
+OUT=Path(os.environ.get('TV_OUT','/srv/projects/free-my-tv-ar/tv-recon/sony-v2-20261023'))
 def adb(*args):
     p=subprocess.run(['adb','-s',SERIAL,*args],capture_output=True,text=True,timeout=15)
     if p.returncode:raise RuntimeError(p.stderr)
@@ -11,7 +13,7 @@ def adb(*args):
 def windows():return adb('shell','dumpsys','window')
 def focus(text):return next((x.strip() for x in text.splitlines() if 'mCurrentFocus=' in x),'')
 def visible(text):return any(re.search(r'Window #\d+ Window\{.*Free My TV prayer',l) for l in text.splitlines())
-assert adb('shell','getprop','ro.product.manufacturer').strip().lower()=='sony'
+assert adb('shell','getprop','ro.product.manufacturer').strip().lower()==EXPECT
 adb('shell','am','start','-a','android.settings.SETTINGS');time.sleep(2)
 before=focus(windows());assert before and 'io.freemytv' not in before,before
 started=time.monotonic()

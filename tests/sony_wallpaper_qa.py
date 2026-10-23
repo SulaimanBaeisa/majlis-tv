@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Sony-only QA for file import, replacing a same-named image, invalid-image fallback and safe cleanup."""
-import hashlib,json,subprocess,time
+import hashlib,json,subprocess,time,os
 from pathlib import Path
-SERIAL='10.3.30.60:5555'
+SERIAL=os.environ.get('TV_SERIAL','10.3.30.60:5555')
 ROOT=Path('/srv/projects/free-my-tv-ar-src')
-OUT=Path('/srv/projects/free-my-tv-ar/tv-recon/sony-v2-20261023')
+OUT=Path(os.environ.get('TV_OUT','/srv/projects/free-my-tv-ar/tv-recon/sony-v2-20261023'))
 REMOTE='/sdcard/Android/data/io.freemytv/files/wallpapers/sony-v2-qa-photo.jpg'
 def adb(*a,ok=True):
     p=subprocess.run(['adb','-s',SERIAL,*a],capture_output=True,timeout=20)
@@ -17,7 +17,7 @@ def restart():
 def logs():
     pid=text('shell','pidof','io.freemytv:home')
     return text('logcat','-d','--pid='+pid,'-s','FreeMyTV:I')
-assert text('shell','getprop','ro.product.manufacturer').lower()=='sony'
+assert text('shell','getprop','ro.product.model')=='AI PONT' or text('shell','getprop','ro.product.manufacturer').lower()=='sony'
 assert adb('shell','test','-e',REMOTE,ok=False).returncode!=0,'Refusing to overwrite a pre-existing file'
 results=[];last_sha=None
 invalid=Path('/home/sulaiman/.hermes/cache/scratch/sony-v2-invalid-image.jpg')
