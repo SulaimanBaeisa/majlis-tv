@@ -3,7 +3,7 @@ package io.freemytv;
 import android.service.dreams.DreamService;
 
 /**
- * The Mashrabiya screensaver (enabled in Mashrabiya mode via `settings put secure screensaver_components`). The system
+ * The Majlis screensaver (enabled in Majlis mode via `settings put secure screensaver_components`). The system
  * still decides when it starts and when the TV turns off (e.g. after 10 min idle, then 2 h later), as before: the app
  * doesn't change those timings. Any key exits.
  */

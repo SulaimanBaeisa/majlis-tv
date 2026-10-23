@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Install guide
-    url: https://github.com/SulaimanBaeisa/mashrabiya-tv/blob/main/docs/INSTALL.md
+    url: https://github.com/SulaimanBaeisa/majlis-tv/blob/main/docs/INSTALL.md
     about: Step-by-step install, including developer mode on each brand
   - name: Troubleshooting
-    url: https://github.com/SulaimanBaeisa/mashrabiya-tv/blob/main/docs/TROUBLESHOOTING.md
+    url: https://github.com/SulaimanBaeisa/majlis-tv/blob/main/docs/TROUBLESHOOTING.md
     about: Every FAIL code and its fix

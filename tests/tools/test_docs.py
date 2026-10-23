@@ -33,7 +33,7 @@ class DocsTests(unittest.TestCase):
     def test_readme_has_the_agent_prompt(self):
         readme = (ROOT / "README.md").read_text()
         self.assertIn("AGENTS.md", readme)
-        self.assertIn("Install Mashrabiya on my Android TV", readme)
+        self.assertIn("Install Majlis on my Android TV", readme)
 
 
 if __name__ == "__main__":

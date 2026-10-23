@@ -1,6 +1,6 @@
 # Install
 
-Mashrabiya runs on Android TV / Google TV 9–14. The agent path is [AGENTS.md](../AGENTS.md);
+Majlis runs on Android TV / Google TV 9–14. The agent path is [AGENTS.md](../AGENTS.md);
 this page is the human version and the brand-specific details.
 
 ## Before you start
@@ -18,7 +18,7 @@ this page is the human version and the brand-specific details.
 | Changhong / Classpro | Settings → Device Preferences → About → press **Build** 7 times; then Developer options → **USB debugging** on |
 | Other | Settings → System → About → press **Build** 7 times; Developer options → USB debugging |
 
-Keep **USB debugging** on: Mashrabiya's Free/Original switch uses the TV's own loopback ADB
+Keep **USB debugging** on: Majlis's Free/Original switch uses the TV's own loopback ADB
 (`127.0.0.1:5555`), which only listens while debugging is on. If the switch ever says
 "debugging is off on the TV", turn it back on.
 
@@ -29,7 +29,7 @@ The first `adb connect` shows **Allow USB debugging?** on the TV. Tick **Always 
 ## 3. Build and install
 
 ```bash
-git clone https://github.com/SulaimanBaeisa/mashrabiya-tv && cd mashrabiya-tv
+git clone https://github.com/SulaimanBaeisa/majlis-tv && cd majlis-tv
 ./tv doctor
 ./tv build --city "Jeddah"
 ./tv install --ip 192.168.1.50
@@ -39,7 +39,7 @@ git clone https://github.com/SulaimanBaeisa/mashrabiya-tv && cd mashrabiya-tv
 
 ## 4. Make it the home screen
 
-On the TV: open **Mashrabiya** → **Home Screen** → **Mashrabiya** → OK.
+On the TV: open **Majlis** → **Home Screen** → **Majlis** → OK.
 The app will ask for debugging permission once more; accept it.
 
 Or let the tool wait for you:
@@ -51,14 +51,14 @@ Or let the tool wait for you:
 ## 5. Verify
 
 ```bash
-./tv verify --ip 192.168.1.50 --mode free --apk Mashrabiya.apk
+./tv verify --ip 192.168.1.50 --mode free --apk Majlis.apk
 ```
 
 The last lines must read `RESULT … 0 FAIL` and `REPORT reports/verify-….md`.
 
 ## Going back
 
-Mashrabiya app → **Home Screen** → **Original** → OK. The stock launcher, recommendations,
+Majlis app → **Home Screen** → **Original** → OK. The stock launcher, recommendations,
 backdrop and screensaver come back; nothing was uninstalled.
 
 If the app will not open, use [EMERGENCY.md](EMERGENCY.md).

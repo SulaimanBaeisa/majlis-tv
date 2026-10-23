@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Mashrabiya TV - host-side installer and verifier. Python 3.9+, stdlib only.
+"""Majlis TV - host-side installer and verifier. Python 3.9+, stdlib only.
 
 Every device decision lives here: agents run the commands in AGENTS.md and report the
 PASS/FAIL lines, they never write adb themselves.
@@ -21,13 +21,13 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PRODUCT = "Mashrabiya"
+PRODUCT = "Majlis"
 PKG = "io.freemytv"
 HOME_ACT = f"{PKG}/.HomeActivity"
 REPORTS = ROOT / "reports"
 PROFILES_DIR = ROOT / "tooling" / "profiles"
 CITIES_PATH = ROOT / "tooling" / "cities.json"
-ADB = shlex.split(os.environ.get("MASH_ADB", "adb"))
+ADB = shlex.split(os.environ.get("MAJLIS_ADB", "adb"))
 MIN_SDK = 28
 CORE_PERMS = [
     "android.permission.INTERNET",
@@ -239,14 +239,14 @@ def build(city=None, lat=None, lon=None, unsigned=False):
         set_prop(cfg, "longitude", lon)
     env = dict(os.environ)
     if unsigned:
-        env["MASH_UNSIGNED"] = "1"
+        env["MAJLIS_UNSIGNED"] = "1"
     proc = subprocess.run(["bash", str(ROOT / "build.sh")], cwd=str(ROOT), text=True,
                           capture_output=True, env=env)
     if proc.returncode != 0:
         raise Blocked("build failed:\n" + (proc.stdout + proc.stderr).strip()[-1500:])
-    apk = ROOT / "Mashrabiya.apk"
+    apk = ROOT / "Majlis.apk"
     if not apk.exists():
-        raise Blocked("build.sh succeeded but Mashrabiya.apk is missing")
+        raise Blocked("build.sh succeeded but Majlis.apk is missing")
     manifest = (ROOT / "app" / "AndroidManifest.xml").read_text(encoding="utf-8")
     code = re.search(r'android:versionCode="(\d+)"', manifest)
     name = re.search(r'android:versionName="([^"]+)"', manifest)
@@ -262,7 +262,7 @@ def install(ip, apk_path=None, switch=False, dry_run=False, port=5555, city=None
         serial = f"{ip}:{port}"
         print("# dry run: no device is contacted; these are the commands")
         print(f"adb connect {serial}")
-        print(f"adb -s {serial} install -r {apk_path or ROOT / 'Mashrabiya.apk'}")
+        print(f"adb -s {serial} install -r {apk_path or ROOT / 'Majlis.apk'}")
         for op in ("SYSTEM_ALERT_WINDOW", "SCHEDULE_EXACT_ALARM"):
             print(f"adb -s {serial} shell appops set {PKG} {op} allow")
         return 0
@@ -287,7 +287,7 @@ def install(ip, apk_path=None, switch=False, dry_run=False, port=5555, city=None
     if switch:
         return 0 if switch_mode(serial, "free") else 2
     if info["home"].startswith(PKG + "/"):
-        print(f"Mashrabiya is already the home screen. Run: ./tv verify --ip {ip} --mode free --apk {apk.name}")
+        print(f"Majlis is already the home screen. Run: ./tv verify --ip {ip} --mode free --apk {apk.name}")
     else:
         print(f"NEXT on the TV: open {PRODUCT} -> Home Screen -> {PRODUCT}, then run: ./tv verify --ip {ip} --mode free")
     return 0
@@ -381,7 +381,7 @@ def verify(ip, mode="auto", expect_apk=None, port=5555, as_json=False):
                   f"device={got[:12]} local={want[:12]}",
                   "" if got == want else "the installed APK differs from this build: reinstall it")
     else:
-        add_check(checks, "apk.hash", "SKIP", "pass --apk Mashrabiya.apk to compare bytes")
+        add_check(checks, "apk.hash", "SKIP", "pass --apk Majlis.apk to compare bytes")
 
     ours = info["home"].startswith(PKG + "/")
     if mode == "free":
@@ -402,7 +402,7 @@ def verify(ip, mode="auto", expect_apk=None, port=5555, as_json=False):
     if mode == "free":
         add_check(checks, "dream.holder", "PASS" if dream_ours else "FAIL",
                   f"screensaver_components={info['dreams']}",
-                  "" if dream_ours else "open Mashrabiya > Home Screen and choose Mashrabiya again")
+                  "" if dream_ours else "open Majlis > Home Screen and choose Majlis again")
     elif mode == "original":
         add_check(checks, "dream.holder", "PASS" if not dream_ours else "FAIL",
                   f"screensaver_components={info['dreams']}")
@@ -558,14 +558,14 @@ def cmd_sign(args):
     source = Path(args.keystore).expanduser()
     if not source.exists():
         raise Blocked(f"keystore not found: {source}")
-    dest = Path.home() / ".config" / "mashrabiya" / "release.keystore"
+    dest = Path.home() / ".config" / "majlis" / "release.keystore"
     dest.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, dest)
     os.chmod(dest, 0o600)
     print(f"Copied to {dest} (mode 600)")
     store_pass = getpass.getpass("Keystore password: ")
     key_pass = getpass.getpass("Key password (blank = same): ") or store_pass
-    alias = input("Key alias [mashrabiya]: ").strip() or "mashrabiya"
+    alias = input("Key alias [majlis]: ").strip() or "majlis"
     local = ROOT / "local.properties"
     local.write_text(f"keystore={dest}\nks_pass={store_pass}\nkey_alias={alias}\nkey_pass={key_pass}\n", encoding="utf-8")
     os.chmod(local, 0o600)
@@ -577,7 +577,7 @@ def cmd_version(args):
     manifest = (ROOT / "app" / "AndroidManifest.xml").read_text(encoding="utf-8")
     code = re.search(r'android:versionCode="(\d+)"', manifest)
     name = re.search(r'android:versionName="([^"]+)"', manifest)
-    apk = ROOT / "Mashrabiya.apk"
+    apk = ROOT / "Majlis.apk"
     print(f"{PRODUCT} {name.group(1) if name else '?'} (versionCode {code.group(1) if code else '?'})")
     if apk.exists():
         print(f"APK {apk} sha256={sha256(apk)}")
@@ -608,7 +608,7 @@ def rollback(ip, uninstall=False, port=5555):
         return 2
     home = current_home(serial)
     if not base.get("home"):
-        print("WARN rollback.baseline the original home was not recorded; checking only that Mashrabiya is no longer HOME")
+        print("WARN rollback.baseline the original home was not recorded; checking only that Majlis is no longer HOME")
     ok = bool(home) and (home == base.get("home") or not home.startswith(PKG + "/"))
     print(("PASS" if ok else "FAIL") + f" rollback.home expected={base.get('home')} actual={home}")
     if ok:
@@ -682,7 +682,7 @@ def main(argv=None):
     p.add_argument("--port", type=int, default=5555)
     p.set_defaults(func=cmd_probe)
 
-    p = sub.add_parser("build", help="build Mashrabiya.apk")
+    p = sub.add_parser("build", help="build Majlis.apk")
     p.add_argument("--city")
     p.add_argument("--lat", type=float)
     p.add_argument("--lon", type=float)
@@ -700,7 +700,7 @@ def main(argv=None):
     p.add_argument("--port", type=int, default=5555)
     p.set_defaults(func=cmd_install)
 
-    p = sub.add_parser("switch", help="switch between Mashrabiya and the original home screen")
+    p = sub.add_parser("switch", help="switch between Majlis and the original home screen")
     p.add_argument("--ip", required=True)
     p.add_argument("--to", choices=["free", "original"], required=True)
     p.add_argument("--wait", type=int, default=180)

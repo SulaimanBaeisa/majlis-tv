@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stand-in for adb in unit tests. Reads $MASH_FAKE_DIR/responses.json, logs every call."""
+"""Stand-in for adb in unit tests. Reads $MAJLIS_FAKE_DIR/responses.json, logs every call."""
 import json
 import os
 import sys
@@ -20,7 +20,7 @@ elif args and args[0] == "exec-out":
     cmd = "exec-out " + " ".join(args[1:])
 else:
     cmd = " ".join(args)
-work = Path(os.environ["MASH_FAKE_DIR"])
+work = Path(os.environ["MAJLIS_FAKE_DIR"])
 with (work / "calls.log").open("a") as fh:
     fh.write(cmd + "\n")
 responses = json.loads((work / "responses.json").read_text())

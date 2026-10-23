@@ -1,6 +1,6 @@
-# AGENTS.md — install, update and verify Mashrabiya
+# AGENTS.md — install, update and verify Majlis
 
-You are putting **Mashrabiya**, an Arabic-first home screen for Android TV, on the user's TV.
+You are putting **Majlis**, an Arabic-first home screen for Android TV, on the user's TV.
 This file is the contract. Follow it exactly. Do not improvise, do not write your own adb
 commands, and never skip a step because it "looks done".
 
@@ -11,7 +11,7 @@ Repository root = the folder that contains this file. Run every command from the
 1. Never use sudo. Everything here is user-level.
 2. Never uninstall an app, and never disable a package yourself. Only `./tv` changes the TV.
 3. Do not switch the TV's home screen until the user agrees in this conversation. Tell them what
-   changes first: the home screen and screensaver become Mashrabiya; the stock launcher,
+   changes first: the home screen and screensaver become Majlis; the stock launcher,
    recommendations and backdrop are disabled (not uninstalled); "Original" brings them back.
 4. If a command prints `FAIL`, `BLOCKED`, or a non-zero exit, stop and use §8. Do not continue.
 5. Never print, ask for, or store a password, token or keystore. If a command asks for one, the
@@ -28,7 +28,7 @@ Repository root = the folder that contains this file. Run every command from the
 
 - The TV's IP address (TV: Settings → Network & Internet → the connected network).
 - Their city (for prayer times and weather).
-- Permission to install and to make Mashrabiya the home screen.
+- Permission to install and to make Majlis the home screen.
 - On the TV: Developer options → USB debugging ON (Settings → System → About → press the build
   number 7 times if Developer options is missing). Brand-specific paths: `docs/INSTALL.md`.
 
@@ -56,7 +56,7 @@ you found.
 
     ./tv build --city "<CITY>"
 
-Expected: `PASS build Mashrabiya.apk versionName=<x> versionCode=<n> sha256=<12 hex>`.
+Expected: `PASS build Majlis.apk versionName=<x> versionCode=<n> sha256=<12 hex>`.
 If it prints `BLOCKED unknown city`, ask for the nearest large city, or for latitude/longitude and run:
 
     ./tv build --lat <LAT> --lon <LON> --city "<CITY>"
@@ -65,10 +65,10 @@ Do not continue if the build fails.
 
 ## Step 3 — install
 
-    ./tv install --ip <IP> --apk Mashrabiya.apk
+    ./tv install --ip <IP> --apk Majlis.apk
 
-Expected: `PASS apk.install Mashrabiya.apk sha256=<12 hex>` followed by a `NEXT on the TV:` line.
-If it says `Mashrabiya is already the home screen`, skip Step 4 and go straight to verify.
+Expected: `PASS apk.install Majlis.apk sha256=<12 hex>` followed by a `NEXT on the TV:` line.
+If it says `Majlis is already the home screen`, skip Step 4 and go straight to verify.
 If it prints `BLOCKED … signed with a different key`, stop and follow `docs/SIGNING.md` with the
 user. Do not uninstall anything on your own.
 
@@ -76,15 +76,15 @@ user. Do not uninstall anything on your own.
 
     ./tv switch --ip <IP> --to free --wait 180
 
-The command opens Mashrabiya's settings on the TV and prints `ACTION REQUIRED`. Tell the user,
-in their language: *"On the TV, choose **Mashrabiya** and press OK."* Then wait.
+The command opens Majlis's settings on the TV and prints `ACTION REQUIRED`. Tell the user,
+in their language: *"On the TV, choose **Majlis** and press OK."* Then wait.
 Expected: `PASS switch.mode home=io.freemytv/.HomeActivity`.
-If it times out, the user can open the Mashrabiya app on the TV → **Home Screen** → **Mashrabiya**,
+If it times out, the user can open the Majlis app on the TV → **Home Screen** → **Majlis**,
 then rerun the same command.
 
 ## Step 5 — verify (this is the definition of done)
 
-    ./tv verify --ip <IP> --mode free --apk Mashrabiya.apk
+    ./tv verify --ip <IP> --mode free --apk Majlis.apk
 
 Expected: `RESULT <n> PASS 0 FAIL <n> WARN <n> SKIP`, exit 0, and a `REPORT reports/verify-….md`
 line. WARN and SKIP are fine. One FAIL means not done: use §8, fix, rerun.
@@ -95,14 +95,14 @@ line. WARN and SKIP are fine. One FAIL means not done: use §8, fix, rerun.
 
 Paste this, filled in, and attach/point to the report file and screenshot:
 
-    Mashrabiya is installed.
+    Majlis is installed.
     TV: <brand> <model> · Android <version> · profile <sony|tcl|changhong|generic>
     APK: <versionName> (<versionCode>) · sha256 <first 12>
     Checks: <n> PASS / 0 FAIL / <n> WARN / <n> SKIP
     Report: reports/verify-<…>.md
     Screenshot: reports/shot-<…>.png
 
-Then tell them how to go back: *Mashrabiya app → Home Screen → Original*.
+Then tell them how to go back: *Majlis app → Home Screen → Original*.
 
 ## Update an existing install
 
@@ -126,10 +126,10 @@ re-enable the stock launcher; rollback must run first.
 | `BLOCKED … unauthorized` | The TV has not trusted this computer | User accepts the prompt, tick Always allow, rerun |
 | `BLOCKED … cannot reach` | Wrong IP or debugging off | Confirm IP, enable USB debugging, rerun |
 | `FAIL dev.android` | Android older than 9 | Stop: unsupported TV |
-| `FAIL apk.installed` | App missing | `./tv install --ip <IP> --apk Mashrabiya.apk` |
+| `FAIL apk.installed` | App missing | `./tv install --ip <IP> --apk Majlis.apk` |
 | `FAIL apk.version` / `FAIL apk.hash` | Old or different build on the TV | Reinstall, then verify |
 | `FAIL home.holder` | Not the home screen yet | `./tv switch --ip <IP> --to free --wait 180` |
-| `FAIL dream.holder` | Screensaver not ours | Open Mashrabiya → Home Screen → Mashrabiya |
+| `FAIL dream.holder` | Screensaver not ours | Open Majlis → Home Screen → Majlis |
 | `FAIL mode.disabled.preserved` | Something you had disabled got re-enabled | `./tv rollback --ip <IP>`, then report a bug |
 | `FAIL mode.disabled.added` | An unexpected package was disabled | `./tv rollback --ip <IP>`, then report a bug |
 | `FAIL mode.protected` | A critical app (Store, YouTube…) got disabled | `./tv rollback --ip <IP>` immediately |
@@ -144,7 +144,7 @@ Never treat a FAIL as a pass, and never edit `reports/` to make it look green.
 
 ## What this changes on the TV (say this before Step 4)
 
-- The home screen and screensaver become Mashrabiya.
+- The home screen and screensaver become Majlis.
 - Three stock packages are disabled with `pm disable-user`: the stock launcher, its recommendations,
   and the stock screensaver/backdrop. They stay installed.
 - The overlay and exact-alarm permissions are granted so the adhan can appear over other apps.

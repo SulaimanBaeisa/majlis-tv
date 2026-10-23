@@ -1,6 +1,6 @@
 # Security
 
-Mashrabiya changes the TV's home screen. Treat it like any system-level tool.
+Majlis changes the TV's home screen. Treat it like any system-level tool.
 
 - Report vulnerabilities privately: GitHub -> Security -> "Report a vulnerability".
 - Never post logs containing your TV's IP, Wi-Fi name, or serial number in a public issue.

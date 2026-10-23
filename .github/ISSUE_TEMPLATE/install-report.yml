@@ -1,5 +1,5 @@
 name: Install or update problem
-description: Something failed while installing, switching or verifying Mashrabiya
+description: Something failed while installing, switching or verifying Majlis
 labels: ["install"]
 body:
   - type: markdown

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">مشربية</string>
-    <string name="remote_key_service">تتيح أزرار التطبيقات في الريموت (نتفلكس، يوتيوب، برايم فيديو، قناة TCL) أن تفتح التطبيقات التي اخترتها في مشربية، من أي تطبيق. تقرأ هذه الأزرار فقط.</string>
+    <string name="app_name">مجلس</string>
+    <string name="remote_key_service">تتيح أزرار التطبيقات في الريموت (نتفلكس، يوتيوب، برايم فيديو، قناة TCL) أن تفتح التطبيقات التي اخترتها في مجلس، من أي تطبيق. تقرأ هذه الأزرار فقط.</string>
 </resources>

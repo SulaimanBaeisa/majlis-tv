@@ -70,7 +70,7 @@ class Fake:
 
     def __enter__(self):
         (self.dir / "responses.json").write_text(json.dumps(self.responses))
-        os.environ["MASH_FAKE_DIR"] = str(self.dir)
+        os.environ["MAJLIS_FAKE_DIR"] = str(self.dir)
         tv.ADB = [sys.executable, FAKE]
         tv.REPORTS = self.dir / "reports"
         return self

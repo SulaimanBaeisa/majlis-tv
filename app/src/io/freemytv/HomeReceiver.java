@@ -11,7 +11,7 @@ public class HomeReceiver extends BroadcastReceiver {
         if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
             HomeMode.bootCheck(context);
         } else if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
-            HomeMode.verify(context);   // app updated: complete Mashrabiya mode if something is missing
+            HomeMode.verify(context);   // app updated: complete Majlis mode if something is missing
             HomeMode.ensureRemoteService(context, 3_000);
         }
     }

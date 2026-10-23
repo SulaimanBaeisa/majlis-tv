@@ -37,7 +37,7 @@ adb -s <IP>:5555 shell cmd package set-home-activity com.google.android.apps.tv.
 
 Expected: `Success`.
 
-## 3. Re-enable the packages Mashrabiya disabled
+## 3. Re-enable the packages Majlis disabled
 
 ```bash
 adb -s <IP>:5555 shell pm enable com.google.android.tvlauncher
@@ -47,7 +47,7 @@ adb -s <IP>:5555 shell pm enable com.google.android.backdrop
 adb -s <IP>:5555 shell pm enable com.google.android.apps.tv.launcherx
 ```
 
-Only enable packages that were disabled *by Mashrabiya*. Do not enable a package that was already
+Only enable packages that were disabled *by Majlis*. Do not enable a package that was already
 disabled at the factory (the baseline in `reports/baseline-<serial>.json` lists them).
 
 ## 4. Clear our screensaver

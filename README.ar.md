@@ -1,6 +1,6 @@
 <div align="center">
 
-# مشربية
+# مجلس
 
 **واجهة عربية أولًا لتلفزيون أندرويد.**
 مواقيت الصلاة على أم القرى مع الإقامة، التاريخ الهجري، آية أو حديث موثّق كل يوم، الدوري السعودي،
@@ -10,46 +10,46 @@
 
 </div>
 
-![واجهة مشربية](docs/screenshots/home.jpg)
+![واجهة مجلس](docs/screenshots/home.jpg)
 
 ## أعطِ وكيلك هذه الجملة
 
-مشربية تُركّب بأمر واحد لوكيل البرمجة عندك: Claude Code أو Codex أو Cursor أو Hermes.
+مجلس تُركّب بأمر واحد لوكيل البرمجة عندك: Claude Code أو Codex أو Cursor أو Hermes.
 الوكيل يتبع [`AGENTS.md`](AGENTS.md)، وكل قرار على التلفزيون يتخذه أداة `./tv`، فالنتيجة واحدة
 مهما كان النموذج.
 
 **التركيب**
 
-> ركّب مشربية على تلفزيون أندرويد عندي. اتبع
-> https://github.com/SulaimanBaeisa/mashrabiya-tv/blob/main/AGENTS.md حرفيًا، ولا تكتب أوامر adb من عندك.
+> ركّب مجلس على تلفزيون أندرويد عندي. اتبع
+> https://github.com/SulaimanBaeisa/majlis-tv/blob/main/AGENTS.md حرفيًا، ولا تكتب أوامر adb من عندك.
 > عنوان التلفزيون 192.168.1.50 ومدينتي جدة.
 
 **التحديث**
 
-> حدّث مشربية على تلفزيوني (192.168.1.50) من https://github.com/SulaimanBaeisa/mashrabiya-tv — اتبع قسم
+> حدّث مجلس على تلفزيوني (192.168.1.50) من https://github.com/SulaimanBaeisa/majlis-tv — اتبع قسم
 > التحديث في AGENTS.md حرفيًا.
 
 **الرجوع**
 
 > أرجِع الشاشة الرئيسية الأصلية على تلفزيوني (192.168.1.50) حسب قسم الرجوع في
-> https://github.com/SulaimanBaeisa/mashrabiya-tv/blob/main/AGENTS.md.
+> https://github.com/SulaimanBaeisa/majlis-tv/blob/main/AGENTS.md.
 
 ## ماذا تغيّر على التلفزيون
 
-- تصبح مشربية هي الشاشة الرئيسية وشاشة التوقف.
+- تصبح مجلس هي الشاشة الرئيسية وشاشة التوقف.
 - تُعطَّل ثلاث حزم من النظام، ولا تُحذف: المشغّل الأصلي، والتوصيات، وشاشة التوقف الأصلية.
 - تُمنح صلاحيتا الظهور فوق التطبيقات والمنبّه الدقيق لأذان الصلاة.
-- زر **الأصلي** في إعدادات مشربية يعيد كل شيء كما كان.
+- زر **الأصلي** في إعدادات مجلس يعيد كل شيء كما كان.
 
 ## التركيب بدون وكيل
 
 ```bash
-git clone https://github.com/SulaimanBaeisa/mashrabiya-tv && cd mashrabiya-tv
+git clone https://github.com/SulaimanBaeisa/majlis-tv && cd majlis-tv
 ./tv doctor
 ./tv build --city "جدة"
 ./tv install --ip 192.168.1.50
-./tv switch --ip 192.168.1.50 --to free --wait 180   # ثم اختر مشربية على التلفزيون
-./tv verify --ip 192.168.1.50 --mode free --apk Mashrabiya.apk
+./tv switch --ip 192.168.1.50 --to free --wait 180   # ثم اختر مجلس على التلفزيون
+./tv verify --ip 192.168.1.50 --mode free --apk Majlis.apk
 ```
 
 ## التحديث والرجوع

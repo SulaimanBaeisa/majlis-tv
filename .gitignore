@@ -19,10 +19,10 @@ tests/out/
 # Licensed personal font files: never redistribute or commit
 app/assets/fonts/thmanyah*
 
-# Mashrabiya local state
+# Majlis local state
 reports/
 local.properties
-Mashrabiya.apk
+Majlis.apk
 *.jks
 private-fonts/
 brand/

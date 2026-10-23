@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds Mashrabiya.apk without Gradle: aapt2 -> javac -> d8 -> zipalign -> apksigner.
+# Builds Majlis.apk without Gradle: aapt2 -> javac -> d8 -> zipalign -> apksigner.
 # Needs a JDK (17+) and the Android SDK command-line tools (build-tools 34+, platform android-34). See README.md.
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -76,10 +76,10 @@ EOF
 
 # --- Sign
 # The signing key is the app's identity: an update must be signed with the same key.
-# It is NEVER in git. Precedence: MASH_KEYSTORE* env > local.properties > ~/.config/mashrabiya.
-APK_NAME="Mashrabiya.apk"
+# It is NEVER in git. Precedence: MAJLIS_KEYSTORE* env > local.properties > ~/.config/majlis.
+APK_NAME="Majlis.apk"
 RELEASE=0; [ "${1:-}" = "--release" ] && RELEASE=1
-if [ "${MASH_UNSIGNED:-0}" = "1" ] || [ "${1:-}" = "--unsigned" ]; then
+if [ "${MAJLIS_UNSIGNED:-0}" = "1" ] || [ "${1:-}" = "--unsigned" ]; then
   cp out/aligned.apk "$APK_NAME"
   echo "BUILT $APK_NAME (unsigned, tests only)"
   exit 0
@@ -90,19 +90,19 @@ if [ "$RELEASE" = "1" ] && ls app/assets/fonts/thmanyah* >/dev/null 2>&1; then
   exit 1
 fi
 lp() { grep -E "^[[:space:]]*$1[[:space:]]*=" local.properties 2>/dev/null | tail -1 | cut -d= -f2- | tr -d '"' || true; }
-KS="${MASH_KEYSTORE:-$(lp keystore)}"
-KS_PASS="${MASH_KEYSTORE_PASS:-$(lp ks_pass)}"
-ALIAS="${MASH_KEY_ALIAS:-$(lp key_alias)}"; ALIAS="${ALIAS:-mashrabiya}"
-KEY_PASS="${MASH_KEY_PASS:-$(lp key_pass)}"; KEY_PASS="${KEY_PASS:-$KS_PASS}"
+KS="${MAJLIS_KEYSTORE:-$(lp keystore)}"
+KS_PASS="${MAJLIS_KEYSTORE_PASS:-$(lp ks_pass)}"
+ALIAS="${MAJLIS_KEY_ALIAS:-$(lp key_alias)}"; ALIAS="${ALIAS:-majlis}"
+KEY_PASS="${MAJLIS_KEY_PASS:-$(lp key_pass)}"; KEY_PASS="${KEY_PASS:-$KS_PASS}"
 if [ -z "$KS" ] && [ -f freemytv.keystore ]; then KS="$PWD/freemytv.keystore"; echo "NOTE: legacy freemytv.keystore in the repo dir; move it out (see docs/SIGNING.md)." >&2; fi
 if [ -z "$KS" ] || [ ! -f "$KS" ]; then
-  mkdir -p "$HOME/.config/mashrabiya"
-  KS="$HOME/.config/mashrabiya/dev.keystore"
+  mkdir -p "$HOME/.config/majlis"
+  KS="$HOME/.config/majlis/dev.keystore"
   KS_PASS="$(head -c 32 /dev/urandom | base64 | tr -d '/+=' | head -c 24)"
-  "$KEYTOOL" -genkeypair -keystore "$KS" -alias mashrabiya -keyalg RSA -keysize 2048 -validity 20000 \
-    -storepass "$KS_PASS" -keypass "$KS_PASS" -dname "CN=Mashrabiya (local build)" >/dev/null 2>&1
+  "$KEYTOOL" -genkeypair -keystore "$KS" -alias majlis -keyalg RSA -keysize 2048 -validity 20000 \
+    -storepass "$KS_PASS" -keypass "$KS_PASS" -dname "CN=Majlis (local build)" >/dev/null 2>&1
   umask 077
-  printf 'keystore=%s\nks_pass=%s\nkey_alias=mashrabiya\nkey_pass=%s\n' "$KS" "$KS_PASS" "$KS_PASS" > local.properties
+  printf 'keystore=%s\nks_pass=%s\nkey_alias=majlis\nkey_pass=%s\n' "$KS" "$KS_PASS" "$KS_PASS" > local.properties
   echo "Created a local signing key: $KS (password in local.properties, mode 600). Keep it: updates need it."
 fi
 "$BT/apksigner" sign --ks "$KS" --ks-pass "pass:$KS_PASS" --ks-key-alias "$ALIAS" --key-pass "pass:$KEY_PASS" \

@@ -20,11 +20,11 @@ Every line below is a literal string the tools print. Search for the code, not t
 | Code | Meaning | Fix |
 |---|---|---|
 | `FAIL dev.android` | Android older than 9 | Unsupported TV |
-| `FAIL apk.installed` | `io.freemytv` is not installed | `./tv install --ip <IP> --apk Mashrabiya.apk` |
+| `FAIL apk.installed` | `io.freemytv` is not installed | `./tv install --ip <IP> --apk Majlis.apk` |
 | `FAIL apk.version` | The package has no readable version | Reinstall |
 | `FAIL apk.hash` | The installed APK differs byte-for-byte from the build | Reinstall; if it persists, check the signing channel |
-| `FAIL home.holder` | Mashrabiya is not the HOME app | `./tv switch --ip <IP> --to free --wait 180` |
-| `FAIL dream.holder` | The screensaver is not Mashrabiya | Open Mashrabiya → Home Screen → Mashrabiya again |
+| `FAIL home.holder` | Majlis is not the HOME app | `./tv switch --ip <IP> --to free --wait 180` |
+| `FAIL dream.holder` | The screensaver is not Majlis | Open Majlis → Home Screen → Majlis again |
 | `FAIL mode.disabled.preserved` | A package that was disabled before is now enabled | `./tv rollback --ip <IP>`; report a bug |
 | `FAIL mode.disabled.added` | A package outside the allow-list was disabled | `./tv rollback --ip <IP>`; report a bug |
 | `FAIL mode.protected` | A critical app (Store, GMS, YouTube, TV input) was disabled | `./tv rollback --ip <IP>` immediately |
@@ -58,10 +58,10 @@ Every line below is a literal string the tools print. Search for the code, not t
 
 - **"debugging is off on the TV (port 5555 closed)"** — turn USB debugging back on.
 - **"Android didn't accept the new home screen"** — another launcher holds the HOME role; open
-  Settings → Apps → Default apps → Home and choose Mashrabiya.
-- **The switch times out** — open the app on the TV and tap **Home Screen → Mashrabiya** yourself;
+  Settings → Apps → Default apps → Home and choose Majlis.
+- **The switch times out** — open the app on the TV and tap **Home Screen → Majlis** yourself;
   then rerun `./tv switch`.
-- **The TV updated itself and Mashrabiya is gone** — an OTA reset the HOME role; open Mashrabiya
+- **The TV updated itself and Majlis is gone** — an OTA reset the HOME role; open Majlis
   once; its boot receiver re-applies the mode.
 
 ## Nothing works

@@ -1,6 +1,6 @@
 <div align="center">
 
-# Mashrabiya · مشربية
+# Majlis · مجلس
 
 **An Arabic-first home screen for Android TV.**
 Umm al-Qura prayer times with iqama, the Hijri date, a Qur'an verse or a verified hadith every day,
@@ -10,28 +10,28 @@ the Saudi Pro League, an Arabic news ticker, and 39 Saudi wallpapers that change
 
 </div>
 
-![Mashrabiya home screen](docs/screenshots/home.jpg)
+![Majlis home screen](docs/screenshots/home.jpg)
 
 ## Ask your agent
 
-Mashrabiya is installed by your coding agent, from a single sentence. It works with Claude Code,
+Majlis is installed by your coding agent, from a single sentence. It works with Claude Code,
 Codex, Cursor or Hermes — the agent follows [`AGENTS.md`](AGENTS.md), and every device decision is
 made by the `./tv` tool, so the result is the same in every model.
 
 **Install**
 
-> Install Mashrabiya on my Android TV. Follow https://github.com/SulaimanBaeisa/mashrabiya-tv/blob/main/AGENTS.md
+> Install Majlis on my Android TV. Follow https://github.com/SulaimanBaeisa/majlis-tv/blob/main/AGENTS.md
 > exactly — do not improvise adb commands. My TV's IP is 192.168.1.50 and my city is Jeddah.
 
 **Update**
 
-> Update Mashrabiya on my TV (192.168.1.50) from https://github.com/SulaimanBaeisa/mashrabiya-tv — follow the
+> Update Majlis on my TV (192.168.1.50) from https://github.com/SulaimanBaeisa/majlis-tv — follow the
 > Update section of AGENTS.md exactly.
 
 **Roll back**
 
 > Put the original home screen back on my TV (192.168.1.50), following the Rollback section of
-> https://github.com/SulaimanBaeisa/mashrabiya-tv/blob/main/AGENTS.md.
+> https://github.com/SulaimanBaeisa/majlis-tv/blob/main/AGENTS.md.
 
 ## What it does
 
@@ -65,21 +65,21 @@ claim a 4K interface.
 
 ## What changes on the TV
 
-- Mashrabiya becomes the home screen and screensaver.
+- Majlis becomes the home screen and screensaver.
 - Three stock packages are disabled — never uninstalled: the stock launcher, its recommendations,
   and the stock screensaver/backdrop.
 - The overlay and exact-alarm permissions are granted for the adhan pop-up.
-- `Original` in Mashrabiya's settings reverses all of it.
+- `Original` in Majlis's settings reverses all of it.
 
 ## Install without an agent
 
 ```bash
-git clone https://github.com/SulaimanBaeisa/mashrabiya-tv && cd mashrabiya-tv
+git clone https://github.com/SulaimanBaeisa/majlis-tv && cd majlis-tv
 ./tv doctor
 ./tv build --city "Jeddah"
 ./tv install --ip 192.168.1.50
-./tv switch --ip 192.168.1.50 --to free --wait 180   # then tap Mashrabiya on the TV
-./tv verify --ip 192.168.1.50 --mode free --apk Mashrabiya.apk
+./tv switch --ip 192.168.1.50 --to free --wait 180   # then tap Majlis on the TV
+./tv verify --ip 192.168.1.50 --mode free --apk Majlis.apk
 ```
 
 Requires: Python 3.9+, JDK 17, Android SDK build-tools 34 + platform 34, adb. `./tv doctor` prints

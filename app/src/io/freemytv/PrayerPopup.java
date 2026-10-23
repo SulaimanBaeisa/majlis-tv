@@ -40,7 +40,7 @@ final class PrayerPopup {
                     PixelFormat.TRANSLUCENT);
             lp.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
             lp.y = Math.round(56 * k);
-            lp.setTitle("Mashrabiya prayer");
+            lp.setTitle("Majlis prayer");
             try {
                 wm.addView(v, lp);
             } catch (RuntimeException e) {

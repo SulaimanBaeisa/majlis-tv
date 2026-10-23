@@ -41,5 +41,5 @@ jobs:
         run: echo "$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)" >> "$GITHUB_PATH"
       - name: Frozen permissions and hosts
         env:
-          MASH_UNSIGNED: "1"
+          MAJLIS_UNSIGNED: "1"
         run: bash tests/check_surface.sh

@@ -60,8 +60,8 @@ SettingsActivity (:home) ── HomeMode (main process, ModeJob)
 
 ```bash
 source ~/tools/android-env.sh    # JDK 17 + Android SDK on this machine
-./build.sh                       # -> Mashrabiya.apk (signed)
-MASH_UNSIGNED=1 ./build.sh       # -> unsigned, for CI checks
+./build.sh                       # -> Majlis.apk (signed)
+MAJLIS_UNSIGNED=1 ./build.sh       # -> unsigned, for CI checks
 bash tests/run.sh                # pure-Java tests
 bash tests/check_surface.sh      # permissions, hosts, package id
 python3 tests/check_daily_sources.py

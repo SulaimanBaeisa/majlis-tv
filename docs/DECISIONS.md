@@ -7,7 +7,7 @@ Short architecture decision records. Each one states the context, the decision, 
 **Context.** The fork was already installed on three TVs as `io.freemytv`. Renaming the id would
 install a second launcher, leave the old one holding the HOME role, and require a second risky switch.
 
-**Decision.** The public product is called Mashrabiya; the application id stays `io.freemytv`.
+**Decision.** The public product is called Majlis; the application id stays `io.freemytv`.
 
 **Consequence.** `adb install -r` updates in place and the key keeps working. The package name looks
 legacy; changing it later needs a documented migration, not a rename.
