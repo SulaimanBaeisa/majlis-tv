@@ -220,9 +220,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private final Spring drawer = new Spring(0.46f, 0.92f, 0);
     private boolean drawerOpen;
     // Android 11 (no hardware layers): the drawer is blitted from a bitmap while it slides.
-    private Bitmap drawerCache;
-    private boolean drawerCacheValid, drawerAnimating, drawerTilesAnimating;
-    private String drawerCacheKey = "";
+    private boolean drawerHw;   // Android 11: the drawer is a hardware layer while it slides
+    private boolean drawerTilesAnimating;
     private int drawerIndex;
 
     // "All Apps" sheet
@@ -638,8 +637,9 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         drawerTilesAnimating = drawerItemsMoving;
         boolean gridMoving = step(gridFocus, dt) | scroll.step(dt);
         boolean drawerMoving = drawer.step(dt);
-        drawerAnimating = drawerMoving;
-        if (drawerMoving || drawerItemsMoving) drawerCacheValid = false;
+        // Android 11 has no hardware layers by default: promote the drawer to one while it slides, so the GPU
+        // translates a cached texture instead of re-drawing every tile, card and line of Arabic text each frame.
+        if (Ui.LEGACY) setDrawerLayer(drawerMoving || drawerItemsMoving);
         boolean sheetMoving = sheet.step(dt);
         boolean toastFading = tickToast(up);
         boolean heroFading = tickHeroFade(up);
@@ -683,6 +683,13 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     }
 
     /** Drawer and sheet: the layers' positions and opacity (without redrawing their content). */
+    /** Android 11: keep the drawer's drawing in a GPU texture while it moves; drop it when it settles. */
+    private void setDrawerLayer(boolean moving) {
+        if (moving == drawerHw) return;
+        drawerHw = moving;
+        drawerLayer.setLayerType(moving ? LAYER_TYPE_HARDWARE : LAYER_TYPE_NONE, null);
+    }
+
     private void updateMotion() {
         float d = drawer.value, dc = Ui.clamp(d), s = Ui.clamp(sheet.value);
         float home = 1 - s, top = home * (1 - smoothstep(0, 0.32f, dc));
@@ -1446,35 +1453,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
 
     private void drawDrawer(Canvas c) {
         if (drawerItems.isEmpty()) return;
-        if (!Ui.LEGACY) { drawDrawerContent(c); return; }
-        // Android 11: translating the drawer redraws every tile and card on each frame. Blit the last render instead.
-        if ((drawerAnimating || drawerTilesAnimating) && drawerCache != null) { c.drawBitmap(drawerCache, 0, 0, null); return; }
-        int cw = Math.max(1, getWidth()), ch = Math.max(1, drawerLayer.getHeight());
-        if (drawerCache == null || drawerCache.getWidth() != cw || drawerCache.getHeight() != ch) {
-            drawerCache = Bitmap.createBitmap(cw, ch, Bitmap.Config.ARGB_8888);
-            drawerCacheValid = false;
-        }
-        String key = drawerCacheKey();
-        if (!drawerCacheValid || !key.equals(drawerCacheKey)) {
-            drawerCache.eraseColor(0);
-            Canvas bc = new Canvas(drawerCache);
-            int top = drawerLayer.getTop();
-            bc.translate(0, -top);
-            scene.setOffset(0, -top);
-            drawDrawerContent(bc);
-            scene.setOffset(0, 0);
-            drawerCacheKey = key;
-            drawerCacheValid = true;
-        }
-        c.drawBitmap(drawerCache, 0, 0, null);
-    }
-
-    /** Everything the drawer shows, without the layer translation (drawn at the screen position it occupies). */
-    private String drawerCacheKey() {
-        StringBuilder s = new StringBuilder(drawerCardsKey());
-        s.append('|').append(drawerIndex).append('|').append(drawerInputs).append('|').append(drawerItems.size());
-        for (Spring f : drawerFocus) s.append('|').append(Math.round(f.value * 20));
-        return s.toString();
+        drawDrawerContent(c);
     }
 
     private void drawDrawerContent(Canvas c) {
