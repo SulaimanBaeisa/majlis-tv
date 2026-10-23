@@ -22,7 +22,7 @@ Repository root = the folder that contains this file. Run every command from the
    is a `fix="..."` string printed by `./tv`: run exactly that, nothing more.
 8. Android TV / Google TV only (Android 9–14). If the TV is LG webOS, Samsung Tizen, Roku, Fire TV
    or Apple TV, stop and say this project does not support it.
-9. Never promise a 4K interface. Vendors cap the UI plane at 1080p; video apps still play in 4K.
+9. Never promise a 4K interface; video apps keep their own 4K plane.
 
 ## Ask the user once, in one message
 

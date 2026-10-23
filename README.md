@@ -12,7 +12,20 @@ the Saudi Pro League, an Arabic news ticker, and 39 Saudi wallpapers that change
 
 ![Majlis home screen](docs/screenshots/home.jpg)
 
-<sub>Design mockup at 1920×1080 — the shipping UI follows this design.</sub>
+<sub>Design mockup — the shipping UI follows this design.</sub>
+
+## Screens
+
+| Home | Matches |
+|:---:|:---:|
+| ![Home](docs/screenshots/home.jpg) | ![Matches](docs/screenshots/matches.jpg) |
+| **News** | **Drawer** |
+| ![News](docs/screenshots/news.jpg) | ![Drawer](docs/screenshots/drawer.jpg) |
+| **Screensaver** | **Settings** |
+| ![Screensaver](docs/screenshots/screensaver.jpg) | ![Settings](docs/screenshots/settings.jpg) |
+
+Home, Matches, News and Drawer are design mockups; the shipping UI follows them.
+Screensaver and Settings are captures from a Sony BRAVIA on Android 12.
 
 ## Ask your agent
 
@@ -52,19 +65,6 @@ made by the `./tv` tool, so the result is the same in every model.
 - **One button back.** `Original` restores the stock launcher, recommendations, backdrop and
   screensaver. Nothing is uninstalled.
 
-## Screens
-
-| Home | Matches |
-|:---:|:---:|
-| ![Home](docs/screenshots/home.jpg) | ![Matches](docs/screenshots/matches.jpg) |
-| **News** | **Drawer** |
-| ![News](docs/screenshots/news.jpg) | ![Drawer](docs/screenshots/drawer.jpg) |
-| **Screensaver** | **Settings** |
-| ![Screensaver](docs/screenshots/screensaver.jpg) | ![Settings](docs/screenshots/settings.jpg) |
-
-Home, Matches, News and Drawer are design mockups at 1920×1080; the shipping UI follows them.
-Screensaver and Settings are captures from a Sony BRAVIA on Android 12.
-
 ## Supported TVs
 
 | Brand | Tested on | Android | Notes |
@@ -73,10 +73,6 @@ Screensaver and Settings are captures from a Sony BRAVIA on Android 12.
 | TCL Google TV | Smart TV Pro G08 | 14 | profile `tcl`; survives `TclAppBoot` |
 | Changhong / Classpro | AI PONT | 11 | profile `changhong`; separate screensaver process |
 | Other Android TV / Google TV | — | 9–14 | profile `generic`; verify before trusting |
-
-The interface is rendered at 1920×1080 on all of them: the vendors cap the graphics plane
-(`ro.surface_flinger.max_graphics_*`). Video apps keep their own 4K/HDR plane. This project does not
-claim a 4K interface.
 
 ## What changes on the TV
 
