@@ -21,7 +21,7 @@ source ~/tools/android-env.sh      # JDK 17 + Android SDK, user-level
 cp config.example.properties config.properties   # then edit (city, coordinates, iqama=)
 tests/run.sh                        # plain-Java tests, expect ALL-PASS
 tests/check_surface.sh              # builds the APK; fails if permissions or hosts change
-adb install -r FreeMyTV.apk
+adb install -r Mashrabiya.apk
 ```
 
 `tests/check_surface.sh` pins the three permissions (INTERNET, ACCESS_NETWORK_STATE, RECEIVE_BOOT_COMPLETED) and the host list

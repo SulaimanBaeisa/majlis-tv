@@ -104,7 +104,7 @@ if __name__ == "__main__":
     os.makedirs(res, exist_ok=True)
     mark(192).save(os.path.join(res, "icon.png"))
     banner().save(os.path.join(res, "banner.png"))
-    site = os.path.join(ROOT, "docs/assets")
+    site = os.path.join(ROOT, "brand")
     os.makedirs(site, exist_ok=True)
     mark(512).save(os.path.join(site, "icon-512.png"))
     mark(180).save(os.path.join(site, "apple-touch-icon.png"))

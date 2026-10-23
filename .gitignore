@@ -18,3 +18,11 @@ tests/out/
 
 # Licensed personal font files: never redistribute or commit
 app/assets/fonts/thmanyah*
+
+# Mashrabiya local state
+reports/
+local.properties
+Mashrabiya.apk
+*.jks
+private-fonts/
+brand/

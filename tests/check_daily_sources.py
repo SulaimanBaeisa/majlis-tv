@@ -3,7 +3,7 @@
 import json, pathlib, subprocess, hashlib
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 rows = [line.split('\t', 2) for line in (ROOT/'app/assets/daily.tsv').read_text().splitlines() if line and not line.startswith('#')]
-manifest = json.loads((ROOT/'docs/hadith-sources.json').read_text())
+manifest = json.loads((ROOT/'docs/religious/hadith-sources.json').read_text())
 q = [r for r in rows if r[0] == 'Q']
 h = [r for r in rows if r[0] == 'H']
 assert len(q) == 29 and len(h) == len(manifest) == 60

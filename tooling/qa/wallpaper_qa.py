@@ -2,7 +2,9 @@
 """Sony-only QA for file import, replacing a same-named image, invalid-image fallback and safe cleanup."""
 import hashlib,json,subprocess,time,os
 from pathlib import Path
-SERIAL=os.environ.get('TV_SERIAL','10.3.30.60:5555')
+SERIAL = os.environ.get("TV_SERIAL")
+if not SERIAL:
+    raise SystemExit("set TV_SERIAL=<ip>:5555")
 ROOT=Path('/srv/projects/free-my-tv-ar-src')
 OUT=Path(os.environ.get('TV_OUT','/srv/projects/free-my-tv-ar/tv-recon/sony-v2-20261023'))
 REMOTE='/sdcard/Android/data/io.freemytv/files/wallpapers/sony-v2-qa-photo.jpg'
@@ -20,7 +22,7 @@ def logs():
 assert text('shell','getprop','ro.product.model')=='AI PONT' or text('shell','getprop','ro.product.manufacturer').lower()=='sony'
 assert adb('shell','test','-e',REMOTE,ok=False).returncode!=0,'Refusing to overwrite a pre-existing file'
 results=[];last_sha=None
-invalid=Path('/home/sulaiman/.hermes/cache/scratch/sony-v2-invalid-image.jpg')
+invalid=Path(os.environ.get("TV_QA_DIR", "reports/qa")) / "invalid-image.jpg"
 invalid.write_bytes(b'Deliberately invalid image: negative QA fixture, not wallpaper content.\n')
 try:
     for label,source,expected in [('import',ROOT/'app/assets/saudi/s10.jpg','custom'),('replacement',ROOT/'app/assets/saudi/s39.jpg','custom'),('invalid-fallback',invalid,'bundled')]:

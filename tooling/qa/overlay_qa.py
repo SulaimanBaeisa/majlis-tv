@@ -3,7 +3,9 @@
 import json,re,subprocess,time
 from pathlib import Path
 import os
-SERIAL=os.environ.get('TV_SERIAL','10.3.30.60:5555')
+SERIAL = os.environ.get("TV_SERIAL")
+if not SERIAL:
+    raise SystemExit("set TV_SERIAL=<ip>:5555")
 EXPECT=os.environ.get('TV_BRAND','sony')
 OUT=Path(os.environ.get('TV_OUT','/srv/projects/free-my-tv-ar/tv-recon/sony-v2-20261023'))
 def adb(*args):

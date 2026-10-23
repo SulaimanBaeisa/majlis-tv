@@ -27,9 +27,9 @@ before you do it, and let them do the taps on the TV.
    after `tmdb_key=` in `config.properties` themselves. Don't ask for it in the chat, never print it, never commit
    it. If they paste it in the chat anyway, put it only in `config.properties`.
    Without a key everything works except the picks and the screensaver photos.
-5. **Build:** `./build.sh` → `FreeMyTV.apk`. Keep `freemytv.keystore`: updates must be signed with the same key.
+5. **Build:** `./build.sh` → `Mashrabiya.apk`. Keep `freemytv.keystore`: updates must be signed with the same key.
 6. **Install:** `adb connect <IP>:5555`. The TV asks *Allow USB debugging?*: tell them to accept and tick *Always
-   allow*. Then `adb install -r FreeMyTV.apk`. On TCL, also `adb shell "appops set io.freemytv AUTO_START allow || appops set io.freemytv APP_AUTO_START allow"`
+   allow*. Then `adb install -r Mashrabiya.apk`. On TCL, also `adb shell "appops set io.freemytv AUTO_START allow || appops set io.freemytv APP_AUTO_START allow"`
    (some firmware calls the operation `APP_AUTO_START`; this tries both):
    TCL's `TclAppBoot` blocks background jobs by default, so the switch (and the watchdog) never run. The log shows
    `forbid bind service ... ModeJob`.
@@ -156,7 +156,7 @@ HDMI (Chromecast with Google TV, Google TV Streamer, onn 4K, NVIDIA Shield). Set
   What the person changes on the TV (`Prefs`: Home Settings, Shelf, Remote Buttons) wins over those first values.
 - The remote's app buttons (`RemoteKeys`, `RemoteKeyService`) use TCL's key codes: they run only on TCL TVs, the
   service is on only in Free My TV mode, and *Original* takes it out of the enabled accessibility services.
-- After any change, `./build.sh` must end with `Built FreeMyTV.apk`.
+- After any change, `./build.sh` must end with `Built Mashrabiya.apk`.
 - LG and Samsung (`web/`): plain ES5 JavaScript and CSS without variables, grid or backdrop-filter, since older TVs
   (webOS 3 and 4, Tizen 3) run a Chromium from 2015 to 2017; only transform and opacity animate. `web/tv.js` is the
   TV's side: on LG, Luna (`listLaunchPoints`, `launch`, the inputs); on Samsung, `tizen.application` (`getAppsInfo`,

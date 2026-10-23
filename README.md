@@ -61,7 +61,7 @@ About ten minutes. You need a Google TV or Android TV (Android 9 or newer) and a
 4. **Install:**
    ```bash
    adb connect 192.168.1.50:5555
-   adb install -r FreeMyTV.apk
+   adb install -r Mashrabiya.apk
    ```
    On TCL TVs, also let it run in the background (TCL blocks it by default, and the switch never starts):
    ```bash

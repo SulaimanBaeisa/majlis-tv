@@ -1,0 +1,15 @@
+Mashrabiya
+Copyright (c) 2026 Mashrabiya contributors
+
+This product is a fork of Free My TV (https://github.com/simbasjungles/free-my-tv),
+Copyright (c) 2026 Free My TV contributors, licensed under the MIT License.
+Fork point: 895063f299cded76870e6dd0bcd23475a6668d21.
+
+What changed: Arabic/right-to-left layout, Umm al-Qura prayer times with iqama, Hijri date,
+daily Qur'an verse / verified hadith, Saudi Pro League card, Arabic news ticker, 39 Saudi
+wallpapers with per-photo credits (PHOTO-CREDITS.md), an adhan overlay, and the host-side
+installer/verifier in tooling/.
+
+The MIT license text in LICENSE applies to the whole repository. Photographs keep their own
+licences, listed in PHOTO-CREDITS.md and app/assets/saudi/credits.tsv. The Thmanyah fonts are
+not part of this repository and are not redistributed.
