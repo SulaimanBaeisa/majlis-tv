@@ -22,8 +22,14 @@ made by the `./tv` tool, so the result is the same in every model.
 
 **Install**
 
-> Install Majlis on my Android TV. Follow https://github.com/SulaimanBaeisa/majlis-tv/blob/main/AGENTS.md
-> exactly — do not improvise adb commands. My TV's IP is 192.168.1.50 and my city is Jeddah.
+> Install Majlis on my Android TV. I have never used adb, so start from the very beginning and walk
+> me through it one step at a time: turning on developer mode and USB debugging on the TV, finding
+> its IP address, and getting this computer ready. Wait for me after each step. Follow
+> https://github.com/SulaimanBaeisa/majlis-tv/blob/main/AGENTS.md exactly — do not improvise adb
+> commands. My city is Jeddah.
+
+You don't need to know adb or your TV's IP address: the agent shows you where to find each setting
+on the TV, and it runs every command itself.
 
 **Update**
 
