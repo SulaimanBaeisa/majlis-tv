@@ -14,19 +14,6 @@ the Saudi Pro League, an Arabic news ticker, and 39 Saudi wallpapers that change
 
 <sub>Design mockup — the shipping UI follows this design.</sub>
 
-## Screens
-
-| Home | Matches |
-|:---:|:---:|
-| ![Home](docs/screenshots/home.jpg) | ![Matches](docs/screenshots/matches.jpg) |
-| **News** | **Drawer** |
-| ![News](docs/screenshots/news.jpg) | ![Drawer](docs/screenshots/drawer.jpg) |
-| **Screensaver** | **Settings** |
-| ![Screensaver](docs/screenshots/screensaver.jpg) | ![Settings](docs/screenshots/settings.jpg) |
-
-Home, Matches, News and Drawer are design mockups; the shipping UI follows them.
-Screensaver and Settings are captures from a Sony BRAVIA on Android 12.
-
 ## Ask your agent
 
 Majlis is installed by your coding agent, from a single sentence. It works with Claude Code,
@@ -64,6 +51,19 @@ made by the `./tv` tool, so the result is the same in every model.
 - **A screensaver and an adhan overlay** that disappears after about a minute.
 - **One button back.** `Original` restores the stock launcher, recommendations, backdrop and
   screensaver. Nothing is uninstalled.
+
+## Screens
+
+| Home | Matches |
+|:---:|:---:|
+| ![Home](docs/screenshots/home.jpg) | ![Matches](docs/screenshots/matches.jpg) |
+| **News** | **Drawer** |
+| ![News](docs/screenshots/news.jpg) | ![Drawer](docs/screenshots/drawer.jpg) |
+| **Screensaver** | **Settings** |
+| ![Screensaver](docs/screenshots/screensaver.jpg) | ![Settings](docs/screenshots/settings.jpg) |
+
+All six are design mockups of Majlis 1.2.0, drawn from the app's own palette, fonts and Saudi
+wallpapers; the shipping UI follows them.
 
 ## Supported TVs
 
