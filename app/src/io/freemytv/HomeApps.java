@@ -366,7 +366,7 @@ final class HomeApps {
                 intent = new Intent().setComponent(new ComponentName(a, SettingsActivity.class));
                 break;
             case ANDROID_SETTINGS:
-                intent = new Intent(Settings.ACTION_SETTINGS);
+                intent = tvSettings(a);
                 break;
             default:
                 return false;
@@ -427,6 +427,19 @@ final class HomeApps {
         } catch (RuntimeException ignored) {
         }
         return system != null ? system : fallback;
+    }
+
+    /**
+     * The TV's own settings, the same on every maker: Android's standard settings request when something answers it,
+     * else the Android TV settings app's launcher entry; when neither is visible to us (package visibility), the standard
+     * request anyway (the caller catches ActivityNotFoundException). No maker-specific activity is guessed.
+     */
+    static Intent tvSettings(Context c) {
+        PackageManager pm = c.getPackageManager();
+        Intent standard = new Intent(Settings.ACTION_SETTINGS);
+        if (standard.resolveActivity(pm) != null) return standard;
+        Intent app = launchIntent(pm, "com.android.tv.settings");
+        return app != null ? app : standard;
     }
 
     static Intent launchIntent(PackageManager pm, String pkg) {

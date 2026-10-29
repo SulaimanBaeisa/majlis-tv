@@ -342,6 +342,11 @@ final class Shaders {
         out.set(NIGHT[0], NIGHT[1], NIGHT[2]);
     }
 
+    /** Settings: the dark Majlis look at any hour (night ink with the Saudi green of the home's accents; HomeLayout). */
+    static void majlis(Palette out) {
+        out.set(HomeLayout.SETTINGS_SKY[0], HomeLayout.SETTINGS_SKY[1], HomeLayout.SETTINGS_SKY[2]);
+    }
+
     private static int mix(int a, int b, float f) {
         int r = Math.round(((a >> 16) & 255) * (1 - f) + ((b >> 16) & 255) * f);
         int g = Math.round(((a >> 8) & 255) * (1 - f) + ((b >> 8) & 255) * f);

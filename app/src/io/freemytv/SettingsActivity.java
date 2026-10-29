@@ -110,7 +110,12 @@ public class SettingsActivity extends Activity {
     }
 
     static final class SettingsView extends View implements Choreographer.FrameCallback {
-        private static final int MAIN = 0, HOME_CHOICE = 1, HOME_SETTINGS = 2, REMOTE_KEYS = 3, PICKER = 4, SHELF_EDIT = 5;
+        private static final int MAIN = 0, HOME_CHOICE = 1, HOME_SETTINGS = 2, REMOTE_KEYS = 3, PICKER = 4, SHELF_EDIT = 5, FOOTBALL = 6, ABOUT = 7;
+        /** Main rows, in order. */
+        private static final int ROW_HOME = 0, ROW_SAVER = 1, ROW_HOME_SETTINGS = 2, ROW_FOOTBALL = 3, ROW_SHELF = 4,
+                ROW_REMOTE = 5, ROW_TV = 6, ROW_ABOUT = 7, MAIN_ROWS = 8;
+        /** Text never goes below this (tvOS safe area: 60 px from the bottom of 1080). */
+        private static final float SAFE_BOTTOM = 1020;
         private static final float LIST_ROW_H = 68, LIST_ROW_GAP = 6;
         private static final int PICK_VISIBLE = 9;
         private static final float LIST_X = 1000, LIST_R = 1824, LIST_TOP = 186, ROW_H = 74, ROW_GAP = 8, CHOICE_H = 104;
@@ -134,12 +139,22 @@ public class SettingsActivity extends Activity {
         private boolean running, okDown, backDown, wasBusy;
         private StaticLayout errorLayout;   // the last error, wrapped (rebuilt only when it changes)
         private String errorShown;
+        // Football: the 20 competitions, the selection being edited (saved on every change).
+        private List<String> football = new ArrayList<>();
+        // About: wrapped paragraphs (heading flag, layout), their total height and the scroll.
+        private final List<StaticLayout> aboutLayouts = new ArrayList<>();
+        private final List<Boolean> aboutHeads = new ArrayList<>();
+        private float aboutHeight, aboutScroll;
+        private String aboutKey = "", paragraphKey = "";
+        private StaticLayout paragraphLayout;
+        private long aboutCheckTick = -1;
         private final Spoken spoken;
         private long startedAt, lastNanos, pendingAt, lastSky;
         private int w, h;
         private float k = 1;
         private Paint title, subtitle, version, rowLabel, rowValue, rowSub, header, cellLabel, cellValue, warn, spinner, white, shadow;
-        private TextPaint notice;
+        private TextPaint notice, warnText;
+        private Paint aboutTitle;
 
         private final Runnable poll = new Runnable() {
             @Override public void run() {
@@ -165,8 +180,8 @@ public class SettingsActivity extends Activity {
             super(a);
             activity = a;
             for (int i = 0; i < pop.length; i++) pop[i] = new Spring(0.28f, 0.85f, 0);
-            HomeData.Weather wx = HomeData.get(a).weather;
-            Shaders.sky(scene.palette, System.currentTimeMillis(), wx.sunrise, wx.sunset);
+            // Always the dark Majlis look (not the time-of-day sky: by day it was a bright blue behind white text).
+            Shaders.majlis(scene.palette);
             scene.setMotion(0.5f, 0.2f);
             scene.applyPalette();
             setFocusable(true);
@@ -203,10 +218,20 @@ public class SettingsActivity extends Activity {
                                 : freeActive() ? "Majlis" : Ui.tr("Original", "Original");
                         return Ui.tr("Início, ", "Home Screen, ") + value;
                     }
-                    String[] names = {Ui.tr("Tela de Descanso, ver agora", "Screensaver, preview"), Ui.tr("Ajustes do Início", "Home Settings"),
-                            Ui.tr("Prateleira", "Shelf"), Ui.tr("Botões do Controle", "Remote Buttons"), Ui.tr("Ajustes da TV", "TV Settings")};
-                    return row - 1 < names.length ? names[row - 1] : "";
+                    String[] labels = mainLabels();
+                    if (row == ROW_SAVER) return Ui.tr("Tela de Descanso, ver agora", "Screensaver, preview");
+                    if (row == ROW_FOOTBALL) return labels[row] + ", " + footballValue();
+                    return row < labels.length ? labels[row] : "";
                 }
+                case FOOTBALL: {
+                    int at = pickScroll + row;
+                    if (at >= Competitions.ALL.size()) return "";
+                    Competitions.Competition comp = Competitions.ALL.get(at);
+                    return name(comp) + ", " + (football.contains(comp.id) ? say("مختارة", "selecionada", "selected") : say("غير مختارة", "não selecionada", "not selected"))
+                            + ", " + (at + 1) + Ui.tr(" de ", " of ") + Competitions.ALL.size();
+                }
+                case ABOUT:
+                    return aboutText();
                 case HOME_CHOICE: {
                     String name = row == 0 ? "Majlis, " + Ui.tr("sem anúncios, com a tela de descanso nova", "no ads, with the new screensaver")
                             : "Original, " + Ui.tr("o Início de fábrica da TV", "the TV's factory home screen");
@@ -246,12 +271,16 @@ public class SettingsActivity extends Activity {
             } else if (screen == HOME_CHOICE) {
                 top = LIST_TOP + 20 + row * (CHOICE_H + ROW_GAP);
                 height = CHOICE_H;
+            } else if (screen == ABOUT) {
+                top = LIST_TOP;
+                height = SAFE_BOTTOM - LIST_TOP;
             } else {
                 top = LIST_TOP + 20 + row * (LIST_ROW_H + LIST_ROW_GAP);
                 height = LIST_ROW_H;
             }
             focusBox.set(LIST_X * k, top * k, LIST_R * k, (top + height) * k);
             Rtl.flip(focusBox, 0, w);
+            if (screen == ABOUT) focusBox.offset(aboutColumnShift(), 0);
             return focusBox;
         }
 
@@ -300,6 +329,11 @@ public class SettingsActivity extends Activity {
             cellValue = Ui.numbers(Ui.regular, 25 * k, 0xD9FFFFFF);
             cellValue.setTextAlign(Paint.Align.RIGHT);
             warn = Ui.text(Ui.regular, 23 * k, AMBER);
+            warnText = new TextPaint(warn);
+            aboutTitle = Ui.text(Ui.displaySemibold, 34 * k, 0xFFFFFFFF);
+            paragraphKey = aboutKey = "";
+            paragraphLayout = null;
+            aboutCheckTick = -1;
             notice = new TextPaint(Ui.text(Ui.regular, 23 * k, 0xB3FFFFFF));
             spinner = new Paint(Paint.ANTI_ALIAS_FLAG);
             spinner.setStyle(Paint.Style.STROKE);
@@ -321,12 +355,14 @@ public class SettingsActivity extends Activity {
 
         private int rowCount() {
             switch (screen) {
-                case MAIN: return 6;
+                case MAIN: return MAIN_ROWS;
                 case HOME_CHOICE: return 2;
                 case HOME_SETTINGS: return settingLabels().length;
                 case PICKER: return Math.min(PICK_VISIBLE, pickLabels.size());
                 case SHELF_EDIT: return Math.min(PICK_VISIBLE, shelfRows.size());
-                default: return Prefs.KEYS.length;
+                case FOOTBALL: return Math.min(PICK_VISIBLE, Competitions.ALL.size());
+                case ABOUT: return 1;   // one block of text, scrolled with ↑ ↓
+                default: return remoteKeys().length;
             }
         }
 
@@ -353,24 +389,71 @@ public class SettingsActivity extends Activity {
             scene.drawBackground(c);
 
             // On the left: big symbol, title, description.
+            c.save();
+            if (screen == ABOUT) c.translate(-aboutColumnShift(), 0);
             float cx = 500 * k;
             Symbols.draw(getContext(), c, "sparkles", Rtl.x(cx, 0, w), 400 * k, 150 * k, 0xEBFFFFFF);
             put(c, "Majlis", cx, 612 * k, title);
             put(c, Ui.tr("Início e tela de descanso da TV", "Your TV's home screen and screensaver"), cx, 660 * k, subtitle);
             put(c, versionName(getContext()), cx, 704 * k, version);
+            c.restore();
 
-            if (screen == MAIN) drawMain(c, seconds); else if (screen == HOME_CHOICE) drawChoice(c); else if (screen == PICKER) drawPicker(c); else if (screen == SHELF_EDIT) drawShelfEditor(c); else drawList(c);
+            if (screen == MAIN) drawMain(c, seconds); else if (screen == HOME_CHOICE) drawChoice(c); else if (screen == PICKER) drawPicker(c);
+            else if (screen == SHELF_EDIT) drawShelfEditor(c); else if (screen == FOOTBALL) drawFootball(c); else if (screen == ABOUT) drawAbout(c); else drawList(c);
+        }
+
+        /** Text for a run-time string with no fixed English key: Arabic, Portuguese, or English (also for Spanish). */
+        private static String say(String ar, String pt, String en) {
+            return Ui.ar ? ar : Ui.en || Ui.es ? en : pt;
+        }
+
+        private String[] mainLabels() {
+            return new String[] {Ui.tr("Início", "Home Screen"), Ui.tr("Tela de Descanso", "Screensaver"),
+                    Ui.tr("Ajustes do Início", "Home Settings"), say("كرة القدم", "Futebol", "Football"), Ui.tr("Prateleira", "Shelf"),
+                    Ui.tr("Botões do Controle", "Remote Buttons"), Ui.tr("Ajustes da TV", "TV Settings"),
+                    say("حول مجلس ومصادر البيانات", "Sobre e fontes de dados", "About and data sources")};
+        }
+
+        private static String name(Competitions.Competition comp) { return Ui.ar ? comp.ar : comp.en; }
+
+        /** "3 بطولات" / "None": the Football row's value. */
+        private String footballValue() {
+            List<String> ids = Prefs.competitions();
+            if (ids.isEmpty()) return say("لا شيء", "Nenhum", "None");
+            if (ids.size() == 1) return name(Competitions.byId(ids.get(0)));
+            return Ui.ar ? Arabic.unit(ids.size(), "بطولة", "بطولتان", "بطولات", "بطولة") : ids.size() + say("", " competições", " competitions");
+        }
+
+        /**
+         * A wrapped paragraph in the list column: right-aligned in Arabic (RTL paragraph direction, so mixed Arabic and
+         * Latin keeps its order), at most {@code maxLines}, never past SAFE_BOTTOM. Returns the height used.
+         */
+        private float paragraph(Canvas c, String text, float top, TextPaint paint, int maxLines) {
+            int width = Math.round((LIST_R - LIST_X - 60) * k);
+            int lines = Math.max(1, Math.min(maxLines, (int) ((SAFE_BOTTOM * k - top) / (paint.getFontSpacing()))));
+            String key = text + "|" + width + "|" + lines + "|" + paint.getTextSize() + "|" + paint.getColor() + "|" + Ui.language;
+            if (paragraphLayout == null || !key.equals(paragraphKey)) {
+                paragraphLayout = Rtl.dir(StaticLayout.Builder.obtain(text, 0, text.length(), new TextPaint(paint), Math.max(1, width))
+                        .setMaxLines(lines).setEllipsize(TextUtils.TruncateAt.END)).build();
+                paragraphKey = key;
+            }
+            StaticLayout l = paragraphLayout;
+            tmp.set((LIST_X + 30) * k, top, (LIST_X + 30) * k + width, top + l.getHeight());
+            Rtl.flip(tmp, 0, w);
+            c.save();
+            c.translate(tmp.left, top);
+            l.draw(c);
+            c.restore();
+            return l.getHeight();
         }
 
         private void drawMain(Canvas c, float seconds) {
             boolean working = busy();
             String busyText = state.optString("busy");
             String mode = freeActive() ? "Majlis" : Ui.tr("Original", "Original");
-            String[] labels = {Ui.tr("Início", "Home Screen"), Ui.tr("Tela de Descanso", "Screensaver"),
-                    Ui.tr("Ajustes do Início", "Home Settings"), Ui.tr("Prateleira", "Shelf"),
-                    Ui.tr("Botões do Controle", "Remote Buttons"), Ui.tr("Ajustes da TV", "TV Settings")};
-            String[] values = {working ? "" : mode, Ui.tr("Ver agora", "Preview"), "", "", "", ""};
-            for (int i = 0; i < 6; i++) {
+            String[] labels = mainLabels();
+            String[] values = {working ? "" : mode, Ui.tr("Ver agora", "Preview"), "", footballValue(), "", "", "", ""};
+            for (int i = 0; i < MAIN_ROWS; i++) {
                 float y = (LIST_TOP + i * (ROW_H + ROW_GAP)) * k;
                 rowRect.set(LIST_X * k, y, LIST_R * k, y + ROW_H * k);
                 float f = drawRowBackground(c, i);
@@ -379,6 +462,12 @@ public class SettingsActivity extends Activity {
                 float base = rowRect.centerY() + Ui.halfCap(rowLabel);
                 put(c, labels[i], rowRect.left + 30 * k, base, rowLabel);
                 float right = rowRect.right - 30 * k;
+                if (i == ROW_FOOTBALL) {
+                    rowValue.setColor(blend(0x8CFFFFFF, 0x8C1C1C1E, f));
+                    float cw = Symbols.width(getContext(), "chevron_right", 22 * k);
+                    String shown = TextUtils.ellipsize(values[i], new TextPaint(rowValue), 360 * k, TextUtils.TruncateAt.END).toString();
+                    put(c, shown, right - cw - 18 * k, base, rowValue);
+                }
                 if (i >= 2) {
                     float cw = Symbols.width(getContext(), "chevron_right", 22 * k);
                     float chx = Rtl.x(right - cw / 2, 0, w);
@@ -401,35 +490,23 @@ public class SettingsActivity extends Activity {
                 }
             }
 
-            float y = (LIST_TOP + 6 * (ROW_H + ROW_GAP) + 20) * k;
+            // Under the list, inside the safe area: what to do on the TV, the last error (wrapped, whole when it fits),
+            // or the newest notice. The comparison, recommendations, credits and all notices are in About.
+            float y = (LIST_TOP + MAIN_ROWS * (ROW_H + ROW_GAP) + 18) * k;
             String error = state.optString("error");
             if (working && (busyText.contains("Permitir") || busyText.contains("Allow"))) {
-                put(c, Ui.tr("Na TV: marque “Sempre permitir” e aperte OK.", "On the TV: tick “Always allow” and press OK."),
-                        LIST_X * k + 30 * k, y, warn);
-                y += 46 * k;
+                paragraph(c, Ui.tr("Na TV: marque “Sempre permitir” e aperte OK.", "On the TV: tick “Always allow” and press OK."), y, warnText, 2);
             } else if (!working && !error.isEmpty()) {
-                // The whole message, on up to five lines: some say what to do (the Wi-Fi one, #14).
-                int width = Math.round(760 * k);
-                if (errorLayout == null || !error.equals(errorShown) || errorLayout.getWidth() != width) {
-                    errorShown = error;
-                    errorLayout = Rtl.dir(StaticLayout.Builder.obtain(error, 0, error.length(), new TextPaint(warn), width)
-                            .setMaxLines(5).setEllipsize(TextUtils.TruncateAt.END)).build();
-                }
-                c.save();
-                c.translate(Rtl.x(LIST_X * k + 30 * k + errorLayout.getWidth(), 0, w), y - errorLayout.getLineBaseline(0));
-                errorLayout.draw(c);
-                c.restore();
-                y += errorLayout.getLineBaseline(errorLayout.getLineCount() - 1) - errorLayout.getLineBaseline(0) + 46 * k;
+                paragraph(c, error, y, warnText, 4);
+            } else {
+                JSONArray notices = state.optJSONArray("notices");
+                JSONObject newest = notices == null ? null : notices.optJSONObject(0);
+                if (newest != null) paragraph(c, ago(newest.optLong("at")) + " · " + newest.optString("text"), y, notice, 3);
             }
-            y = drawComparison(c, y);
-            y = drawRecs(c, y + 26 * k);
-            drawNotices(c, y + 40 * k);
         }
 
-        /** Home screen picks: status, and the credit TMDB asks for. */
-        private float drawRecs(Canvas c, float y) {
-            float x = LIST_X * k + 30 * k;
-            put(c, Ui.tr("RECOMENDAÇÕES", "RECOMMENDATIONS"), x, y, header);
+        /** Home screen picks: status (About; the credit TMDB asks for is in About.sections). */
+        private String recsLine() {
             String line;
             String error = recs.optString("error");
             int count = recs.optInt("count");
@@ -439,12 +516,7 @@ public class SettingsActivity extends Activity {
                     Ui.tr("Ligadas · " + count + " títulos nos apps da TV, 3 novos a cada hora.",
                     "On · " + count + " titles from the TV's apps, 3 new ones every hour."));
             else line = Ui.tr("Buscando os títulos…", "Fetching titles…");
-            put(c, TextUtils.ellipsize(line, notice, 790 * k, TextUtils.TruncateAt.END).toString(), x, y + 42 * k, notice);
-            version.setTextAlign(Paint.Align.LEFT);
-            put(c, Ui.tr("Usa a API do TMDB, sem endosso ou certificação do TMDB.",
-                    "This product uses the TMDB API but is not endorsed or certified by TMDB."), x, y + 78 * k, version);
-            version.setTextAlign(Paint.Align.CENTER);
-            return y + 78 * k;
+            return line;
         }
 
         /** List row: no background; focused, white with a shadow (the Apple TV focus). Returns how focused it is. */
@@ -470,40 +542,178 @@ public class SettingsActivity extends Activity {
             return f;
         }
 
-        private float drawComparison(Canvas c, float y) {
-            float x = LIST_X * k + 30 * k, colA = LIST_R * k - 220 * k, colB = LIST_R * k - 30 * k;
-            put(c, Ui.tr("COMPARAÇÃO", "COMPARISON"), x, y, header);
-            cellValue.setColor(0x73FFFFFF);
-            put(c, "Original", colA, y, cellValue);
-            put(c, "Majlis", colB, y, cellValue);
-            cellValue.setColor(0xD9FFFFFF);
+        /** The Original / Majlis measurements, one line each (About). */
+        private String comparisonText() {
             JSONObject metrics = state.optJSONObject("metrics");
             JSONObject a = metrics == null ? null : metrics.optJSONObject(HomeMode.ORIGINAL);
             JSONObject b = metrics == null ? null : metrics.optJSONObject(HomeMode.FREE);
             String[][] rows = {{Ui.tr("Botão Início", "Home button"), "homeMs"}, {Ui.tr("Memória livre", "Free memory"), "memAvailableMB"},
                     {Ui.tr("Memória do Início", "Home screen memory"), "homePssMB"}};
-            for (int i = 0; i < rows.length; i++) {
-                float base = y + (46 + 40 * i) * k;
-                put(c, rows[i][0], x, base, cellLabel);
-                put(c, metric(a, rows[i][1]), colA, base, cellValue);
-                put(c, metric(b, rows[i][1]), colB, base, cellValue);
+            StringBuilder sb = new StringBuilder();
+            for (String[] r : rows) {
+                sb.append(sb.length() == 0 ? "" : "\n").append(r[0]).append(": ").append(Ui.tr("Original", "Original")).append(" ")
+                        .append(Rtl.ltr(metric(a, r[1]))).append(" · Majlis ").append(Rtl.ltr(metric(b, r[1])));
             }
-            return y + (46 + 40 * rows.length) * k;
+            return sb.toString();
         }
 
-        private void drawNotices(Canvas c, float y) {
-            float x = LIST_X * k + 30 * k;
-            put(c, Ui.tr("AVISOS", "NOTICES"), x, y, header);
+        /** Up to five notices, newest first, whole (About). */
+        private String noticesText() {
             JSONArray notices = state.optJSONArray("notices");
-            int shown = 0;
-            for (int i = 0; notices != null && i < notices.length() && shown < 2; i++) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0, shown = 0; notices != null && i < notices.length() && shown < 5; i++) {
                 JSONObject o = notices.optJSONObject(i);
                 if (o == null) continue;
-                String line = ago(o.optLong("at")) + " · " + o.optString("text");
-                put(c, TextUtils.ellipsize(line, notice, 790 * k, TextUtils.TruncateAt.END).toString(), x, y + (42 + 38 * shown) * k, notice);
+                sb.append(sb.length() == 0 ? "" : "\n").append(ago(o.optLong("at"))).append(" · ").append(o.optString("text"));
                 shown++;
             }
-            if (shown == 0) put(c, Ui.tr("Nenhum ainda.", "None yet."), x, y + 42 * k, notice);
+            return sb.length() == 0 ? Ui.tr("Nenhum ainda.", "None yet.") : sb.toString();
+        }
+
+        /** Everything About shows, as {heading, text} (headings may be ""), in order. */
+        private List<String[]> aboutSections() {
+            List<String[]> out = new ArrayList<>();
+            out.add(new String[] {versionName(getContext()), say("الشاشة الرئيسية وشاشة التوقف لتلفازك.",
+                    "Início e tela de descanso da TV.", "Your TV's home screen and screensaver.")});
+            out.addAll(About.sections(Ui.ar));   // Arabic, else English
+            out.add(new String[] {Ui.tr("RECOMENDAÇÕES", "RECOMMENDATIONS"), recsLine()});
+            out.add(new String[] {Ui.tr("COMPARAÇÃO", "COMPARISON"), comparisonText()});
+            out.add(new String[] {Ui.tr("AVISOS", "NOTICES"), noticesText()});
+            return out;
+        }
+
+        private String aboutText() {
+            StringBuilder sb = new StringBuilder();
+            for (String[] s : aboutSections()) sb.append(s[0]).append(s[0].isEmpty() ? "" : ". ").append(s[1]).append(" ");
+            return sb.toString().trim();
+        }
+
+        /** Rebuilds the wrapped paragraphs when the text or the size changed (the notices change while it is open). */
+        private void layoutAbout() {
+            long tick = SystemClock.uptimeMillis() / 500;
+            if (tick == aboutCheckTick) return;
+            aboutCheckTick = tick;
+            List<String[]> sections = aboutSections();
+            StringBuilder key = new StringBuilder().append(w);
+            for (String[] s : sections) key.append('|').append(s[0]).append('|').append(s[1]);
+            if (key.toString().equals(aboutKey)) return;
+            aboutKey = key.toString();
+            aboutLayouts.clear();
+            aboutHeads.clear();
+            int width = Math.round((LIST_R - LIST_X - 60) * k);
+            TextPaint head = new TextPaint(header), body = new TextPaint(notice);
+            head.setColor(HomeLayout.ACCENT);   // headings in the home's green: readable on the dark background
+            head.setLetterSpacing(0);           // Arabic must not be letter-spaced
+            aboutHeight = 0;
+            for (String[] s : sections) {
+                if (!s[0].isEmpty()) add(s[0], head, width, true);
+                add(s[1], body, width, false);
+            }
+            aboutScroll = Math.max(0, Math.min(aboutScroll, maxAboutScroll()));
+        }
+
+        private void add(String text, TextPaint paint, int width, boolean heading) {
+            StaticLayout l = Rtl.dir(StaticLayout.Builder.obtain(text, 0, text.length(), paint, Math.max(1, width))
+                    .setLineSpacing(4 * k, 1f)).build();
+            aboutLayouts.add(l);
+            aboutHeads.add(heading);
+            aboutHeight += l.getHeight() + (heading ? 8 : 22) * k;
+        }
+
+        private float maxAboutScroll() {
+            return Math.max(0, aboutHeight - (SAFE_BOTTOM - LIST_TOP - 60) * k);
+        }
+
+        /**
+         * About: the data sources (generated from what the app really fetches), the licences, the TMDB notice, then the
+         * recommendations status, the measurements and the notices. Wrapped and right-aligned in Arabic, clipped to the
+         * safe area and scrolled with ↑ ↓; nothing is cut to fit.
+         */
+        private float aboutColumnShift() {
+            return HomeLayout.rightColumnShift(w, LIST_X * k, LIST_R * k, Rtl.on());
+        }
+
+        private void drawAbout(Canvas c) {
+            c.save();
+            c.translate(aboutColumnShift(), 0);
+            layoutAbout();
+            put(c, say("حول مجلس", "Sobre", "About"), LIST_X * k + 30 * k, (LIST_TOP - 24) * k, aboutTitle);
+            float top = (LIST_TOP + 10) * k, bottom = (SAFE_BOTTOM - 50) * k;
+            tmp.set((LIST_X + 30) * k, top, (LIST_R - 30) * k, bottom);
+            Rtl.flip(tmp, 0, w);
+            c.save();
+            c.clipRect(tmp);
+            float y = top - aboutScroll;
+            for (int i = 0; i < aboutLayouts.size(); i++) {
+                StaticLayout l = aboutLayouts.get(i);
+                if (y + l.getHeight() > top && y < bottom) {
+                    c.save();
+                    c.translate(tmp.left, y);
+                    l.draw(c);
+                    c.restore();
+                }
+                y += l.getHeight() + (aboutHeads.get(i) ? 8 : 22) * k;
+            }
+            c.restore();
+            Paint hint = Ui.text(Ui.regular, 23 * k, 0x8CFFFFFF);
+            if (maxAboutScroll() > 0) {
+                int pct = Math.round(100 * aboutScroll / maxAboutScroll());
+                put(c, say("↑ ↓ للتمرير · ", "↑ ↓ rolam · ", "↑ ↓ scroll · ") + Rtl.ltr(pct + "%"), LIST_X * k + 30 * k, (SAFE_BOTTOM - 8) * k, hint);
+            }
+            c.restore();
+        }
+
+        // MARK: - Football competitions
+
+        private void openFootball() {
+            football = new ArrayList<>(Prefs.competitions());
+            pickScroll = 0;
+            focus = 0;
+            screen = FOOTBALL;
+        }
+
+        /** OK: follows or stops following the focused competition (saved right away; Competitions.MAX_SELECTED at most). */
+        private void toggleCompetition() {
+            String id = Competitions.ALL.get(pickScroll + focus).id;
+            List<String> next = Competitions.toggle(football, id);
+            if (next.equals(football)) return;   // the limit: nothing changes (the hint says why)
+            football = new ArrayList<>(next);
+            Prefs.setCompetitions(football);
+        }
+
+        private void drawFootball(Canvas c) {
+            Paint heading = Ui.text(Ui.displaySemibold, 34 * k, 0xFFFFFFFF);
+            put(c, say("بطولات كرة القدم", "Campeonatos de futebol", "Football competitions"), LIST_X * k + 30 * k, (LIST_TOP - 24) * k, heading);
+            int rows = rowCount();
+            for (int i = 0; i < rows; i++) {
+                Competitions.Competition comp = Competitions.ALL.get(pickScroll + i);
+                boolean on = football.contains(comp.id);
+                float y = (LIST_TOP + 20 + i * (LIST_ROW_H + LIST_ROW_GAP)) * k;
+                rowRect.set(LIST_X * k, y, LIST_R * k, y + LIST_ROW_H * k);
+                float f = drawRowBackground(c, i);
+                rowLabel.setColor(blend(on ? 0xF2FFFFFF : 0x99FFFFFF, on ? INK : 0x991C1C1E, f));
+                float base = rowRect.centerY() + Ui.halfCap(rowLabel);
+                put(c, TextUtils.ellipsize(name(comp), new TextPaint(rowLabel), 600 * k, TextUtils.TruncateAt.END).toString(), rowRect.left + 30 * k, base, rowLabel);
+                if (on) {
+                    float cw = Symbols.width(getContext(), "check", 26 * k);
+                    Symbols.draw(getContext(), c, "check", Rtl.x(rowRect.right - 30 * k - cw / 2, 0, w), rowRect.centerY(), 26 * k,
+                            blend(HomeLayout.ACCENT, 0xFF1E8E3E, f));
+                }
+            }
+            float hy = (LIST_TOP + 20 + rows * (LIST_ROW_H + LIST_ROW_GAP) + 24) * k;
+            String count = Rtl.ltr((pickScroll + focus + 1) + " / " + Competitions.ALL.size());
+            String hint = football.isEmpty()
+                    ? say("لم تختر أي بطولة: تبويب المباريات سيطلب منك الاختيار ولن يجلب أي بيانات.",
+                        "Nenhum escolhido: a aba de jogos pede para escolher e não busca nada.",
+                        "None selected: the matches tab asks you to pick one and fetches nothing.")
+                    : football.size() >= Competitions.MAX_SELECTED
+                    ? say("الحد " + Competitions.MAX_SELECTED + " بطولات لتخفيف الطلبات. ألغِ واحدة لإضافة أخرى.",
+                        "No máximo " + Competitions.MAX_SELECTED + ". Tire um para pôr outro.",
+                        "Up to " + Competitions.MAX_SELECTED + " at once. Remove one to add another.")
+                    : say("موافق للاختيار أو الإلغاء (حتى " + Competitions.MAX_SELECTED + "). ← → في تبويب المباريات للتبديل بينها.",
+                        "OK escolhe ou tira (até " + Competitions.MAX_SELECTED + "). ← → na aba de jogos alternam.",
+                        "OK picks or removes (up to " + Competitions.MAX_SELECTED + "). ← → in the matches tab switch between them.");
+            paragraph(c, count + "  ·  " + hint, hy - Ui.cap(notice), notice, 3);
         }
 
         /** Home screen choice: Majlis or the original, with a check on the one in use. */
@@ -568,12 +778,22 @@ public class SettingsActivity extends Activity {
             boolean down = e.getAction() == KeyEvent.ACTION_DOWN;
             switch (e.getKeyCode()) {
                 case KeyEvent.KEYCODE_DPAD_UP:
+                    if (screen == ABOUT) {
+                        if (down) aboutScroll = Math.max(0, aboutScroll - 80 * k);
+                        invalidate();
+                        return true;
+                    }
                     if (down && focus > 0) focus--;
                     else if (down && scrolling() && pickScroll > 0) pickScroll--;
                     invalidate();
                     spoken.focusMoved();
                     return true;
                 case KeyEvent.KEYCODE_DPAD_DOWN:
+                    if (screen == ABOUT) {
+                        if (down) aboutScroll = Math.min(maxAboutScroll(), aboutScroll + 80 * k);
+                        invalidate();
+                        return true;
+                    }
                     if (down && focus < rowCount() - 1) focus++;
                     else if (down && scrolling() && pickScroll + rowCount() < listSize()) pickScroll++;
                     invalidate();
@@ -609,8 +829,8 @@ public class SettingsActivity extends Activity {
                                 focus = pickFor - 1;
                                 screen = REMOTE_KEYS;
                             } else {
-                                focus = screen == HOME_SETTINGS ? 2 : screen == SHELF_EDIT ? 3 : screen == REMOTE_KEYS ? 4 : 0;
-                                screen = MAIN;
+                                focus = screen == HOME_SETTINGS ? ROW_HOME_SETTINGS : screen == SHELF_EDIT ? ROW_SHELF
+                                        : screen == REMOTE_KEYS ? ROW_REMOTE : screen == FOOTBALL ? ROW_FOOTBALL : screen == ABOUT ? ROW_ABOUT : 0;                                screen = MAIN;
                             }
                         }
                         backDown = false;
@@ -667,15 +887,44 @@ public class SettingsActivity extends Activity {
             return on ? Ui.tr("Ligado", "On") : Ui.tr("Desligado", "Off");
         }
 
+        /**
+         * The remote buttons this TV's maker sends with the codes Majlis knows (TvBrand): TCL's four (with its own
+         * "TCL Channel" button), none on other makers, where the codes may mean other buttons.
+         */
+        private static int[] remoteKeys() {
+            return RemoteKeys.supported() ? Prefs.KEYS : new int[0];
+        }
+
         private String[] keyLabels() {
-            return new String[] {Ui.tr("Botão Netflix", "Netflix button"), Ui.tr("Botão YouTube", "YouTube button"),
-                    Ui.tr("Botão Prime Video", "Prime Video button"), Ui.tr("Botão TCL Channel", "TCL Channel button")};
+            int[] keys = remoteKeys();
+            String[] out = new String[keys.length];
+            for (int i = 0; i < keys.length; i++) {
+                switch (keys[i]) {
+                    case Prefs.KEY_NETFLIX: out[i] = Ui.tr("Botão Netflix", "Netflix button"); break;
+                    case Prefs.KEY_YOUTUBE: out[i] = Ui.tr("Botão YouTube", "YouTube button"); break;
+                    case Prefs.KEY_PRIME: out[i] = Ui.tr("Botão Prime Video", "Prime Video button"); break;
+                    default: out[i] = Ui.tr("Botão TCL Channel", "TCL Channel button"); break;   // KEY_TCL_CHANNEL: TCL only
+                }
+            }
+            return out;
+        }
+
+        /** Remote Buttons on a TV that isn't a TCL: says so with the TV's own maker name. */
+        private String otherBrandNote() {
+            String brand = RemoteKeys.brandName();
+            if (brand.isEmpty()) return say("أزرار هذا الريموت تعمل كما هي دائمًا، ولا يغيّرها مجلس على هذا التلفاز.",
+                    "Os botões deste controle funcionam como sempre: o Majlis não os muda nesta TV.",
+                    "This remote's buttons work as they always did: Majlis doesn't change them on this TV.");
+            return say("على تلفاز " + brand + " تعمل أزرار الريموت كما هي دائمًا، ولا يغيّرها مجلس.",
+                    "Nesta TV " + brand + ", os botões do controle funcionam como sempre: o Majlis não os muda.",
+                    "On this " + brand + " TV, the remote's buttons work as they always did: Majlis doesn't change them.");
         }
 
         private String[] keyValues() {
-            String[] v = new String[Prefs.KEYS.length];
+            int[] keys = remoteKeys();
+            String[] v = new String[keys.length];
             for (int i = 0; i < v.length; i++) {
-                int at = appPkgs.indexOf(Prefs.keyApp(Prefs.KEYS[i]));
+                int at = appPkgs.indexOf(Prefs.keyApp(keys[i]));
                 v[i] = at >= 0 ? appLabels.get(at) : Ui.tr("Não instalado", "Not installed");
             }
             return v;
@@ -739,11 +988,11 @@ public class SettingsActivity extends Activity {
         }
 
         private boolean scrolling() {
-            return screen == PICKER || screen == SHELF_EDIT;
+            return screen == PICKER || screen == SHELF_EDIT || screen == FOOTBALL;
         }
 
         private int listSize() {
-            return screen == SHELF_EDIT ? shelfRows.size() : pickLabels.size();
+            return screen == SHELF_EDIT ? shelfRows.size() : screen == FOOTBALL ? Competitions.ALL.size() : pickLabels.size();
         }
 
         // MARK: - Shelf editor
@@ -881,12 +1130,14 @@ public class SettingsActivity extends Activity {
             }
             Paint hint = Ui.text(Ui.regular, 23 * k, 0x8CFFFFFF);
             float hy = (LIST_TOP + 20 + labels.length * (LIST_ROW_H + LIST_ROW_GAP) + 36) * k;
+            if (keys && labels.length == 0) {
+                paragraph(c, otherBrandNote(), hy - Ui.cap(notice), notice, 4);
+                return;
+            }
             put(c, Ui.tr("OK ou as setas mudam o valor.", "OK or the arrows change the value."), LIST_X * k + 30 * k, hy, hint);
             if (keys) {
-                put(c, RemoteKeys.supported() ? Ui.tr("Disney e Globoplay: a própria TV controla esses botões.",
-                        "Disney and Globoplay: the TV itself controls those buttons.")
-                        : Ui.tr("Esses são os botões do controle da TCL: nesta TV, os botões funcionam como sempre.",
-                        "These are the TCL remote's buttons: on this TV, the buttons work as they always did."), LIST_X * k + 30 * k, hy + 38 * k, hint);
+                paragraph(c, Ui.tr("Disney e Globoplay: a própria TV controla esses botões.",
+                        "Disney and Globoplay: the TV itself controls those buttons."), hy + 38 * k - Ui.cap(notice), notice, 2);
             }
         }
 
@@ -909,31 +1160,50 @@ public class SettingsActivity extends Activity {
                 toggleShelfApp();
                 invalidate();
                 return;
+            } else if (screen == FOOTBALL) {
+                toggleCompetition();
+                invalidate();
+                spoken.focusMoved();
+                return;
+            } else if (screen == ABOUT) {
+                return;
             } else if (screen == REMOTE_KEYS) {
+                if (remoteKeys().length == 0) return;   // not a TCL: nothing to pick (the note says why)
                 openPicker(focus + 1);
             } else if (screen == HOME_SETTINGS) {
                 adjust(1);
                 invalidate();
                 return;
-            } else if (focus == 0) {
+            } else if (focus == ROW_HOME) {
                 if (busy()) return;
                 screen = HOME_CHOICE;
                 focus = freeActive() ? 0 : 1;
-            } else if (focus == 1) {
+            } else if (focus == ROW_SAVER) {
                 pause();
                 activity.showPreview();
-            } else if (focus == 2) {
+            } else if (focus == ROW_HOME_SETTINGS) {
                 screen = HOME_SETTINGS;
                 focus = 0;
-            } else if (focus == 3) {
+            } else if (focus == ROW_FOOTBALL) {
+                openFootball();
+            } else if (focus == ROW_SHELF) {
                 openShelfEditor();
-            } else if (focus == 4) {
+            } else if (focus == ROW_REMOTE) {
                 HomeMode.ensureRemoteService(c, 0);   // the buttons work from inside other apps through this service
                 loadApps();
                 screen = REMOTE_KEYS;
                 focus = 0;
+            } else if (focus == ROW_TV) {
+                try {
+                    activity.startActivity(HomeApps.tvSettings(c).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                } catch (android.content.ActivityNotFoundException | SecurityException e) {
+                    AppLog.w("TV settings: " + e.getMessage());
+                }
             } else {
-                activity.startActivity(new Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                aboutScroll = 0;
+                aboutKey = "";
+                screen = ABOUT;
+                focus = 0;
             }
             for (Spring s : pop) s.snap(0);
             invalidate();

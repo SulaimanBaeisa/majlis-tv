@@ -82,6 +82,23 @@ final class Info {
         return p;
     }
 
+    /**
+     * The screensaver's prayer row, from the same {@link #prayer} the home card uses: {name, time} for the five prayers
+     * of the day the card shows (today, or tomorrow after Isha), with «الجمعة» for Dhuhr on Friday, as on the card.
+     */
+    static String[][] row(Prayer p, LocalDate today) {
+        LocalDate day = p.tomorrow ? today.plusDays(1) : today;
+        String[][] out = new String[5][];
+        for (int i = 0; i < 5; i++) {
+            String name = i == Schedule.DHUHR && day.getDayOfWeek() == java.time.DayOfWeek.FRIDAY ? Schedule.JUMUAH_AR : Schedule.NAMES_AR[i];
+            out[i] = new String[] {name, p.times[i]};
+        }
+        return out;
+    }
+
+    /** The row's heading: today's or tomorrow's times. */
+    static String rowTitle(Prayer p) { return p.tomorrow ? "مواقيت صلاة الغد" : "مواقيت الصلاة اليوم"; }
+
     /** Alternating verse/hadith days, each kind advancing through its entire independent cycle. */
     static String[] daily(List<String[]> items, LocalDate d) {
         if (items == null || items.isEmpty()) return null;

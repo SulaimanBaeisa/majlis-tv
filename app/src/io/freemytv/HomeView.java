@@ -74,7 +74,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     // Corner capsule: the height and top offset of the tvOS tab bar (68 and 46).
     private static final float CAPSULE_TOP = 46, CAPSULE_H = 68, BUTTON = 56;
     // Bottom drawer (measured with it open; everything moves up by SHIFT).
-    private static final float SHIFT = 560, ROW_TITLE = 518, ROW_TOP = 540, ROW_H = 126, CARDS_TOP = 708, CARDS_H = 300;
+    private static final float SHIFT = HomeLayout.SHIFT, ROW_TITLE = HomeLayout.ROW_TITLE, ROW_TOP = HomeLayout.ROW_TOP, ROW_H = 126, CARDS_TOP = 708, CARDS_H = 300;
     // "All Apps" sheet.
     private static final int COLUMNS = 5, VISIBLE_ROWS = 3;
     private static final float GRID_W = 300, GRID_H = 169, GRID_GAP = 40, GRID_ROW = 239, GRID_TOP = 196, GRID_RADIUS = 22;
@@ -102,9 +102,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private final Activity activity;
     private final Scene scene = new Scene();
     private final HomeData data;
-    private final LeagueFeed league = new LeagueFeed(new LeagueFeed.Listener() {
-        @Override public void onLeague() { post(new Runnable() { @Override public void run() { drawerDirty = true; platter.invalidate(); } }); }
-    });
+    private final LeagueFeed league;
     private Paint leagueName, leagueSmall, leagueNum, leagueHead;
     private final Recs recs;
     private final NewsFeed news;
@@ -140,6 +138,14 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         @Override public void click(int id) { activate(); }
     });
     private final RectF a11yRect = new RectF();
+    private final Rect tipInk = new Rect();
+    // Matches tab: the refresh button (its own focus zone) and the room its card's title leaves for it.
+    private static final int Z_MATCH = 6;
+    private static final float REFRESH_RESERVE = 90;
+    private final Spring matchFocus = new Spring(0.26f, 0.85f, 0);
+    private final RectF matchButton = new RectF();
+    private final Paint refreshSpin = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private boolean matchShown;
     private final Layer sky, heroLayer, status, platter, tiles, drawerLayer, sheetLayer, toastLayer;
     private int zone = Z_SHELF;
 
@@ -342,6 +348,9 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         data = HomeData.get(a);
         recs = Recs.get(a);
         news = NewsFeed.get(a);
+        league = new LeagueFeed(new LeagueFeed.Listener() {
+            @Override public void onLeague() { post(new Runnable() { @Override public void run() { drawerDirty = heroDirty = true; platter.invalidate(); } }); }
+        }, a.getCacheDir());
         click = new Click(a);
         ui = a.getSharedPreferences("home-ui", Context.MODE_PRIVATE);
         tvInputs = (TvInputManager) a.getSystemService(Context.TV_INPUT_SERVICE);
@@ -617,6 +626,9 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         border.setStrokeWidth(2 * k);
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(2.5f * k);
+        refreshSpin.setStyle(Paint.Style.STROKE);
+        refreshSpin.setStrokeCap(Paint.Cap.ROUND);
+        refreshSpin.setStrokeWidth(3.5f * k);
     }
 
     // MARK: - Frames: 60 per second while something moves; nothing is redrawn when still
@@ -632,7 +644,13 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         boolean heroMoving = heroFocus.step(dt);
         boolean topMoving = step(topFocus, dt), cardsMoving = step(cardFocus, dt);
         if (topMoving) status.invalidate();
-        heroMoving |= topMoving | cardsMoving;
+        // The refresh button: its focus spring, and the spinner / result while a fetch someone asked for runs.
+        boolean matchMoving = matchFocus.step(dt) || (Ui.ar && tab == 1 && league.gate.state(System.currentTimeMillis()) != RefreshGate.IDLE);
+        if (matchShown != (Ui.ar && tab == 1 && league.gate.state(System.currentTimeMillis()) != RefreshGate.IDLE)) {
+            matchShown = !matchShown;
+            heroDirty = true;   // one more frame when the result goes back to the arrow
+        }
+        heroMoving |= topMoving | cardsMoving | matchMoving;
         boolean drawerItemsMoving = step(drawerFocus, dt);
         drawerTilesAnimating = drawerItemsMoving;
         boolean gridMoving = step(gridFocus, dt) | scroll.step(dt);
@@ -1114,9 +1132,13 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         crispLogos.clear();
     }
 
-    /** Shelf layer: the glass bar and its shadow (it only changes with the background). */
+    /**
+     * The news ticker, in the shelf layer under the shelf: it lifts with the shelf when the drawer opens and stays
+     * between the shelf and the drawer's first row (HomeLayout, tests/HomeLayoutTest.java), so it is drawn at every
+     * drawer position, including when the layer is redrawn with the drawer fully open.
+     */
     private void drawNewsTicker(Canvas c) {
-        tickerRect.set(MARGIN*k,912*k,CONTENT_R*k,988*k);
+        tickerRect.set(HomeLayout.TICKER_LEFT*k,HomeLayout.TICKER_TOP*k,HomeLayout.TICKER_RIGHT*k,HomeLayout.TICKER_BOTTOM*k);
         scene.glass(c,tickerRect,38*k,SMOKE,0.24f,0,0,0.02f,1);
         List<News.Item> list=news.snapshot.ticker;long elapsed=SystemClock.uptimeMillis()-tickerFadeAt;
         float alpha=1;int index=list.isEmpty()?0:tickerIndex%list.size();
@@ -1128,8 +1150,9 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         panels.ticker(c,tickerRect,list.isEmpty()?null:list.get(index),alpha,index,list.size());
     }
 
+    /** Shelf layer: the glass bar and its shadow (it only changes with the background), and the news ticker. */
     private void drawPlatter(Canvas c) {
-        if(Ui.ar && drawer.value<0.01f)drawNewsTicker(c);
+        if(Ui.ar)drawNewsTicker(c);
         if (shelf.isEmpty()) return;
         float radius = (TILE_RADIUS + SHELF_PAD) * k;
         tmp.set(platterRect);
@@ -1667,6 +1690,10 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         if (snap) heroFocus.snap(heroFocus.target);
         boolean topChanged = aim(topFocus, !sheetOpen && zone == Z_TOP ? topIndex : -1, snap);
         heroChanged |= aim(cardFocus, !sheetOpen && zone == Z_CARDS ? cardIndex : -1, snap) | topChanged;
+        float matchTarget = !sheetOpen && zone == Z_MATCH ? 1 : 0;
+        heroChanged |= matchFocus.target != matchTarget;
+        matchFocus.target = matchTarget;
+        if (snap) matchFocus.snap(matchTarget);
         statusChanged |= topChanged;
         tilesDirty |= snap || tilesChanged;
         statusDirty |= snap || statusChanged;
@@ -2073,6 +2100,13 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             }
             it = lightButtons.get(topIndex - 3);
             r = topRects[topIndex];
+        } else if (zone == Z_MATCH) {
+            // Never blocks: the fetch runs on LeagueFeed's thread; a press during a fetch or right after one only
+            // shows that result (RefreshGate), so holding OK can't flood the source.
+            league.refreshNow();
+            click.open();
+            heroDirty = true;
+            return;
         } else if (zone == Z_CARDS) {
             Recs.Pick p = cardIndex < cards.size() ? cards.get(cardIndex) : null;
             if (p == null || p.pkg == null) return;
@@ -2123,6 +2157,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         }
         for (int i = 0; i < 3 + lightButtons.size(); i++) out.add(a11yId(Z_TOP, i));
         for (int i = 0; i < Math.min(3, cards.size()); i++) out.add(a11yId(Z_CARDS, i));
+        if (matchesTab()) out.add(a11yId(Z_MATCH, 0));
         for (int i = 0; i < shelf.size(); i++) out.add(a11yId(Z_SHELF, i));
         for (int i = 0; i < drawerItems.size(); i++) out.add(a11yId(Z_DRAWER, i));
     }
@@ -2137,6 +2172,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
                 if (i >= 3) return label(lightButtons, i - 3);
                 return tabs()[i] + Ui.tr(", aba ", ", tab ") + (i + 1) + Ui.tr(" de 3", " of 3");
             case Z_CARDS: return i < cards.size() ? pickText(cards.get(i)) : "";
+            case Z_MATCH: return "تحديث المباريات، " + HomePanels.heading(league);
             case Z_SHELF: return label(shelf, i);
             case Z_DRAWER: return label(drawerItems, i);
             default: return "";
@@ -2171,6 +2207,11 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
                 a11yRect.set(cardRects[i]);
                 dy = heroLayer.getTranslationY();
                 break;
+            case Z_MATCH:
+                if (!matchesTab()) return false;
+                a11yRect.set(matchButton);
+                dy = heroLayer.getTranslationY();
+                break;
             case Z_SHELF:
                 if (i >= tileRects.length) return false;
                 a11yRect.set(tileRects[i]);
@@ -2197,6 +2238,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         switch (zone) {
             case Z_TOP: return a11yId(Z_TOP, topIndex);
             case Z_CARDS: return cardIndex < cards.size() ? a11yId(Z_CARDS, cardIndex) : -1;
+            case Z_MATCH: return a11yId(Z_MATCH, 0);
             case Z_SHELF: return shelf.isEmpty() ? -1 : a11yId(Z_SHELF, shelfIndex);
             case Z_DRAWER: return drawerItems.isEmpty() ? -1 : a11yId(Z_DRAWER, drawerIndex);
             default: return -1;
@@ -2231,6 +2273,10 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
                 if (i >= cards.size()) return;
                 if (drawerOpen) closeDrawer();
                 cardIndex = i;
+                break;
+            case Z_MATCH:
+                if (!matchesTab()) return;
+                if (drawerOpen) closeDrawer();
                 break;
             case Z_SHELF:
                 if (i >= shelf.size()) return;
@@ -2400,13 +2446,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     /** With no picks to show (no TMDB key) the three cards carry the prayer times, the date and a verse of the day. */
     private boolean showInfoCards() { return Ui.ar; }
 
-    private double[] where() {
-        try {
-            return new double[] {Double.parseDouble(Prefs.latitude()), Double.parseDouble(Prefs.longitude())};
-        } catch (NumberFormatException e) {
-            return new double[] {21.49012, 39.18624};
-        }
-    }
+    /** Same place as the screensaver's prayer row (Prefs.where). */
+    private double[] where() { return Prefs.where(); }
 
     /** Recomputes the prayer card when the minute changes (called from the 15 s tick). */
     private void refreshInfo() {
@@ -2454,12 +2495,41 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         infoMid.setColor(ink);
         infoNum.setColor(ink);
         for (int i = 0; i < 3; i++) infoChrome(c, cardRects[i]);
-        if(tab==1){for(int i=0;i<3;i++)panels.matches(c,cardRects[i],league,i);return;}
+        if(tab==1){for(int i=0;i<3;i++)panels.matches(c,cardRects[i],league,i,REFRESH_RESERVE*k);drawRefreshButton(c,cardRects[0]);return;}
         if(tab==2){for(int i=0;i<3;i++)panels.news(c,cardRects[i],news.snapshot,i);return;}
         Info.Prayer p = infoPrayer;
         if (p != null) drawPrayerCard(c, cardRects[0], p, ink, dim);
         drawDateCard(c, cardRects[1], ink, dim);
         drawVerseCard(c, cardRects[2], ink, dim);
+    }
+
+    /**
+     * The matches tab's refresh button (↻), at the card's far edge from the title: focusable with the remote (zone
+     * Z_MATCH), OK fetches in the background (LeagueFeed.refreshNow, RefreshGate). It spins while fetching, shows a check
+     * when done, and turns amber when the fetch failed; the third card says the same in words.
+     */
+    private void drawRefreshButton(Canvas c, RectF card) {
+        float rad = 28 * k, f = Ui.clamp(matchFocus.value), s = 1 + 0.12f * f, rr = rad * s;
+        float cx = card.left + 40 * k + rad, cy = card.top + 50 * k;
+        matchButton.set(cx - rad, cy - rad, cx + rad, cy + rad);
+        if (f > 0.01f) {
+            tmp.set(cx - rr, cy - rr, cx + rr, cy + rr);
+            tmp.offset(0, 6 * k * f);
+            shadow.setColor(Ui.alpha(0xFF000000, 0.35f * f));
+            shadows.draw(c, tmp, rr, SHADOW_BLUR * k, shadow);
+        }
+        fill.setShader(null);
+        fill.setColor(blend(0x29FFFFFF, 0xFFFFFFFF, f));
+        c.drawCircle(cx, cy, rr, fill);
+        int state = league.gate.state(System.currentTimeMillis());
+        int ink = blend(0xF2FFFFFF, L_INK, f);
+        if (state == RefreshGate.LOADING) {
+            refreshSpin.setColor(ink);
+            Ui.spinner(c, cx, cy, 12 * k * s, (SystemClock.uptimeMillis() - resumedAt) / 1000f * 1.3f, refreshSpin);
+        } else {
+            int color = state == RefreshGate.FAILED ? 0xFFFFC266 : state == RefreshGate.DONE ? (f > 0.5f ? 0xFF1E8E3E : HomeLayout.ACCENT) : ink;
+            Symbols.draw(getContext(), c, state == RefreshGate.DONE ? "check" : "sync", cx, cy, 26 * k * s, color);
+        }
     }
 
     private void drawPrayerCard(Canvas c, RectF r, Info.Prayer p, int ink, int dim) {
@@ -2599,11 +2669,17 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             Symbols.draw(getContext(), c, lightButtons.get(i).symbol, cell.centerX(), cell.centerY(), 27 * k * s,
                     blend(tone(L_INK, 0xEBFFFFFF), L_INK, f));
             if (f > 0.01f) {
+                // The name, centred under the button (Arabic too: measured with its own shaping and ink), only pulled
+                // in when it would pass the overscan-safe edge; vertically centred between the grown button and the
+                // cards, from the label's real ink (Arabic marks below the line, like the hamza of «الإعدادات»).
                 String label = lightButtons.get(i).label;
                 float half = lTip.measureText(label) / 2;
-                float x = Rtl.on() ? Math.max(r.centerX(), MARGIN * k + half) : Math.min(r.centerX(), CONTENT_R * k - half);
+                float x = HomeLayout.tipCenter(r.centerX(), half, HomeLayout.SAFE_EDGE * k, w - HomeLayout.SAFE_EDGE * k);
+                lTip.getTextBounds(label, 0, label.length(), tipInk);
+                float buttonBottom = r.centerY() + r.width() / 2 * 1.1f;
+                float y = HomeLayout.centredBaseline(buttonBottom, L_CARDS_TOP * k, tipInk.top, tipInk.bottom);
                 lTip.setAlpha(Math.round(255 * f));
-                c.drawText(label, x, r.bottom + (26 + 2 * f) * k, lTip);
+                c.drawText(label, x, y, lTip);
             }
         }
     }
@@ -2612,7 +2688,9 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         switch (zone) {
             case Z_SHELF:
                 if (dy >= 0 || shelf.isEmpty()) return false;
-                if (cards.isEmpty()) {
+                if (matchesTab()) {
+                    zone = Z_MATCH;
+                } else if (cards.isEmpty()) {
                     zone = Z_TOP;
                     topIndex = tab;
                 } else {
@@ -2640,7 +2718,9 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
                     topIndex = next;
                     if (topIndex < 3) selectTab(topIndex);   // like Apple TV tabs: focusing a tab selects it
                 } else if (dy > 0) {
-                    if (cards.isEmpty()) {
+                    if (matchesTab()) {
+                        zone = Z_MATCH;
+                    } else if (cards.isEmpty()) {
                         zone = Z_SHELF;
                     } else {
                         zone = Z_CARDS;
@@ -2650,6 +2730,21 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
                     return true;
                 }
                 break;
+            case Z_MATCH:
+                if (dx != 0) {
+                    // ← → : the other followed competitions (nothing to do with only one)
+                    if (!league.step(dx)) return true;   // dx is already in reading order (Rtl.key)
+                    heroDirty = true;
+                    click.move();
+                    spoken.focusMoved();
+                    return true;
+                } else if (dy < 0) {
+                    zone = Z_TOP;
+                    topIndex = tab;
+                } else {
+                    zone = Z_SHELF;
+                }
+                break;
             default:
                 return false;
         }
@@ -2657,6 +2752,9 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         click.move();
         return true;
     }
+
+    /** The Arabic matches tab, where the refresh button sits between the tabs and the shelf. */
+    private boolean matchesTab() { return Ui.ar && tab == 1; }
 
     private static int nearest(RectF[] rects, int count, float x) {
         int best = 0;

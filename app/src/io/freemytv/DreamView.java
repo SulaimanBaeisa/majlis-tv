@@ -123,6 +123,8 @@ final class DreamView extends View implements Choreographer.FrameCallback, HomeD
     private String clock = "", date = "";
     private Paint datePaint, clockPaint, weatherPaint, weatherDim, quotePaint, stalePaint;
     private Paint cornerDate, cornerQuote, cornerStale, cornerClock, labelPaint, metaPaint;
+    private Paint prayerTitle, prayerName, prayerTime;
+    private final Paint prayerFill = new Paint(Paint.ANTI_ALIAS_FLAG);
     private TextPaint titlePaint;
 
     private final Runnable tick = new Runnable() {
@@ -243,7 +245,12 @@ final class DreamView extends View implements Choreographer.FrameCallback, HomeD
         titlePaint.setLetterSpacing(0.005f);
         metaPaint = Ui.text(Ui.medium, 29 * k, 0xC7FFFFFF);
         metaPaint.setLetterSpacing(0.014f);
-        for (Paint p : new Paint[] {cornerDate, cornerQuote, cornerStale, cornerClock, labelPaint, titlePaint, metaPaint}) {
+        prayerTitle = Ui.text(Ui.medium, 22 * k, 0xB8FFFFFF);
+        prayerName = Ui.text(Ui.medium, 22 * k, 0xC7FFFFFF);
+        prayerName.setTextAlign(Paint.Align.CENTER);
+        prayerTime = Ui.numbers(Ui.semibold, 27 * k, 0xF2FFFFFF);
+        prayerTime.setTextAlign(Paint.Align.CENTER);
+        for (Paint p : new Paint[] {cornerDate, cornerQuote, cornerStale, cornerClock, labelPaint, titlePaint, metaPaint, prayerTitle, prayerName, prayerTime}) {
             p.setShadowLayer(18 * k, 0, 2 * k, 0x66000000);
         }
         glassFor = "";
@@ -550,10 +557,58 @@ final class DreamView extends View implements Choreographer.FrameCallback, HomeD
             }
             String stale = HomeData.staleness(data.pricesAt, 5 * 60_000L);
             if (!stale.isEmpty() && n > 0) c.drawText(stale, Rtl.tx(cornerStale, stale, right - total - 24 * k - cornerStale.measureText(stale), 0, w), base, cornerStale);
+            // Prayer times under the prices (or under the clock with no prices), inside the clock's scrim.
+            float top = n > 0 ? base + 40 * k : (CLOCK_TOP + Ui.cap(cornerClock) / k + 30) * k;
+            float rowW = 5 * PRAYER_COL * k;
+            drawPrayers(c, Rtl.on() ? w - right + rowW : right, top, false);
         } finally {
             chrome.endRecording();
         }
         chromeDirty = false;
+    }
+
+    private static final float PRAYER_COL = 128;
+
+    /**
+     * Today's five prayer times (Arabic only, like the home card): same place and calculation as the home screen
+     * (Prefs.where, Info.prayer with the TV's time zone), recomputed every time the corner is redrawn (each minute), so
+     * the next prayer, midnight and the switch to tomorrow's times follow by themselves. Fajr on the right (reading
+     * order); the next prayer's time in green. {@code rowRight}: the row's right edge; {@code top}: its heading's top.
+     */
+    private void drawPrayers(Canvas c, float rowRight, float top, boolean centredHeading) {
+        if (!Ui.ar) return;
+        double[] ll = Prefs.where();
+        long nowMs = System.currentTimeMillis();
+        Info.Prayer p = Info.prayer(java.time.LocalDateTime.now(), ll[0], ll[1],
+                java.util.TimeZone.getDefault().getOffset(nowMs) / 3_600_000.0, Prefs.iqama());
+        String[][] row = Info.row(p, java.time.LocalDate.now());
+        float col = PRAYER_COL * k, rowW = 5 * col;
+        String title = Info.rowTitle(p);
+        float titleBase = top + Ui.cap(prayerTitle);
+        // Contrast must not depend on the photograph or the clock's narrower scrim.
+        prayerFill.setColor(0xE6050C09);
+        c.drawRoundRect(rowRight - rowW - 12 * k, top - 14 * k, rowRight + 12 * k,
+                titleBase + 104 * k, 22 * k, 22 * k, prayerFill);
+        if (centredHeading) {
+            prayerTitle.setTextAlign(Paint.Align.CENTER);
+            c.drawText(title, rowRight - rowW / 2, titleBase, prayerTitle);
+        } else {
+            prayerTitle.setTextAlign(Paint.Align.RIGHT);
+            c.drawText(title, rowRight - 8 * k, titleBase, prayerTitle);
+        }
+        float nameBase = titleBase + 44 * k, timeBase = nameBase + 40 * k;
+        for (int i = 0; i < 5; i++) {
+            float cx = rowRight - col * (i + 0.5f);
+            boolean next = i == p.index;
+            if (next) {
+                prayerFill.setColor(0x3330D158);
+                c.drawRoundRect(cx - col / 2 + 6 * k, nameBase - 30 * k, cx + col / 2 - 6 * k, timeBase + 14 * k, 18 * k, 18 * k, prayerFill);
+            }
+            prayerName.setColor(next ? 0xFFFFFFFF : 0xC7FFFFFF);
+            c.drawText(row[i][0], cx, nameBase, prayerName);
+            prayerTime.setColor(next ? HomeLayout.ACCENT : 0xF2FFFFFF);
+            c.drawText(row[i][1], cx, timeBase, prayerTime);
+        }
     }
 
     private void drawGlass(Canvas c, float alpha, float e) {
@@ -778,6 +833,8 @@ final class DreamView extends View implements Choreographer.FrameCallback, HomeD
             x += weatherPaint.measureText(now) + 18 * k;
             c.drawText(range, x, base, weatherDim);
         }
+        // Prayer times, centred under the clock and the weather (Arabic).
+        drawPrayers(c, cx + 5 * PRAYER_COL * k / 2, clockBase + 142 * k, true);
 
         // Prices near the bottom edge: small white logo + value, all four on one line.
         float cap = Ui.cap(quotePaint), spacing = 56 * k, gap = 10 * k;

@@ -15,13 +15,16 @@ import java.util.Map;
 /** Text/content for the approved three-tab TV layout. Chrome is drawn separately with screen-aligned glass. */
 final class HomePanels {
     private float k;
-    private Paint title,body,meta,num,score,fill;
-    private final RectF box=new RectF();
+    private Paint title,body,meta,num,score,fill,chipText,chipBorder;
+    private final TextPaint chipTp=new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF box=new RectF(),chipBox=new RectF();
     private final Map<String,StaticLayout> layouts=new LinkedHashMap<>();
     void size(float scale) {
         k=scale;layouts.clear();title=Ui.text(Ui.semibold,32*k,0xFFFFFFFF);
         body=Ui.text(Ui.medium,30*k,0xFFF5F5F7);meta=Ui.text(Ui.medium,25*k,0xFFBFC3CA);
         num=Ui.numbers(Ui.medium,28*k,0xFFFFFFFF);score=Ui.numbers(Ui.semibold,36*k,0xFFFFFFFF);
+        chipText=Ui.text(Ui.medium,26*k,0xFFFFFFFF);
+        chipBorder=new Paint(Paint.ANTI_ALIAS_FLAG);chipBorder.setStyle(Paint.Style.STROKE);chipBorder.setStrokeWidth(2.5f*k);
         fill=new Paint(Paint.ANTI_ALIAS_FLAG);
     }
     private void right(Canvas c,String s,float right,float base,Paint p,float width) {
@@ -47,7 +50,7 @@ final class HomePanels {
         right(c,panel==0?"آخر الأخبار":panel==1?"صحة وطب":"اقتصاد",right,r.top+60*k,title,width);
         if(items.isEmpty()) {
             multiline(c,"الأخبار غير متاحة الآن",left,r.top+110*k,width,body,2);
-            multiline(c,"تُعرض عناوين العربية والحدث عند توفر الاتصال.",left,r.top+220*k,width,meta,3);return;
+            multiline(c,"تُعرض عناوين "+News.namesAr()+" عند توفر الاتصال.",left,r.top+220*k,width,meta,3);return;
         }
         boolean stale=snapshot.updated>0 && System.currentTimeMillis()-snapshot.updated>2*3600_000L;
         int count=panel==0 && !stale?3:2;float step=panel==0?130*k:180*k;
@@ -59,24 +62,96 @@ final class HomePanels {
         if(snapshot.updated>0 && System.currentTimeMillis()-snapshot.updated>2*3600_000L)
             right(c,"نسخة محفوظة · الاتصال غير متاح",right,r.bottom-22*k,meta,width);
     }
-    void matches(Canvas c,RectF r,LeagueFeed feed,int panel) {
+    /** Why there are no rows to show, for the competition on screen (null = there is data). */
+    static String emptyReason(LeagueFeed feed) {
+        if(feed.current()==null)return "لم تختر أي بطولة. اخترها من الإعدادات ← كرة القدم.";
+        int s=feed.status();
+        if(s==Competitions.UNSUPPORTED)return "هذه البطولة غير متاحة من المصدر حاليًا.";
+        if(s==LeagueFeed.UNKNOWN)return "جارٍ جلب المباريات…";
+        if(s==Competitions.FAILED && !feed.hasData())return "تعذّر الاتصال بالمصدر. سنحاول مجددًا.";
+        return null;
+    }
+    static String heading(LeagueFeed feed) {
+        Competitions.Competition c=feed.current();return c==null?"كرة القدم":c.ar;
+    }
+    /** Panel 0 leaves {@code reserve} px at its left edge for the refresh button. */
+    void matches(Canvas c,RectF r,LeagueFeed feed,int panel,float reserve) {
+        long now=System.currentTimeMillis();
+        String reason=emptyReason(feed);
         if(panel==0) {
-            long now=System.currentTimeMillis();List<League.Match> all=feed.matches(),rows=new ArrayList<>();
+            List<League.Match> all=feed.matches(),rows=new ArrayList<>();
             rows.addAll(League.live(all));
             if(rows.isEmpty())rows.addAll(League.recent(all,now,3));
             for(League.Match m:League.upcoming(all,now,3))if(rows.size()<3)rows.add(m);
-            right(c,League.live(all).isEmpty()?"مباريات الدوري السعودي":"مباشر الآن",r.right-40*k,r.top+60*k,title,r.width()-80*k);
-            if(rows.isEmpty()){right(c,"لا توجد مباريات متاحة الآن",r.right-40*k,r.top+126*k,body,r.width()-80*k);return;}
-            for(int i=0;i<Math.min(3,rows.size());i++)match(c,r,rows.get(i),r.top+(88+i*125)*k);
+            chips(c,r,feed,reserve);
+            if(reason!=null){multiline(c,reason,r.left+40*k,r.top+104*k,r.width()-80*k,body,3);return;}
+            if(rows.isEmpty()){multiline(c,"لا توجد مباريات قريبة لهذه البطولة (قد تكون في فترة توقف).",r.left+40*k,r.top+104*k,r.width()-80*k,body,3);return;}
+            for(int i=0;i<Math.min(3,rows.size());i++)match(c,r,rows.get(i),r.top+(CompetitionTabs.MATCH_TOP+i*CompetitionTabs.MATCH_STEP)*k);
         } else if(panel==1) {
-            table(c,r,feed.table(),6,false);
+            Competitions.Competition comp=feed.current();
+            if(comp!=null && !comp.hasTable()) {
+                float right=r.right-26*k,width=r.width()-52*k;
+                right(c,"الترتيب",right,r.top+60*k,title,width);
+                multiline(c,"لا يُعرض جدول ترتيب لبطولات الكؤوس هنا.",r.left+26*k,r.top+104*k,width,meta,3);
+                return;
+            }
+            table(c,r,reason==null?feed.table():new ArrayList<League.Row>(),6,false);
         } else {
             float left=r.left+30*k,right=r.right-30*k,width=right-left;
-            right(c,"الدوري السعودي",right,r.top+60*k,title,width);
-            multiline(c,"المصدر: ESPN",left,r.top+110*k,width,body,2);
+            right(c,heading(feed),right,r.top+60*k,title,width);
+            multiline(c,"المصدر: ESPN",left,r.top+100*k,width,body,1);
             long at=feed.lastUpdateMs();
-            multiline(c,at>0?"آخر تحديث\n"+News.ageAr(at,System.currentTimeMillis()):"بانتظار بيانات المباريات",left,r.top+210*k,width,meta,3);
-            multiline(c,"لكل فريق سطره ونتيجته، حتى لا ينعكس الترتيب مع العربية.",left,r.top+320*k,width,meta,4);
+            int st=feed.gate.state(now);
+            String status=st==RefreshGate.LOADING?"جارٍ التحديث…":st==RefreshGate.DONE?"تم التحديث الآن"
+                    :st==RefreshGate.FAILED || feed.status()==Competitions.FAILED?"تعذّر التحديث، المعروض آخر نسخة محفوظة":at>0?"آخر تحديث "+News.ageAr(at,now)
+                    :"بانتظار بيانات المباريات";
+            int color=meta.getColor();
+            if(st==RefreshGate.FAILED || (st==RefreshGate.IDLE && at>0 && feed.stale(now)))meta.setColor(0xFFFFC266);
+            float y=r.top+150*k;
+            y+=multiline(c,status+(st==RefreshGate.IDLE && at>0 && feed.stale(now)?" (بيانات قديمة)":""),left,y,width,meta,2)+18*k;
+            meta.setColor(color);
+            multiline(c,"زر التحديث ↻ يجلب أحدث النتائج.",left,y,width,meta,2);
+        }
+    }
+    /**
+     * The followed competitions as small glass chips inside the wide matches card; the one on screen is highlighted.
+     * Remote left/right switches (LeagueFeed.step); with more than {@link CompetitionTabs#MAX_VISIBLE} followed the
+     * window pages to keep the active chip visible. A green dot marks live matches for the chip on screen.
+     */
+    private void chips(Canvas c,RectF r,LeagueFeed feed,float reserve) {
+        List<String> ids=feed.followed();
+        int total=ids.size(),shown=CompetitionTabs.visible(total);
+        if(shown==0)return;
+        float pad=18*k,h=CompetitionTabs.HEIGHT*k,gap=CompetitionTabs.GAP*k;
+        if(shown>=4)pad=12*k;
+        float stripLeft=r.left+40*k+reserve;
+        float stripRight=r.right-40*k;
+        if(stripRight-stripLeft<shown*(h+gap))stripLeft=stripRight-shown*(h+gap);
+        int active=Math.max(0,Math.min(total-1,feed.position()-1));
+        int start=CompetitionTabs.start(total,active);
+        boolean live=!League.live(feed.matches()).isEmpty();
+        float w=CompetitionTabs.width(stripLeft,stripRight,shown);
+        float top=r.top+CompetitionTabs.TOP*k;
+        for(int slot=0;slot<shown;slot++) {
+            int i=start+slot;
+            if(i>=total)break;
+            Competitions.Competition comp=Competitions.byId(ids.get(i));
+            String label=comp==null?ids.get(i):CompetitionTabs.chipLabel(comp.ar,shown>=3);
+            boolean on=i==active;
+            float cellLeft=CompetitionTabs.left(stripLeft,stripRight,shown,slot);
+            chipBox.set(cellLeft,top,cellLeft+w,top+h);
+            fill.setShader(null);
+            fill.setColor(on?0x3A30D158:0x1CFFFFFF);
+            c.drawRoundRect(chipBox,h/2,h/2,fill);
+            if(on){chipBorder.setColor(0x995BE37F);c.drawRoundRect(chipBox,h/2,h/2,chipBorder);}
+            float dot=on&&live?18*k:0,textLeft=chipBox.left+pad,textRight=chipBox.right-pad-dot;
+            chipTp.set(chipText);
+            if(shown>=4)chipTp.setTextSize(chipTp.getTextSize()*0.84f);   // five names in one row: shrink, never clip a word
+            String fitted=TextUtils.ellipsize(label,chipTp,Math.max(1,textRight-textLeft),TextUtils.TruncateAt.END).toString();
+            chipTp.setTextAlign(Paint.Align.CENTER);
+            chipTp.setColor(on?0xFFFFFFFF:0xFFD7DAE0);
+            c.drawText(fitted,(textLeft+textRight)/2,chipBox.centerY()+chipTp.getTextSize()*0.35f,chipTp);
+            if(dot>0){fill.setColor(0xFF5BE37F);c.drawCircle(chipBox.right-pad-3.5f*k,chipBox.centerY(),3.5f*k,fill);}
         }
     }
     private void match(Canvas c,RectF r,League.Match m,float y) {
@@ -95,12 +170,15 @@ final class HomePanels {
     }
     void drawer(Canvas c,RectF r,LeagueFeed feed) {
         float mid=r.centerX();RectF matches=new RectF(mid+8*k,r.top,r.right,r.bottom);
-        right(c,"المباريات",matches.right-28*k,r.top+48*k,title,matches.width()-56*k);
+        right(c,heading(feed),matches.right-28*k,r.top+48*k,title,matches.width()-56*k);
+        String reason=emptyReason(feed);
         List<League.Match> rows=new ArrayList<>(League.live(feed.matches()));
         for(League.Match m:League.upcoming(feed.matches(),System.currentTimeMillis(),2))if(rows.size()<2)rows.add(m);
-        if(rows.isEmpty())right(c,"لا مباريات متاحة الآن",matches.right-28*k,r.top+110*k,meta,matches.width()-50*k);
-        for(int i=0;i<Math.min(2,rows.size());i++)compactMatch(c,matches,rows.get(i),r.top+(65+i*112)*k);
-        table(c,new RectF(r.left,r.top,mid-8*k,r.bottom),feed.table(),4,true);
+        if(reason!=null)multiline(c,reason,matches.left+28*k,r.top+80*k,matches.width()-56*k,meta,4);
+        else if(rows.isEmpty())right(c,"لا مباريات قريبة",matches.right-28*k,r.top+110*k,meta,matches.width()-50*k);
+        else for(int i=0;i<Math.min(2,rows.size());i++)compactMatch(c,matches,rows.get(i),r.top+(65+i*112)*k);
+        Competitions.Competition comp=feed.current();
+        if(comp!=null && comp.hasTable() && reason==null)table(c,new RectF(r.left,r.top,mid-8*k,r.bottom),feed.table(),4,true);
     }
     private void compactMatch(Canvas c,RectF r,League.Match m,float y) {
         float left=r.left+22*k,right=r.right-22*k,width=right-left;
@@ -131,7 +209,7 @@ final class HomePanels {
     void ticker(Canvas c,RectF r,News.Item item,float alpha,int index,int total) {
         int save=c.saveLayerAlpha(r,Math.round(255*Ui.clamp(alpha)));
         float right=r.right-24*k,left=r.left+30*k;
-        if(item==null){right(c,"الأخبار غير متاحة الآن · العربية والحدث",right,r.centerY()+10*k,meta,r.width()-60*k);c.restoreToCount(save);return;}
+        if(item==null){right(c,"الأخبار غير متاحة الآن · "+News.namesAr(),right,r.centerY()+10*k,meta,r.width()-60*k);c.restoreToCount(save);return;}
         String badge=item.source+" · "+item.category;
         meta.setTextAlign(Paint.Align.RIGHT);meta.setColor(0xFF5BE37F);
         float badgeW=meta.measureText(badge)+36*k;

@@ -77,6 +77,24 @@ final class Prefs {
     static String latitude() { return Config.LATITUDE; }
     static String longitude() { return Config.LONGITUDE; }
 
+    /** Latitude and longitude for prayer times: the home card and the screensaver both read this one place. */
+    static double[] where() {
+        try {
+            return new double[] {Double.parseDouble(latitude()), Double.parseDouble(longitude())};
+        } catch (NumberFormatException e) {
+            return new double[] {21.49012, 39.18624};
+        }
+    }
+
+    // MARK: - Football competitions (Settings > Football)
+
+    /** Followed competition ids (Competitions.ALL), in catalogue order; empty = the user turned them all off. */
+    static List<String> competitions() {
+        return Competitions.decode(app == null ? null : sp().getString("competitions", null));
+    }
+
+    static void setCompetitions(List<String> ids) { put("competitions", Competitions.encode(ids)); }
+
     // MARK: - Widgets and coins
 
     static boolean weather() { return sp().getBoolean("weather", true); }

@@ -55,12 +55,48 @@ final class News {
         } catch(Exception ignored) { /* malformed/unavailable feeds never break the home screen */ }
         return Collections.unmodifiableList(out);
     }
-    private static String sourceName(String host) {
+    /**
+     * The only publishers whose headlines are shown: {site, Arabic name, English name}. NewsFeed builds its Google News
+     * RSS queries from this list and the parser drops any item from another site, so the credits in Settings > About
+     * (credits()) are generated from what is really fetched.
+     */
+    static final String[][] SOURCES = {
+        {"alarabiya.net", "العربية", "Al Arabiya"},
+        {"alhadath.net", "الحدث", "Al Hadath"},
+    };
+    /** The feed the headlines come through (public RSS search, no account or key). */
+    static final String AGGREGATOR_AR = "أخبار Google ‏(RSS)", AGGREGATOR_EN = "Google News (RSS)";
+
+    static String sourceName(String host) {
         if (host==null) return null;
         String h=host.toLowerCase(Locale.ROOT);
-        if (h.equals("alarabiya.net") || h.equals("www.alarabiya.net")) return "العربية";
-        if (h.equals("alhadath.net") || h.equals("www.alhadath.net")) return "الحدث";
+        for (String[] s:SOURCES) if (h.equals(s[0]) || h.equals("www."+s[0])) return s[1];
         return null;
+    }
+
+    /** "site:alarabiya.net OR site:alhadath.net" (or one site), for the RSS search. */
+    static String siteQuery(boolean onlyLast) {
+        if (onlyLast) return "site:"+SOURCES[SOURCES.length-1][0];
+        StringBuilder sb=new StringBuilder("(");
+        for (int i=0;i<SOURCES.length;i++) sb.append(i==0?"":" OR ").append("site:").append(SOURCES[i][0]);
+        return sb.append(")").toString();
+    }
+
+    /** "العربية والحدث": the publishers' names, for short notices. */
+    static String namesAr() {
+        StringBuilder sb=new StringBuilder();
+        for (int i=0;i<SOURCES.length;i++) sb.append(i==0?"":i==SOURCES.length-1?" و":"، ").append(SOURCES[i][1]);
+        return sb.toString();
+    }
+
+    /** The news credit line for Settings > About, from SOURCES. */
+    static String credits(boolean arabic) {
+        StringBuilder sb=new StringBuilder();
+        for (int i=0;i<SOURCES.length;i++) {
+            sb.append(i==0?"":arabic?"، ":", ").append(arabic?SOURCES[i][1]:SOURCES[i][2]).append(" (").append(SOURCES[i][0]).append(")");
+        }
+        return arabic ? "عناوين الأخبار: "+sb+" عبر "+AGGREGATOR_AR+". الحقوق لأصحابها، وتُعرض العناوين فقط."
+                : "News headlines: "+sb+" via "+AGGREGATOR_EN+". Rights belong to their publishers; only headlines are shown.";
     }
     private static String text(Element e,String tag) {
         NodeList n=e.getElementsByTagName(tag);return n.getLength()==0?"":n.item(0).getTextContent();

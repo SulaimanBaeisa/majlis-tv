@@ -1,6 +1,6 @@
 {
   "id": "changhong", "label": "Changhong / Classpro AI PONT (Android 9-11)",
-  "match": {"device": "changhong|classpro|ai pont|mstar|m7322", "sdk_min": 28},
+  "match": {"device": "changhong|classpro|ai pont|m7322", "sdk_min": 28},
   "appops": ["SYSTEM_ALERT_WINDOW", "SCHEDULE_EXACT_ALARM"],
   "must_stay_enabled": ["com.mediatek.wwtv.tvcenter", "com.mediatek.tvinput"],
   "extra_checks": [

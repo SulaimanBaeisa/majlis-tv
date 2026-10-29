@@ -54,10 +54,18 @@ public class InfoTest {
 
         p = Info.prayer(LocalDateTime.parse("2026-10-23T11:00"), LAT, LNG, TZ, Schedule.DEFAULT_IQAMA);
         eq("friday name", p.name, "الجمعة");
+        eq("screensaver friday row", Info.row(p, LocalDate.of(2026, 10, 23))[Schedule.DHUHR][0], "الجمعة");
+        eq("screensaver today title", Info.rowTitle(p), "مواقيت الصلاة اليوم");
+        for (int i = 0; i < p.times.length; i++)
+            eq("screensaver shares home time " + i, Info.row(p, LocalDate.of(2026, 10, 23))[i][1], p.times[i]);
 
         p = Info.prayer(LocalDateTime.parse("2026-10-20T22:00"), LAT, LNG, TZ, Schedule.DEFAULT_IQAMA);
         eq("tomorrow fajr", p.name, "الفجر");
         eq("tomorrow label", p.label, "الصلاة القادمة غدًا");
+        eq("screensaver tomorrow title", Info.rowTitle(p), "مواقيت صلاة الغد");
+        Info.Prayer tomorrow = Info.prayer(LocalDateTime.parse("2026-10-21T01:00"), LAT, LNG, TZ, Schedule.DEFAULT_IQAMA);
+        for (int i = 0; i < p.times.length; i++)
+            eq("screensaver uses tomorrow time " + i, Info.row(p, LocalDate.of(2026, 10, 20))[i][1], tomorrow.times[i]);
 
         // verse of the day: stable for a date, changes day to day, wraps
         List<String[]> items = new ArrayList<>();

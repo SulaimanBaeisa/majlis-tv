@@ -107,7 +107,7 @@ final class NewsFeed {
         main.post(()->{for(Runnable r:new ArrayList<>(listeners))r.run();});
     }
     private static String fetch(int category) throws IOException {
-        String q=(category==5?"site:alhadath.net":"(site:alarabiya.net OR site:alhadath.net)")+" "+TERMS[category]+" when:1d";
+        String q=News.siteQuery(category==5)+" "+TERMS[category]+" when:1d";
         URL url=new URL("https://news.google.com/rss/search?q="+URLEncoder.encode(q,"UTF-8")+"&hl=ar&gl=SA&ceid=SA:ar");
         HttpURLConnection c=(HttpURLConnection)url.openConnection();
         c.setConnectTimeout(6000);c.setReadTimeout(8000);c.setInstanceFollowRedirects(false);
