@@ -62,8 +62,7 @@ made by the `./tv` tool, so the result is the same in every model.
 | **Screensaver** | **Settings** |
 | ![Screensaver](docs/screenshots/screensaver.jpg) | ![Settings](docs/screenshots/settings.jpg) |
 
-All six are design mockups of Majlis 1.2.0, drawn from the app's own palette, fonts and Saudi
-wallpapers; the shipping UI follows them.
+All six are captures from a TCL Smart TV Pro on Android 14 running Majlis 1.2.0.
 
 ## Supported TVs
 
