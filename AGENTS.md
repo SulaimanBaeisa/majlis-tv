@@ -6,6 +6,14 @@ commands, and never skip a step because it "looks done".
 
 Repository root = the folder that contains this file. Run every command from there.
 
+**Work step by step.** Steps 1–8 run in that order, one at a time: open the connection, check this
+computer, identify the TV, build, install, switch the home screen, verify, report. Before each command,
+say which step you are on and what it will do ("Step 3 of 8 — identifying the TV"). Run the command
+alone, read all of its output, then say in one line what it returned (the PASS line, or the
+FAIL/BLOCKED line). Do not batch steps, do not run them in parallel, do not skip one because the
+previous one "looks fine", and do not continue past a FAIL or BLOCKED. At the end, give the user a
+numbered log of the eight steps with the result of each.
+
 ## Hard rules
 
 1. Never use sudo. Everything here is user-level.
@@ -20,9 +28,11 @@ Repository root = the folder that contains this file. Run every command from the
    under `reports/`, plus `config.properties` (the tool writes it).
 7. Do not run `git push`, `git reset`, `pm disable-user`, `pm enable` or `rm`. The only exception
    is a `fix="..."` string printed by `./tv`: run exactly that, nothing more.
-8. Android TV / Google TV only (Android 9–14). If the TV is LG webOS, Samsung Tizen, Roku, Fire TV
+8. The only `adb` commands you run are the two in Step 1 (`adb connect`, `adb devices`). Every
+   other action goes through `./tv`, which connects and disconnects on its own.
+9. Android TV / Google TV only (Android 9–14). If the TV is LG webOS, Samsung Tizen, Roku, Fire TV
    or Apple TV, stop and say this project does not support it.
-9. Never promise a 4K interface; video apps keep their own 4K plane.
+10. Never promise a 4K interface; video apps keep their own 4K plane.
 
 ## Ask the user once, in one message
 
@@ -32,7 +42,24 @@ Repository root = the folder that contains this file. Run every command from the
 - On the TV: Developer options → USB debugging ON (Settings → System → About → press the build
   number 7 times if Developer options is missing). Brand-specific paths: `docs/INSTALL.md`.
 
-## Step 0 — is this computer ready?
+## Step 1 — open the connection
+
+    adb connect <IP>:5555
+
+Expected: `connected to <IP>:5555`, or `already connected to <IP>:5555`. Then:
+
+    adb devices
+
+Expected: a line `<IP>:5555\tdevice` — the word `device`, not `offline` or `unauthorized`.
+
+- `unauthorized` → ask the user to accept **Allow USB debugging?** on the TV, tick **Always allow**,
+  then rerun `adb connect`.
+- `cannot connect` / `connection refused` → the IP is wrong or USB debugging is off. Ask again; do
+  not guess another address.
+- Two TVs on one computer is fine: write the IP into every `./tv` command with `--ip`, never rely on
+  "the only device".
+
+## Step 2 — is this computer ready?
 
     ./tv doctor
 
@@ -40,7 +67,7 @@ Expected: every line starts with `OK`, the last line is `RESULT doctor: N OK, 0 
 If a line starts with `FAIL`, run the `fix:` line under it (user-level only), then run `./tv doctor`
 again. Do not continue until it is 0 missing.
 
-## Step 1 — identify the TV
+## Step 3 — identify the TV
 
     ./tv probe --ip <IP>
 
@@ -52,7 +79,7 @@ you found.
   **Always allow**, then rerun.
 - `BLOCKED … cannot reach` → ask them to confirm the IP and that USB debugging is on.
 
-## Step 2 — build
+## Step 4 — build
 
     ./tv build --city "<CITY>"
 
@@ -63,16 +90,16 @@ If it prints `BLOCKED unknown city`, ask for the nearest large city, or for lati
 
 Do not continue if the build fails.
 
-## Step 3 — install
+## Step 5 — install
 
     ./tv install --ip <IP> --apk Majlis.apk
 
 Expected: `PASS apk.install Majlis.apk sha256=<12 hex>` followed by a `NEXT on the TV:` line.
-If it says `Majlis is already the home screen`, skip Step 4 and go straight to verify.
+If it says `Majlis is already the home screen`, skip Step 6 and go straight to verify.
 If it prints `BLOCKED … signed with a different key`, stop and follow `docs/SIGNING.md` with the
 user. Do not uninstall anything on your own.
 
-## Step 4 — make it the home screen (the user taps)
+## Step 6 — make it the home screen (the user taps)
 
     ./tv switch --ip <IP> --to free --wait 180
 
@@ -82,14 +109,14 @@ Expected: `PASS switch.mode home=io.freemytv/.HomeActivity`.
 If it times out, the user can open the Majlis app on the TV → **Home Screen** → **Majlis**,
 then rerun the same command.
 
-## Step 5 — verify (this is the definition of done)
+## Step 7 — verify (this is the definition of done)
 
     ./tv verify --ip <IP> --mode free --apk Majlis.apk
 
 Expected: `RESULT <n> PASS 0 FAIL <n> WARN <n> SKIP`, exit 0, and a `REPORT reports/verify-….md`
 line. WARN and SKIP are fine. One FAIL means not done: use §8, fix, rerun.
 
-## Step 6 — report to the user
+## Step 8 — report to the user
 
     ./tv report --ip <IP>
 
@@ -103,6 +130,17 @@ Paste this, filled in, and attach/point to the report file and screenshot:
     Screenshot: reports/shot-<…>.png
 
 Then tell them how to go back: *Majlis app → Home Screen → Original*.
+
+Finish with the step log, one line per step, so the user can see the whole path that ran:
+
+    Step 1 connection  adb connect 10.3.30.60:5555 → device
+    Step 2 doctor      6 OK, 0 missing
+    Step 3 probe       sony · BRAVIA VH1 · Android 12
+    Step 4 build       1.2.0 (4) sha256 bb1ec6f1399d
+    Step 5 install     installed, hash matched
+    Step 6 switch      already the home screen
+    Step 7 verify      17 PASS / 0 FAIL / 1 WARN / 1 SKIP
+    Step 8 report      reports/verify-….md
 
 ## Update an existing install
 
@@ -142,7 +180,7 @@ re-enable the stock launcher; rollback must run first.
 
 Never treat a FAIL as a pass, and never edit `reports/` to make it look green.
 
-## What this changes on the TV (say this before Step 4)
+## What this changes on the TV (say this before Step 6)
 
 - The home screen and screensaver become Majlis.
 - Three stock packages are disabled with `pm disable-user`: the stock launcher, its recommendations,
